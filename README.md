@@ -1,0 +1,98 @@
+# 小樱的手帐
+
+一个可以直接部署的个人博客小站。首次打开是只有四个分类按钮可操作的入口页，分别进入生活日记、学习与工作、关于我、留言角。Q 版人物插画会在入口页和分类页显示。站长可以登录发布动态、编辑资料并删除留言。访客可以发起话题和回复。五个页面采用不同莫奈画作的主体构图作为参考，重新绘制成粉、红、紫色系背景。
+
+| 页面 | 背景构图参考 |
+| --- | --- |
+| 入口页 | [《睡莲》](https://www.metmuseum.org/art/collection/search/437137)：无地平线的池面与睡莲 |
+| 生活日记 | [《罂粟花田》](https://www.musee-orsay.fr/en/artworks/coquelicots-1010)：花田与斜向小路 |
+| 学习与工作 | [《鲁昂大教堂，西立面》](https://www.nga.gov/artworks/46524-rouen-cathedral-west-facade)：建筑立面与变化的光线 |
+| 关于我 | [《日本桥》](https://www.nga.gov/artworks/74796-japanese-footbridge)：拱桥、池塘与庭园 |
+| 留言角 | [《印象·日出》](https://www.marmottan.fr/notice/4014/)：晨雾港口、太阳与水面倒影 |
+
+这些背景是重新绘制的参考作品，不是原画复制件。网站使用保存在 `public/assets/` 的本地 WebP 文件。
+
+## 本地运行
+
+需要 Node.js 20 或更高版本，不需要安装 npm 依赖。
+
+```bash
+cd /Users/potatosmac/Desktop/blog
+BLOG_ADMIN_PASSWORD='换成你自己的强密码' npm start
+```
+
+打开 <http://localhost:3000>。右上角爱心是站长入口。登录后，可在生活日记和学习工作页发布动态，也可以在关于我页编辑资料。
+
+直接双击 `public/index.html` 也能预览页面和插画，但这是静态演示数据；发布动态、编辑资料和留言需要通过上面的本地服务打开。
+
+默认个人信息和演示动态位于 `server.js` 的 `initialData`。首次启动时会复制到 `data/blog.json`。之后网站只读取 `data/blog.json`，不会因为更新代码而覆盖已有内容。**部署时请备份 `data/` 目录**。如果想重置演示内容，停机后删除 `data/blog.json`，再启动。
+
+## Ubuntu 部署示例
+
+1. 安装 Node.js 20+，将整个项目复制到 `/var/www/pink-diary`。
+2. 创建 `/var/www/pink-diary/.env`，设置密码并限制权限：
+
+   ```ini
+   BLOG_ADMIN_PASSWORD=请填写独一无二的强密码
+   PORT=3000
+   BLOG_SECURE_COOKIE=1
+   BLOG_TRUST_PROXY=1
+   ```
+
+   ```bash
+   sudo chmod 600 /var/www/pink-diary/.env
+   ```
+
+3. 创建 `/etc/systemd/system/pink-diary.service`：
+
+   ```ini
+   [Unit]
+   Description=Pink Diary Blog
+   After=network.target
+
+   [Service]
+   Type=simple
+   User=www-data
+   Group=www-data
+   WorkingDirectory=/var/www/pink-diary
+   EnvironmentFile=/var/www/pink-diary/.env
+   ExecStart=/usr/bin/node /var/www/pink-diary/server.js
+   Restart=always
+   RestartSec=3
+
+   [Install]
+   WantedBy=multi-user.target
+   ```
+
+   请确认 `/usr/bin/node` 与 `command -v node` 的输出一致，并让 `www-data` 对项目中的 `data/` 目录有写入权限。如果目录尚不存在，先执行 `sudo mkdir -p /var/www/pink-diary/data && sudo chown -R www-data:www-data /var/www/pink-diary/data`。
+
+4. 启动服务：
+
+   ```bash
+   sudo systemctl daemon-reload
+   sudo systemctl enable --now pink-diary
+   sudo systemctl status pink-diary
+   ```
+
+5. 用 Nginx 反向代理到本地 3000 端口：
+
+   ```nginx
+   server {
+       listen 80;
+       server_name 你的域名;
+       location / {
+           proxy_pass http://127.0.0.1:3000;
+           proxy_set_header Host $host;
+           proxy_set_header X-Real-IP $remote_addr;
+       }
+   }
+   ```
+
+   配置域名的 HTTPS 证书后再正式开放站长登录。启用 HTTPS 时保留 `BLOG_SECURE_COOKIE=1`；纯 HTTP 本地调试时不要设置它。
+
+## 内容与管理说明
+
+- 数据持久化在 `data/blog.json`；无外部数据库依赖。
+- 发布和管理动态、编辑资料需要站长密码。密码由服务器环境变量读取，不写入网页。
+- 留言区对访客开放，站长可以删除整个话题；目前没有图片上传和独立的逐条回复删除功能。
+- 插画在 `public/assets/rin-saber-chibi.png`，网站加载时不依赖外部图片服务。若将来用于商业用途，请先确认角色相关授权。
