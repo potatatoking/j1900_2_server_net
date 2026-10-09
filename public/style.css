@@ -95,3 +95,24 @@ body:not(.is-entry) .site-footer{background:rgba(255,249,252,.70);backdrop-filte
   .entry-button,.character-bubble,.button-character img{transition:none}
   .entry-with-character .button-character{animation:none!important}
 }
+/* 每页的站内检索与按日期整理的留言。 */
+.search-panel{margin:0 0 24px;padding:15px 18px;border:1px solid #eed4df;border-radius:15px;background:rgba(255,253,252,.86);box-shadow:var(--shadow)}
+.search-panel label{display:block;margin-bottom:7px;color:#815c70;font-size:12px;font-weight:700}
+.search-field{display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid #e9ceda;border-radius:9px;background:#fff}
+.search-field:focus-within{border-color:#b67ca2;box-shadow:0 0 0 3px #f3e4ef}
+.search-field span{color:#a56e91;font-size:22px;line-height:1}
+.search-field input{width:100%;height:39px;border:0;outline:0;background:transparent;color:#604c55;font-size:13px}
+.search-results:empty{display:none}
+.search-results{max-height:340px;overflow:auto;margin-top:10px;border-top:1px dashed #ead2db}
+.search-summary{padding:9px 2px 5px;color:#9d788a;font-size:11px}
+.search-result{display:grid;grid-template-columns:82px 1fr;column-gap:10px;align-items:baseline;padding:9px 7px;border-radius:8px;border-bottom:1px solid #f6e9ed}
+.search-result:hover,.search-result:focus-visible{background:#fff1f6;outline:none}
+.search-result span{color:#ac6f8c;font-size:11px}.search-result strong{color:#6d4d5d;font-size:13px}.search-result small{grid-column:2;overflow:hidden;color:#a08a95;font-size:11px;text-overflow:ellipsis;white-space:nowrap}
+.search-empty{margin:10px 2px;color:#a08a95;font-size:12px}
+.entry-page{display:flex;flex-direction:column;justify-content:center;gap:24px}
+.entry-search{position:relative;z-index:4;width:min(100%,522px)}
+.entry-search .search-panel{margin:0;background:rgba(255,250,252,.9)}
+.date-group{display:grid;gap:14px}.date-group-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin:2px 2px 0;color:#704e5b;font-size:17px}.date-group-title small{color:#9c7891;font-size:11px;font-weight:500}
+.topic h3{margin:0 0 9px;font-size:19px;color:#704e5b}.topic-meta{flex-wrap:wrap}.admin-actions{display:inline-flex;gap:6px;margin-left:auto}
+[id^="post-"],[id^="topic-"],#profile{scroll-margin-top:24px}
+@media(max-width:700px){.entry-page{gap:17px}.search-panel{padding:12px}.search-result{grid-template-columns:64px 1fr}}

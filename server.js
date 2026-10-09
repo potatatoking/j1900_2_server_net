@@ -121,10 +121,19 @@ async function api(req, res, url) {
     }
   }
   const postId = route.match(/^\/api\/posts\/([\w-]+)$/)?.[1];
-  if (postId && req.method === 'DELETE') {
+  if (postId && (req.method === 'PUT' || req.method === 'DELETE')) {
     if (!requireAdmin(req, res)) return;
-    const old = db.posts.length; db.posts = db.posts.filter(p => p.id !== postId);
-    if (old === db.posts.length) return json(res, 404, { error: '动态不存在' });
+    const post = db.posts.find(p => p.id === postId);
+    if (!post) return json(res, 404, { error: '动态不存在' });
+    if (req.method === 'PUT') {
+      const input = await body(req);
+      const type = input.type === 'study' ? 'study' : input.type === 'life' ? 'life' : null;
+      const title = clean(input.title, 100), content = clean(input.content, 5000), tag = clean(input.tag, 30);
+      if (!type || !title || !content) return json(res, 400, { error: '请填写完整的标题和内容' });
+      Object.assign(post, { type, title, content, tag, updatedAt: new Date().toISOString() });
+      await save(); return json(res, 200, post);
+    }
+    db.posts = db.posts.filter(p => p.id !== postId);
     await save(); return json(res, 200, { ok: true });
   }
   if (route === '/api/topics') {
@@ -138,10 +147,18 @@ async function api(req, res, url) {
     }
   }
   const topicId = route.match(/^\/api\/topics\/([\w-]+)$/)?.[1];
-  if (topicId && req.method === 'DELETE') {
+  if (topicId && (req.method === 'PUT' || req.method === 'DELETE')) {
     if (!requireAdmin(req, res)) return;
-    const old = db.topics.length; db.topics = db.topics.filter(t => t.id !== topicId);
-    if (old === db.topics.length) return json(res, 404, { error: '话题不存在' });
+    const topic = db.topics.find(t => t.id === topicId);
+    if (!topic) return json(res, 404, { error: '留言不存在' });
+    if (req.method === 'PUT') {
+      const input = await body(req);
+      const author = clean(input.author, 30), title = clean(input.title, 100), content = clean(input.content, 2000);
+      if (!author || !title || !content) return json(res, 400, { error: '请填写昵称、标题和内容' });
+      Object.assign(topic, { author, title, content, updatedAt: new Date().toISOString() });
+      await save(); return json(res, 200, topic);
+    }
+    db.topics = db.topics.filter(t => t.id !== topicId);
     await save(); return json(res, 200, { ok: true });
   }
   const replyId = route.match(/^\/api\/topics\/([\w-]+)\/replies$/)?.[1];
