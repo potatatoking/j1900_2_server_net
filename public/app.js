@@ -52,7 +52,7 @@ function render() {
 function sectionHead(title, subtitle, link, label) { return `<div class="section-head"><div><div class="eyebrow">✦ ${esc(subtitle)}</div><h2>${esc(title)}</h2></div>${link ? `<a href="#${link}">${esc(label)} →</a>` : ''}</div>`; }
 function home() {
   return `<section class="entry-page" aria-label="选择分类"><nav class="entry-buttons" aria-label="博客分类">
-    <a class="entry-button entry-life" href="#life"><span class="entry-icon" aria-hidden="true">🌷</span><span class="entry-name">生活日记</span><span class="entry-arrow" aria-hidden="true">↗</span></a>
+    <a class="entry-button entry-life entry-with-character" href="#life"><span class="button-character" aria-hidden="true"><span class="character-bubble">一起收集今天的小确幸 ♡</span><img src="./assets/rin-button.png" width="1415" height="1111" alt="" draggable="false"></span><span class="entry-icon" aria-hidden="true">🌷</span><span class="entry-name">生活日记</span><span class="entry-arrow" aria-hidden="true">↗</span></a>
     <a class="entry-button entry-study" href="#study"><span class="entry-icon" aria-hidden="true">📖</span><span class="entry-name">学习 & 工作</span><span class="entry-arrow" aria-hidden="true">↗</span></a>
     <a class="entry-button entry-about" href="#about"><span class="entry-icon" aria-hidden="true">🎀</span><span class="entry-name">关于我</span><span class="entry-arrow" aria-hidden="true">↗</span></a>
     <a class="entry-button entry-talk" href="#talk"><span class="entry-icon" aria-hidden="true">💌</span><span class="entry-name">留言角</span><span class="entry-arrow" aria-hidden="true">↗</span></a>
@@ -86,6 +86,11 @@ document.querySelector('#login-button').addEventListener('click', adminModal);
 document.querySelector('#modal-close').addEventListener('click', closeModal);
 modal.addEventListener('click', event => { if (event.target === modal) closeModal(); });
 window.addEventListener('hashchange', () => { render(); scrollTo(0, 0); });
+app.addEventListener('click', event => {
+  if (event.target.closest('.entry-with-character') && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+    toast('来啦！一起看看今天的小确幸 ♡');
+  }
+});
 document.addEventListener('click', async event => {
   const button = event.target.closest('[data-action]'); if (!button) return;
   const { action, id, type } = button.dataset;
