@@ -456,7 +456,7 @@ function contactRows(profile) {
 function about() {
   const p = state.profile;
   const [original, translation, source] = todaysQuote();
-  return `<div class="container page">${pageHead('NICE TO MEET YOU', '关于我 🎀', '你好呀，很高兴在这里与你相遇。', state.admin ? '<button class="btn tiny" data-action="edit-profile">✎ 编辑资料</button>' : '')}<div class="about-layout"><aside id="profile" class="profile-card paper-card"><div class="avatar">${p.avatar ? `<img src="${esc(p.avatar)}" alt="${esc(p.name)}的头像">` : '🌸'}</div><h2>${esc(p.name)}</h2><div class="handle">@${esc(p.handle)}</div><p>${esc(p.intro)}</p><div class="divider"></div><div class="meta"><div><span>📍 家乡</span>${esc(p.location)}</div>${contactRows(p)}${p.contactNote ? `<div class="contact-note">${esc(p.contactNote)}</div>` : ''}${p.birthday ? `<div><span>🎂 生日</span>${esc(p.birthday)}</div>` : ''}${p.workExperience ? `<div><span>💼 工作经历</span><div class="meta-detail">${esc(p.workExperience)}</div></div>` : ''}${educationRows(p)}${hobbyGrid(p)}</div></aside><div class="about-content paper-card"><div class="eyebrow">A LETTER FROM ME</div><h2>写给来到这里的你 🥔</h2><p>${esc(p.bio)}</p><button class="saber-scene" data-day="${localDay()}" type="button" aria-label="让 Saber 举高寄语框" aria-pressed="false"><span class="saber-lift"><span class="saber-frame"><span class="saber-frame-label">A LITTLE LIGHT FOR YOU</span><span class="saber-quote-original">${esc(original)}</span><span class="saber-quote-translation">${esc(translation)}</span><span class="saber-quote-source">— ${esc(source)}</span><span class="saber-spark" aria-hidden="true">✦</span></span><img class="saber-character" src="./assets/saber-frame.png" alt="Saber 双手托着寄语框" width="1176" height="1337"></span><span class="saber-hint">点点我，把小小光亮举高一点 ↑</span></button></div></div>${bottomSearch()}</div>`;
+  return `<div class="container page page-about">${pageHead('NICE TO MEET YOU', '关于我 🎀', '你好呀，很高兴在这里与你相遇。', state.admin ? '<button class="btn tiny" data-action="edit-profile">✎ 编辑资料</button>' : '')}<div class="about-layout"><section id="profile" class="profile-card paper-card" aria-labelledby="profile-name"><header class="profile-identity"><div class="avatar">${p.avatar ? `<img src="${esc(p.avatar)}" alt="${esc(p.name)}的头像">` : '🌸'}</div><div class="profile-identity-copy"><h2 id="profile-name">${esc(p.name)}</h2><div class="handle">@${esc((p.handle || "").replace(/^@+/, ""))}</div><p>${esc(p.intro)}</p></div></header>${p.bio ? `<div class="profile-bio"><span class="journal-kicker">A LETTER FROM ME</span><p>${esc(p.bio)}</p></div>` : ""}<div class="divider"></div><div class="meta"><div><span>📍 家乡</span>${esc(p.location)}</div>${contactRows(p)}${p.contactNote ? `<div class="contact-note">${esc(p.contactNote)}</div>` : ''}${p.birthday ? `<div><span>🎂 生日</span>${esc(p.birthday)}</div>` : ''}${p.workExperience ? `<div><span>💼 工作经历</span><div class="meta-detail">${esc(p.workExperience)}</div></div>` : ''}${educationRows(p)}${hobbyGrid(p)}</div></section></div><aside class="about-content quote-note" aria-label="今日寄语"><div class="quote-note-label"><span>✦ 今日寄语</span><small>A LITTLE LIGHT FOR YOU</small></div><div class="quote-note-body"><h2>送你一点小小光亮</h2><button class="saber-scene" data-day="${localDay()}" type="button" aria-label="让 Saber 举高寄语框" aria-pressed="false"><span class="saber-lift"><span class="saber-frame"><span class="saber-frame-label">A LITTLE LIGHT FOR YOU</span><span class="saber-quote-original">${esc(original)}</span><span class="saber-quote-translation">${esc(translation)}</span><span class="saber-quote-source">— ${esc(source)}</span><span class="saber-spark" aria-hidden="true">✦</span></span><img class="saber-character" src="./assets/saber-frame.png" alt="Saber 双手托着寄语框" width="1176" height="1337"></span><span class="saber-hint">点点我，把小小光亮举高一点 ↑</span></button></div></aside>${bottomSearch()}</div>`;
 }
 function bottomSearch() {
   return `<section class="page-bottom-search" aria-label="页面底部搜索">${searchPanel()}</section>`;
@@ -467,8 +467,9 @@ function talk() {
 }
 const topicDrafts = new Map();
 let activeTopicId = '';
-function newTopicModal() {
+function newTopicModal(sourceRect) {
   openModal(`<h2>吹起一个新气泡 💬</h2><p>发起新话题，让路过的人加入聊天。提交后会公开显示。</p><form id="topic-form"><label for="topic-author">你的昵称</label><input class="field" id="topic-author" name="author" maxlength="30" required><label for="topic-title">话题标题</label><input class="field" id="topic-title" name="title" maxlength="100" required><label for="topic-content">想聊些什么</label><textarea class="field" id="topic-content" name="content" maxlength="2000" required></textarea><p class="form-error" role="alert"></p><button class="btn" type="submit">发布话题</button></form>`);
+  animateConversationEntrance(sourceRect, true);
 }
 function topicConversation(id, focusReply = false) {
   const topic = state.topics.find(item => item.id === id);
@@ -484,9 +485,9 @@ let conversationEntrance = null;
 function stopConversationEntrance() {
   conversationEntrance?.cancel();
   conversationEntrance = null;
-  modal.classList.remove('conversation-entering');
+  modal.classList.remove('conversation-entering', 'topic-composing-entering');
 }
-function animateConversationEntrance(sourceRect) {
+function animateConversationEntrance(sourceRect, composing = false) {
   if (!modal.animate || motionReduced()) return;
   stopConversationEntrance();
   const destination = modal.getBoundingClientRect();
@@ -495,16 +496,20 @@ function animateConversationEntrance(sourceRect) {
   const y = sourceRect ? clamp(sourceRect.top + sourceRect.height / 2 - destination.top - destination.height / 2, -120, 120) : 18;
   const scale = sourceRect ? clamp(sourceRect.width / destination.width, .65, .92) : .97;
   modal.classList.add('conversation-entering');
-  const animation = modal.animate([
+  if (composing) modal.classList.add('topic-composing-entering');
+  const animation = modal.animate(composing ? [
+    { opacity: 0, transform: `translate(${x * .5}px, ${y * .5}px) scale(.9)` },
+    { opacity: 1, transform: 'translate(0, 0) scale(1)' }
+  ] : [
     { opacity: 0, transform: `translate(${x}px, ${y}px) scale(${scale}) rotate(${sourceRect ? -2 : 0}deg)`, borderRadius: '48px 48px 48px 8px' },
     { opacity: 1, transform: 'translate(0, -3px) scale(1.01) rotate(.4deg)', offset: .78 },
     { opacity: 1, transform: 'translate(0, 0) scale(1) rotate(0)', borderRadius: getComputedStyle(modal).borderRadius }
-  ], { duration: sourceRect ? 360 : 280, easing: 'cubic-bezier(.22,1,.36,1)' });
+  ], { duration: composing ? 440 : sourceRect ? 360 : 280, easing: 'cubic-bezier(.22,1,.36,1)' });
   conversationEntrance = animation;
   animation.onfinish = () => {
     if (conversationEntrance !== animation) return;
     conversationEntrance = null;
-    modal.classList.remove('conversation-entering');
+    modal.classList.remove('conversation-entering', 'topic-composing-entering');
   };
 }
 let modalExit = null;
@@ -669,17 +674,55 @@ modal.addEventListener('change', event => {
   modal.querySelector('#mood-choice').value = entry?.mood || '';
   modal.querySelector('#mood-note').value = entry?.note || '';
 });
+function lifeFilterMarker(nav) {
+  const moving = nav?.querySelector('.life-filter-indicator');
+  if (moving) return moving.getBoundingClientRect();
+  const button = nav?.querySelector('[aria-pressed="true"]');
+  if (!button) return null;
+  const rect = button.getBoundingClientRect();
+  const vertical = nav.classList.contains('life-year-nav') && !window.matchMedia('(max-width:600px)').matches;
+  if (vertical) return { left: nav.getBoundingClientRect().left - 3, top: rect.top + rect.height / 2 - 3.5, width: 7, height: 7 };
+  return { left: rect.left, top: nav.classList.contains('life-year-nav') ? rect.bottom + 6 : nav.getBoundingClientRect().bottom - 3, width: rect.width, height: 3 };
+}
+function slideLifeFilter(nav, previous) {
+  if (!nav || !previous || motionReduced() || !nav.animate) return;
+  const target = lifeFilterMarker(nav);
+  if (!target) return;
+  const bounds = nav.getBoundingClientRect();
+  const marker = document.createElement('span');
+  marker.className = 'life-filter-indicator';
+  marker.setAttribute('aria-hidden', 'true');
+  Object.assign(marker.style, { left: `${target.left - bounds.left + nav.scrollLeft}px`, top: `${target.top - bounds.top + nav.scrollTop}px`, width: `${target.width}px`, height: `${target.height}px` });
+  nav.classList.add('filter-sliding');
+  nav.append(marker);
+  const animation = marker.animate([
+    { transform: `translate(${previous.left - target.left}px, ${previous.top - target.top}px) scale(${previous.width / target.width}, ${previous.height / target.height})` },
+    { transform: 'translate(0, 0) scale(1)' }
+  ], { duration: 340, easing: 'cubic-bezier(.22,1,.36,1)' });
+  animation.onfinish = () => { marker.remove(); nav.classList.remove('filter-sliding'); };
+}
 app.addEventListener('click', event => {
   const lifeFilter = event.target.closest('[data-life-year], [data-life-month]');
   if (lifeFilter) {
     const yearFilter = lifeFilter.hasAttribute('data-life-year');
+    const selectedValue = yearFilter ? lifeFilter.dataset.lifeYear : lifeFilter.dataset.lifeMonth;
+    if (selectedValue === (yearFilter ? lifeArchiveState.year : lifeArchiveState.month)) return;
+    const oldMarkers = ['.life-year-nav', '.life-month-nav'].map(selector => lifeFilterMarker(document.querySelector(selector)));
+    const monthScroll = document.querySelector('.life-month-nav')?.scrollLeft || 0;
     if (yearFilter) { lifeArchiveState.year = lifeFilter.dataset.lifeYear; lifeArchiveState.month = ''; }
     else lifeArchiveState.month = lifeFilter.dataset.lifeMonth;
     const archive = document.querySelector('#life-archive');
     updateContent(archive, () => { archive.innerHTML = lifeArchiveView(); });
+    archive.querySelector('.life-month-nav').scrollLeft = yearFilter ? 0 : monthScroll;
     const attr = yearFilter ? 'data-life-year' : 'data-life-month';
     const value = yearFilter ? lifeArchiveState.year : lifeArchiveState.month;
     archive.querySelector(`[${attr}="${value}"]`)?.focus({ preventScroll: true });
+    ['.life-year-nav', '.life-month-nav'].forEach((selector, index) => slideLifeFilter(archive.querySelector(selector), oldMarkers[index]));
+    const timeline = archive.querySelector('.life-timeline');
+    if (timeline?.animate && !motionReduced()) timeline.animate([
+      { opacity: 0, transform: `translate(${yearFilter ? 0 : 18}px, ${yearFilter ? 14 : 0}px)` },
+      { opacity: 1, transform: 'translate(0, 0)' }
+    ], { duration: 320, easing: 'cubic-bezier(.22,1,.36,1)' });
   }
 
   const calendarButton = event.target.closest('[data-study-day], [data-study-month]');
@@ -773,7 +816,7 @@ document.addEventListener('click', async event => {
       topicConversation(id);
       if (modal.open && activeTopicId === id) animateConversationEntrance(sourceRect);
     }
-    if (action === 'new-topic') newTopicModal();
+    if (action === 'new-topic') newTopicModal(button.getBoundingClientRect());
     if (action === 'edit-mood' && state.admin) moodModal(moodDate || localDay());
     if (action === 'new-post') postModal(type, null, section);
     if (action === 'edit-post') { const post = state.posts.find(post => post.id === id); if (post) postModal(post.type, post); }
