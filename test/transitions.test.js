@@ -22,7 +22,7 @@ function harness(reduced = false) {
     location: { protocol: 'file:', hash: '' }
   });
   vm.runInContext(source, context);
-  return { layer, animations, turn: vm.runInContext('paperTransition', context) };
+  return { layer, animations, turn: vm.runInContext('paperTransition', context), update: vm.runInContext('updateContent', context) };
 }
 
 test('a newer turn cancels the old destination and clears the paper overlay', async () => {
@@ -60,4 +60,42 @@ test('an interrupted exit does not replay a destination that was already rendere
   await Promise.all([first, next]);
   assert.deepEqual(commits, ['first', 'next']);
   assert.equal(h.layer.hidden, true);
+});
+
+
+test('content replacement interrupts at its current height and clears completed animation ownership', async () => {
+  const h = harness();
+  const frames = [];
+  let height = 100;
+  let cancelled = 0;
+  const pending = [];
+  const element = {
+    getBoundingClientRect: () => ({ height }),
+    animate(keyframes) {
+      frames.push(keyframes);
+      let finish, reject;
+      const finished = new Promise((yes, no) => { finish = yes; reject = no; });
+      pending.push(finish);
+      return { finished, cancel() { cancelled++; reject(new Error('interrupted')); } };
+    }
+  };
+  h.update(element, () => { height = 240; });
+  height = 160; // The visible intermediate height of the first animation.
+  h.update(element, () => { height = 80; });
+  assert.equal(cancelled, 1);
+  assert.equal(frames[1][0].height, '160px');
+  assert.equal(frames[1][1].height, '80px');
+  await new Promise(resolve => setImmediate(resolve));
+  pending[1]();
+  await new Promise(resolve => setImmediate(resolve));
+  h.update(element, () => { height = 120; });
+  assert.equal(cancelled, 1, 'completed animations must release ownership');
+  pending[2]();
+});
+
+test('reduced motion updates content synchronously without measuring or animating', () => {
+  const h = harness(true);
+  let updated = false;
+  h.update({ animate() { assert.fail('must not animate'); } }, () => { updated = true; });
+  assert.equal(updated, true);
 });
