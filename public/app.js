@@ -71,27 +71,151 @@ function render() {
   const siteName = `${state.profile.name || '我的'}的手帐`;
   document.querySelector('#brand-name').textContent = siteName;
   document.querySelector('#footer-brand').textContent = `♥ ${siteName}`;
-  document.querySelectorAll('[data-nav]').forEach(a => a.classList.toggle('active', a.dataset.nav === page));
   document.querySelector('#login-button').textContent = state.admin ? '♥' : '♡';
   app.innerHTML = ({ home, life: () => postsPage('life'), study: () => postsPage('study'), about, talk })[page]();
   document.title = `${({home:'首页',life:'生活日记',study:'学习与工作',about:'关于我',talk:'留言角'})[page]} | ${siteName}`;
   focusHashTarget();
+  revealSections();
+}
+let paperAnimation;
+let paperVersion = 0;
+const motionReduced = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+async function paperTransition(commit, label, reverse = false, enabled = true) {
+  const version = ++paperVersion;
+  paperAnimation?.cancel();
+  const layer = document.querySelector('#paper-transition');
+  layer.hidden = true;
+  if (!enabled || motionReduced() || !layer.animate) { commit(); return; }
+  layer.querySelector('.turn-title').textContent = label;
+  layer.classList.toggle('is-reverse', reverse);
+  layer.hidden = false;
+  const sheet = layer.querySelector('.turn-sheet');
+  const narrow = window.matchMedia('(max-width: 700px)').matches;
+  const angle = reverse ? 105 : -105;
+  let committed = false;
+  try {
+    // Cover the old view before changing its contents and scroll position.
+    paperAnimation = layer.animate([{ opacity: 0, transform: 'translateY(12px) scale(.97)' }, { opacity: 1, transform: 'none' }], { duration: 180, easing: 'ease-out', fill: 'both' });
+    await paperAnimation.finished;
+    if (version !== paperVersion) return;
+    paperAnimation.cancel();
+    commit();
+    committed = true;
+    paperAnimation = sheet.animate([
+      { transform: 'rotateY(0deg)', filter: 'brightness(1)' },
+      { transform: `rotateY(${angle * .6}deg)`, filter: 'brightness(.87)', offset: .62 },
+      { transform: `rotateY(${angle}deg)`, filter: 'brightness(.98)' }
+    ], { duration: narrow ? 420 : 600, easing: 'cubic-bezier(.3,.05,.2,1)', fill: 'forwards' });
+    await paperAnimation.finished;
+  } catch (error) {
+    // A newer navigation owns the screen; never commit an outdated route.
+    if (version === paperVersion && !committed) commit();
+  } finally {
+    if (version === paperVersion) {
+      paperAnimation?.cancel();
+      layer.hidden = true;
+    }
+  }
+}
+function changePage() {
+  const page = route();
+  const differentPage = document.body.dataset.page !== page;
+  state.searchQuery = '';
+  return paperTransition(() => {
+    scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    render();
+    const heading = app.querySelector('h1');
+    if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
+  }, ({ home: '回到故事的起点', life: '生活日记', study: '学习与工作', about: '关于我', talk: '留言角' })[page], page === 'home', differentPage);
+}
+let revealObserver;
+function revealSections() {
+  revealObserver?.disconnect();
+  if (motionReduced() || !('IntersectionObserver' in window)) return;
+  revealObserver = new IntersectionObserver(entries => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.remove('reveal-pending');
+      revealObserver.unobserve(entry.target);
+    }
+  }, { threshold: .08 });
+  app.querySelectorAll('.chapter-link, .journal-entry, .journal-letter, .post-card, .topic').forEach((element, index) => {
+    // Already-visible content stays visible, including deep-linked articles.
+    if (element.getBoundingClientRect().top < window.innerHeight) return;
+    element.style.setProperty('--reveal-delay', `${(index % 4) * 55}ms`);
+    element.classList.add('reveal-item', 'reveal-pending');
+    revealObserver.observe(element);
+  });
+}
+
+function setHomeSearch(open) {
+  const search = document.querySelector('.entry-search');
+  if (!search) return;
+  const toggle = search.querySelector('.search-toggle');
+  const reveal = search.querySelector('.entry-search-reveal');
+  search.classList.toggle('is-open', open);
+  toggle.setAttribute('aria-expanded', String(open));
+  toggle.setAttribute('aria-label', open ? '收起搜索' : '展开搜索');
+  reveal.inert = !open;
+  reveal.setAttribute('aria-hidden', String(!open));
+  (open ? search.querySelector('#site-search') : toggle).focus({ preventScroll: true });
 }
 function sectionHead(title, subtitle, link, label) { return `<div class="section-head"><div><div class="eyebrow">✦ ${esc(subtitle)}</div><h2>${esc(title)}</h2></div>${link ? `<a href="#${link}">${esc(label)} →</a>` : ''}</div>`; }
+const homeInteraction = { mood: '', artwork: 0, lastPost: null };
+const homeMoods = [
+  ['sunny', '☀', '晴朗', '把这份好心情，夹进今天的书页里。'],
+  ['quiet', '☁', '放空', '暂时什么都不做，也是一种好好生活。'],
+  ['growing', '✿', '充电', '慢慢来，每一点成长都算数。']
+];
+const homeArtworks = [
+  ['monet-entry.webp', '粉紫色的莫奈风格池塘与花园', '一些日常，值得被珍藏。'],
+  ['monet-study.webp', '紫色光影交织的莫奈风格画作', '给灵感一点发芽的时间。'],
+  ['monet-about.webp', '柔和色彩的莫奈风格花园', '在自己的节奏里，慢慢盛开。']
+];
 function home() {
-  return `<section class="entry-page" aria-label="选择分类"><nav class="entry-buttons" aria-label="博客分类">
-    <a class="entry-button entry-life entry-with-character" href="#life"><span class="button-character" aria-hidden="true"><span class="character-bubble">一起收集今天的小确幸 ♡</span><img src="./assets/rin-button.png" width="1415" height="1111" alt="" draggable="false"></span><span class="entry-icon" aria-hidden="true">🌷</span><span class="entry-name">生活日记</span><span class="entry-arrow" aria-hidden="true">↗</span></a>
-    <a class="entry-button entry-study" href="#study"><span class="entry-icon" aria-hidden="true">📖</span><span class="entry-name">学习 & 工作</span><span class="entry-arrow" aria-hidden="true">↗</span></a>
-    <a class="entry-button entry-about" href="#about"><span class="entry-icon" aria-hidden="true">🎀</span><span class="entry-name">关于我</span><span class="entry-arrow" aria-hidden="true">↗</span></a>
-    <a class="entry-button entry-talk" href="#talk"><span class="entry-icon" aria-hidden="true">💌</span><span class="entry-name">留言角</span><span class="entry-arrow" aria-hidden="true">↗</span></a>
-  </nav><div class="entry-search">${searchPanel()}</div><img class="entry-art" src="./assets/rin-saber-chibi.png" alt="" aria-hidden="true"></section>`;
+  const artwork = homeArtworks[homeInteraction.artwork];
+  const mood = homeMoods.find(item => item[0] === homeInteraction.mood);
+  const latest = state.posts.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 3);
+  const chapters = [
+    ['life', 'LIFE JOURNAL', '生活日记', '收藏平凡日子的闪光', '01'],
+    ['study', 'LEARNING NOTES', '学习 & 工作', '记录一点一点的成长', '02'],
+    ['about', 'ABOUT ME', '关于我', '一封写给新朋友的信', '03'],
+    ['talk', 'GUESTBOOK', '留言角', '在这里交换小小心事', '04']
+  ];
+  return `<div class="journal-home">
+    <section class="journal-hero" aria-labelledby="journal-title">
+      <div class="journal-intro"><p class="journal-kicker"><span></span> A PERSONAL JOURNAL · ${esc(state.profile.handle)}</p>
+        <p class="opening-welcome">欢迎来到我的小小世界</p><h1 id="journal-title"><span class="opening-line">把日子，</span><span class="opening-line">写成<span class="title-flower" aria-hidden="true">✳</span></span><span class="opening-line"><em>喜欢的样子。</em></span></h1>
+        <div class="journal-intro-bottom"><p>${esc(state.profile.intro)}<br>生活、学习，以及一些小小心事。</p><button class="journal-cta" type="button" data-home-action="explore">翻开手帐 <span aria-hidden="true">↓</span></button></div>
+        <div class="mood-picker" role="group" aria-label="今天的心情"><span class="mood-label">今天的你，是什么天气？</span><div class="mood-options">${homeMoods.map(([key, icon, label]) => `<button type="button" data-mood="${key}" aria-pressed="${homeInteraction.mood === key}"><span aria-hidden="true">${icon}</span> ${label}</button>`).join('')}</div><p id="mood-message" aria-live="polite">${mood ? mood[3] : '选一个心情，收下一句小小的回应。'}</p></div>
+      </div>
+      <div class="journal-collage" aria-label="莫奈色彩与日常灵感的拼贴">
+        <span class="collage-script" aria-hidden="true">little things,<br>beautiful days.</span>
+        <figure class="collage-main"><button class="artwork-switch" type="button" data-home-action="artwork" aria-label="切换下一幅画作"><img id="home-artwork" src="./assets/${artwork[0]}" alt="${artwork[1]}" fetchpriority="high"><span class="artwork-hint">换一幅风景 ↻</span></button><figcaption><span>THE ART OF EVERYDAY</span><span id="artwork-number">FIG. 0${homeInteraction.artwork + 1} / 03</span></figcaption></figure>
+        <figure class="collage-small"><img src="./assets/monet-life.webp" alt="柔和光影中的花园笔触"><figcaption>停下来，看看花。</figcaption></figure>
+        <span class="collage-seal" aria-hidden="true">慢慢生活<br>好好记录 <span>✳</span></span>
+        <button class="collage-character character-greeting" type="button" data-home-action="greeting" aria-label="和小凛打个招呼"><img src="./assets/rin-button.png" alt="" width="1415" height="1111"><span>戳戳我 ♡</span></button>
+        <span class="collage-note" id="artwork-note" aria-live="polite">${artwork[2]}</span>
+      </div>
+    </section>
+    <button class="opening-invitation" type="button" data-home-action="explore"><span class="opening-index">01 — THE BEGINNING</span><span>往下翻，故事才刚刚开始</span><span class="opening-down" aria-hidden="true">↓</span></button>
+    <section class="journal-chapters" id="home-chapters" aria-labelledby="chapters-title" tabindex="-1"><div class="explore-heading"><div><span class="journal-kicker">FIND YOUR LITTLE CORNER</span><h2 id="chapters-title">探索手帐 <em>Choose a chapter</em></h2><p>想从哪一页开始？选一个角落，慢慢逛。</p></div><button class="random-note" type="button" data-home-action="random" ${state.posts.length ? '' : 'disabled'}><span aria-hidden="true">⚄</span> 随机翻一篇 ↗</button></div>
+      <nav class="chapter-grid" aria-label="博客分类">${chapters.map(([page, en, title, caption, number]) => `<a class="chapter-link" href="#${page}"><div class="chapter-meta"><span>${number} / ${en}</span><span class="chapter-arrow" aria-hidden="true">↗</span></div><h3>${title}</h3><p>${caption}</p><span class="chapter-count">${page === 'life' || page === 'study' ? `${state.posts.filter(post => post.type === page).length} 篇记录` : page === 'talk' ? `${state.topics.length} 条留言` : '很高兴认识你'}</span></a>`).join('')}</nav>
+    </section>
+    <section class="journal-latest" aria-labelledby="latest-title"><div class="journal-section-label"><h2 id="latest-title">最近写下的 <em>Latest notes</em></h2><span>持续收集生活中的微光</span></div>
+      <div class="journal-latest-grid"><div class="journal-entries">${latest.length ? latest.map((post, index) => `<a class="journal-entry" href="#${post.type}?item=${encodeURIComponent(`post-${post.id}`)}"><span class="journal-entry-index">0${index + 1}</span><div><span class="journal-entry-category">${post.type === 'life' ? '生活日记' : '学习 & 工作'} · ${date(post.createdAt)}</span><h3>${esc(post.title)}</h3><p>${esc(post.content.slice(0, 76))}${post.content.length > 76 ? '…' : ''}</p></div><span aria-hidden="true">↗</span></a>`).join('') : '<p class="journal-empty">新的一页，等一个想记录的瞬间。</p>'}</div>
+      <aside class="journal-letter"><span class="journal-kicker">A NOTE TO YOU</span><span class="letter-star" aria-hidden="true">✳</span><h3>你好呀，<br>我是${esc(state.profile.name)}。</h3><p>${esc(state.profile.bio)}</p><a href="#about">关于我的更多故事 ↗</a></aside></div>
+    </section>
+    <section class="journal-search" aria-label="搜索手帐">${searchPanel()}</section>
+    <section class="journal-signoff"><p>很高兴，我们在这里相遇。</p><a href="#talk">留一句话，再走吧 <span aria-hidden="true">↗</span></a><span>WITH LOVE, ${esc(state.profile.name)}</span></section>
+  </div>`;
 }
 function pageHead(eyebrow, title, desc, action = '') { return `<div class="page-head"><div class="page-head-copy"><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p>${desc}</p>${action ? `<div class="page-head-action">${action}</div>` : ''}</div><img class="page-head-art" src="./assets/rin-saber-chibi.png" alt="" aria-hidden="true"></div>`; }
 function postsPage(type) {
   const life = type === 'life';
   const posts = state.posts.filter(post => post.type === type);
   const action = state.admin ? `<button class="btn tiny" data-action="new-post" data-type="${type}">＋ 写一篇动态</button>` : '';
-  const cards = posts.length ? posts.map(post => `<article id="post-${esc(post.id)}" class="post-card paper-card"><div class="post-top"><span class="tag">${esc(post.tag || (life ? '生活日记' : '成长笔记'))}</span><time class="date">${date(post.createdAt)}</time></div><h2>${esc(post.title)}</h2><p>${esc(post.content)}</p><div class="post-foot"><span>${post.updatedAt ? `✎ 编辑于 ${date(post.updatedAt)}` : '♥ 写给今天的自己'}</span>${state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></span>` : '<span>✦</span>'}</div></article>`).join('') : '<div class="paper-card empty"><span class="emoji">✿</span>这里还没有动态，敬请期待。</div>';
+  const cards = posts.length ? posts.map((post, index) => `<article id="post-${esc(post.id)}" class="post-card paper-card"><div class="post-top"><div class="post-label"><span class="post-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span><span class="tag">${esc(post.tag || (life ? '生活日记' : '成长笔记'))}</span></div><time class="date">${date(post.createdAt)}</time></div><h2>${esc(post.title)}</h2><p>${esc(post.content)}</p><div class="post-foot"><span>${post.updatedAt ? `✎ 编辑于 ${date(post.updatedAt)}` : '♥ 写给今天的自己'}</span>${state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></span>` : '<span>✦</span>'}</div></article>`).join('') : '<div class="paper-card empty"><span class="emoji">✿</span>这里还没有动态，敬请期待。</div>';
   return `<div class="container page page-${type}">${pageHead(life ? 'MY LITTLE DAYS' : 'GROWING NOTES', life ? '生活日记 🌷' : '学习 & 工作 📖', life ? '把日常里的甜和暖，都悄悄收藏起来。' : '一点点努力，也会汇成闪亮的星河。', action)}${searchPanel()}<div class="posts-layout"><div class="post-list">${cards}</div><aside class="side-note paper-card"><div class="emoji">${life ? '🍓' : '✏️'}</div><h3>${life ? '生活收集簿' : '成长备忘录'}</h3><p>${life ? '认真记录那些值得开心的小事。' : '今天也朝着喜欢的方向前进一点点。'}</p><ul><li>${life ? '散步时碰见的花' : '正在读的书'}</li><li>${life ? '甜点与咖啡香' : '学到的新知识'}</li><li>${life ? '喜欢的番剧片段' : '完成的小目标'}</li></ul></aside></div></div>`;
 }
 function about() {
@@ -122,13 +246,61 @@ function formData(form) { return Object.fromEntries(new FormData(form).entries()
 document.querySelector('#login-button').addEventListener('click', adminModal);
 document.querySelector('#modal-close').addEventListener('click', closeModal);
 modal.addEventListener('click', event => { if (event.target === modal) closeModal(); });
-window.addEventListener('hashchange', () => { state.searchQuery = ''; scrollTo(0, 0); render(); });
+window.addEventListener('hashchange', changePage);
+app.addEventListener('keydown', event => {
+  if (event.key === 'Escape' && event.target.closest('.entry-search.is-open')) {
+    event.preventDefault();
+    setHomeSearch(false);
+  }
+});
 app.addEventListener('input', event => {
   if (event.target.id !== 'site-search') return;
   state.searchQuery = event.target.value;
   document.querySelector('#search-results').innerHTML = searchResults(state.searchQuery);
 });
 app.addEventListener('click', event => {
+  const moodButton = event.target.closest('[data-mood]');
+  if (moodButton) {
+    homeInteraction.mood = moodButton.dataset.mood;
+    app.querySelectorAll('[data-mood]').forEach(button => button.setAttribute('aria-pressed', String(button === moodButton)));
+    document.querySelector('#mood-message').textContent = homeMoods.find(item => item[0] === homeInteraction.mood)[3];
+  }
+  const homeButton = event.target.closest('[data-home-action]');
+  if (homeButton) {
+    const action = homeButton.dataset.homeAction;
+    if (action === 'explore') {
+      paperTransition(() => {
+        const chapters = document.querySelector('#home-chapters');
+        if (!chapters) return;
+        chapters.focus({ preventScroll: true });
+        chapters.scrollIntoView({ behavior: 'instant', block: 'start' });
+      }, '翻开新的小小世界');
+    }
+    if (action === 'artwork') {
+      homeInteraction.artwork = (homeInteraction.artwork + 1) % homeArtworks.length;
+      const artwork = homeArtworks[homeInteraction.artwork];
+      const img = document.querySelector('#home-artwork');
+      img.src = `./assets/${artwork[0]}`;
+      img.alt = artwork[1];
+      if (!motionReduced() && img.animate) img.animate([{ opacity: .25, transform: 'scale(1.045)' }, { opacity: 1, transform: 'scale(1)' }], { duration: 500, easing: 'ease-out' });
+      document.querySelector('#artwork-number').textContent = `FIG. 0${homeInteraction.artwork + 1} / 03`;
+      document.querySelector('#artwork-note').textContent = artwork[2];
+    }
+    if (action === 'greeting') {
+      toast('小凛：欢迎回来！今天也要留一点时间给喜欢的事 ♡');
+      if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) homeButton.animate([{ transform: 'rotate(0)' }, { transform: 'translateY(-10px) rotate(-6deg)' }, { transform: 'rotate(4deg)' }, { transform: 'rotate(0)' }], { duration: 500 });
+    }
+    if (action === 'random' && state.posts.length) {
+      const otherPosts = state.posts.filter(post => post.id !== homeInteraction.lastPost);
+      const candidates = otherPosts.length ? otherPosts : state.posts;
+      const post = candidates[Math.floor(Math.random() * candidates.length)];
+      homeInteraction.lastPost = post.id;
+      location.hash = `${post.type}?item=${encodeURIComponent(`post-${post.id}`)}`;
+    }
+  }
+
+  const searchToggle = event.target.closest('.search-toggle');
+  if (searchToggle) setHomeSearch(searchToggle.getAttribute('aria-expanded') !== 'true');
   const result = event.target.closest('.search-result');
   if (result && result.getAttribute('href') === location.hash) focusHashTarget();
   if (event.target.closest('.entry-with-character') && event.button === 0 && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
