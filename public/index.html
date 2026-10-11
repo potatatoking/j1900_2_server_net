@@ -7,7 +7,8 @@
   <meta name="description" content="一间记录生活、学习与交流的粉红紫色小站。">
   <title>土豆的记事簿 | 生活、学习与小小心事</title>
   <link rel="stylesheet" href="./style.css?v=21">
-  <link rel="stylesheet" href="./editorial.css?v=46">
+  <link rel="stylesheet" href="./vendor/cropperjs/cropper.min.css">
+  <link rel="stylesheet" href="./editorial.css?v=60">
 </head>
 <body class="is-entry">
   <div class="top-ribbon">✦ &nbsp; welcome to my little corner of the internet &nbsp; ✦</div>
@@ -17,9 +18,16 @@
   <main id="app" class="app" aria-live="polite"></main>
   <footer class="site-footer"><span id="footer-brand">🥔 土豆的记事簿</span><span>活在当下呀</span><button id="back-to-top" type="button">返回顶部 ↑</button></footer>
   <div id="paper-transition" class="paper-transition" hidden aria-hidden="true" inert><div class="turn-sheet"><div class="turn-spine"></div><div class="turn-copy"><span>MY LITTLE NOTEBOOK</span><i>✳</i><strong class="turn-title">翻开新的小小世界</strong><small>每一页，都有值得珍藏的微光。</small></div><span class="turn-page-number">A NEW CHAPTER</span></div></div>
+  <div id="fan-preview" class="fan-preview" hidden aria-hidden="true" inert></div>
+  <div id="fan-navigation" class="fan-navigation" hidden>
+    <button id="fan-toggle" class="fan-toggle" type="button" aria-label="打开扇形导航" aria-expanded="false" aria-controls="fan-panel"><svg class="fan-toggle-icon" viewBox="0 0 48 36" aria-hidden="true"><path class="mini-fan-paper" d="M24 30 3 13Q24-6 45 13Z"/><path class="mini-fan-folds" d="m24 30-21-17m21 17L10 7m14 23L18 3m6 27L30 3m-6 27L38 7m-14 23 21-17"/><path class="mini-fan-edge" d="M3 13Q24-6 45 13"/><circle cx="24" cy="30" r="2.2"/></svg><small>逛逛</small><span class="fan-tassel" aria-hidden="true"></span></button>
+    <nav id="fan-panel" class="fan-panel" aria-label="扇形页面导航" hidden></nav>
+  </div>
   <div id="toast" class="toast" role="status" aria-live="polite"></div>
   <dialog id="modal" class="modal"><button class="modal-close" id="modal-close" aria-label="关闭" type="button">×</button><div id="modal-content"></div></dialog>
   <script defer src="./quotes.js?v=2"></script>
-  <script defer src="./app.js?v=57"></script>
+  <script defer src="./vendor/cropperjs/cropper.min.js"></script>
+  <script defer src="./image-crop.js?v=1"></script>
+  <script defer src="./app.js?v=75"></script>
 </body>
 </html>

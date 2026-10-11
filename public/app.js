@@ -4,7 +4,7 @@ const modalContent = document.querySelector('#modal-content');
 const toastNode = document.querySelector('#toast');
 const adminMode = ['/admin', '/admin.html'].includes(location.pathname);
 const filePreview = location.protocol === 'file:';
-const state = { posts: [], topics: [], moods: [], profile: null, readingPlan: null, admin: false, loginEnabled: false, searchQuery: '' };
+const state = { posts: [], topics: [], moods: [], profile: null, readingPlan: null, readingHistory: [], admin: false, loginEnabled: false, searchQuery: '' };
 const previewData = {
   moods: [],
   readingPlan: { book: '', author: '', goal: '', progress: 0, note: '' },
@@ -28,6 +28,7 @@ function searchItems() {
     const plan = state.readingPlan;
     items.push({ page: 'study', id: 'reading-plan', category: '阅读计划', title: plan.book, detail: plan.goal || plan.note, words: [plan.book, plan.author, plan.goal, plan.note].join(' ') });
   }
+  for (const book of state.readingHistory || []) items.push({ page: 'study', id: `read-${book.id}`, category: '历史书库', title: book.book, detail: book.note || book.author, words: [book.book, book.author, book.note, book.goal].join(' ') });
   for (const topic of state.topics) {
     items.push({ page: 'talk', id: `topic-${topic.id}`, category: '留言角', title: topic.title, detail: `${topic.author} · ${topic.content}`, words: [topic.title, topic.author, topic.content, date(topic.createdAt)].join(' ') });
     for (const reply of topic.replies) items.push({ page: 'talk', id: `topic-${topic.id}`, category: '留言回复', title: `${reply.author} 回复了「${topic.title}」`, detail: reply.content, words: [reply.author, reply.content, topic.title, date(reply.createdAt)].join(' ') });
@@ -53,6 +54,15 @@ function focusHashTarget() {
   if (id) requestAnimationFrame(() => {
     let target = document.getElementById(id);
     if (!target) target = openStudyArchivedPost(id);
+    if (route() === 'study' && id.startsWith('read-')) {
+      libraryExpanded = true;
+      const library = document.querySelector('#reading-library');
+      library?.classList.add('is-open');
+      const fans = library?.querySelector('#library-fans');
+      if (fans) fans.inert = false;
+      const toggle = library?.querySelector('.library-toggle');
+      if (toggle) { toggle.setAttribute('aria-expanded', 'true'); toggle.textContent = '收拢书页 ↗'; }
+    }
     if (route() === 'talk' && id.startsWith('topic-')) topicConversation(id.slice(6));
     target?.scrollIntoView({ block: id === 'home-chapters' ? 'start' : 'center', behavior: motionReduced() ? 'instant' : 'smooth' });
   });
@@ -84,13 +94,14 @@ async function request(url, options = {}) {
 async function load() {
   if (filePreview) { Object.assign(state, previewData); render(); return; }
   try {
-    const [posts, topics, moods, profile, readingPlan, session] = await Promise.all([request('/api/posts'), request('/api/topics'), request('/api/moods'), request('/api/profile'), request('/api/reading-plan'), adminMode ? request('/api/session') : Promise.resolve({ admin: false, loginEnabled: false })]);
-    Object.assign(state, { posts, topics, moods, profile, readingPlan, admin: session.admin, loginEnabled: session.loginEnabled });
+    const [posts, topics, moods, profile, readingPlan, readingHistory, session] = await Promise.all([request('/api/posts'), request('/api/topics'), request('/api/moods'), request('/api/profile'), request('/api/reading-plan'), request('/api/reading-history'), adminMode ? request('/api/session') : Promise.resolve({ admin: false, loginEnabled: false })]);
+    Object.assign(state, { posts, topics, moods, profile, readingPlan, readingHistory, admin: session.admin, loginEnabled: session.loginEnabled });
     render();
   } catch (error) { app.innerHTML = `<div class="container empty"><span class="emoji">☁️</span>暂时无法加载小站：${esc(error.message)}</div>`; }
 }
 function route() { const name = location.hash.replace('#', '').split('?')[0]; return ['home','life','study','about','talk'].includes(name) ? name : 'home'; }
 function render() {
+  syncFanNavigation();
   if (!state.profile) return;
   const page = route();
   document.body.classList.toggle('is-entry', page === 'home');
@@ -134,6 +145,9 @@ function updateContent(element, update) {
 async function paperTransition(commit, label, reverse = false, enabled = true) {
   const version = ++paperVersion;
   paperAnimation?.cancel();
+  blurNavigationAnimation?.cancel();
+  document.body.classList.remove('page-blur-transition');
+  clearFanPreview();
   const layer = document.querySelector('#paper-transition');
   layer.hidden = true;
   if (!enabled || motionReduced() || !layer.animate) { commit(); return; }
@@ -173,12 +187,17 @@ function changePage() {
   const differentPage = document.body.dataset.page !== page;
   state.searchQuery = '';
   if (modal.open) requestModalClose();
-  return paperTransition(() => {
+  if (fanOpen) closeFanNavigation(false, false);
+  const fromFan = fanNavigatePending;
+  fanNavigatePending = false;
+  const commit = () => {
     scrollTo({ top: 0, left: 0, behavior: 'instant' });
     render();
     const heading = app.querySelector('h1');
     if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
-  }, ({ home: '回到故事的起点', life: '生活日记', study: '学习与工作', about: '关于我', talk: '留言角' })[page], page === 'home', differentPage);
+  };
+  if (fromFan || (!adminMode && differentPage && page !== 'home')) return blurPageTransition(commit);
+  return paperTransition(commit, ({ home: '回到故事的起点', life: '生活日记', study: '学习与工作', about: '关于我', talk: '留言角' })[page], page === 'home', differentPage);
 }
 let revealObserver;
 function revealSections() {
@@ -276,13 +295,227 @@ function home() {
     <section class="journal-signoff"><p>很高兴，我们在这里相遇。</p><a href="#talk">欢迎和土豆交谈 <span aria-hidden="true">↗</span></a><span>土豆🥔</span></section>
   </div>`;
 }
+const fanPages = [
+  { id: 'home', title: '首页', en: 'THE BEGINNING', desc: '回到故事开始的地方，翻开下一页。', angle: 12 },
+  { id: 'life', title: '生活日记', en: 'LITTLE DAYS', desc: '把日常里的甜和暖，都悄悄收藏起来。', angle: 29 },
+  { id: 'study', title: '学习与工作', en: 'GROWING NOTES', desc: '每一页记录，都是一点点成长。', angle: 46 },
+  { id: 'about', title: '关于我', en: 'NICE TO MEET YOU', desc: '你好呀，很高兴在这里与你相遇。', angle: 63 },
+  { id: 'talk', title: '留言角', en: 'LET’S TALK', desc: '选一个小小话题，慢慢聊。', angle: 80 }
+];
+let fanOpen = false;
+let fanSelection = 0;
+let fanPanelAnimation = null;
+let fanPreviewAnimation = null;
+let fanNavigatePending = false;
+let fanDrag = null;
+let blurNavigationAnimation = null;
+function fanPoint(angle, radius = 210) {
+  const radians = angle * Math.PI / 180;
+  return { x: 300 - Math.cos(radians) * radius, y: Math.sin(radians) * radius };
+}
+function fanPaperArtwork() {
+  const point = (angle, radius) => { const p = fanPoint(angle, radius); return `${p.x.toFixed(2)} ${p.y.toFixed(2)}`; };
+  const folds = Array.from({ length: 10 }, (_, index) => {
+    const angle = index * 9;
+    return `<path class="fan-paper-leaf ${index % 2 ? 'is-valley' : 'is-ridge'}" data-fan-leaf="${fanPages[Math.floor(index / 2)].id}" style="--rib-angle:${angle}deg" d="M${point(angle, 64)}L${point(angle, 294)}Q${point(angle + 4.5, 302)} ${point(angle + 9, 294)}L${point(angle + 9, 64)}A64 64 0 0 1 ${point(angle, 64)}Z"/>`;
+  }).join('');
+  const ribs = Array.from({ length: 11 }, (_, index) => `<path class="fan-rib ${index === 0 || index === 10 ? 'is-guard' : ''}" style="--rib-angle:${index * 9}deg" d="M300 0L${point(index * 9, 294)}"/>`).join('');
+  return `<svg class="fan-paper" viewBox="0 0 300 300" aria-hidden="true"><defs><linearGradient id="fan-silk" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#fff8e9"/><stop offset=".5" stop-color="#f5e4df"/><stop offset="1" stop-color="#e3cfdb"/></linearGradient></defs><path fill="#fbf1e6" d="M300 0H210A90 90 0 0 0 300 90Z"/>${folds}${ribs}<path class="fan-paper-trim" d="M12 0A288 288 0 0 0 300 288M236 0A64 64 0 0 0 300 64"/><g class="fan-blossoms"><path d="M39 68q28 21 33 68m-15-29 18-15m-11 31-19-8"/><g transform="translate(53 87)"><circle cy="-4" r="3"/><circle cx="4" cy="-1" r="3"/><circle cx="2.5" cy="4" r="3"/><circle cx="-3" cy="3" r="3"/><circle cx="-4" cy="-2" r="3"/></g><g transform="translate(75 92) scale(.7)"><circle cy="-4" r="3"/><circle cx="4" cy="-1" r="3"/><circle cx="2.5" cy="4" r="3"/><circle cx="-3" cy="3" r="3"/><circle cx="-4" cy="-2" r="3"/></g><g transform="translate(66 123) scale(.8)"><circle cy="-4" r="3"/><circle cx="4" cy="-1" r="3"/><circle cx="2.5" cy="4" r="3"/><circle cx="-3" cy="3" r="3"/><circle cx="-4" cy="-2" r="3"/></g></g><circle class="fan-pivot" cx="300" cy="0" r="6"/></svg>`;
+}
+function syncFanNavigation() {
+  if (adminMode) return;
+  const root = document.querySelector('#fan-navigation');
+  if (!root) return;
+  root.hidden = route() === 'home';
+  if (root.hidden) closeFanNavigation(false, false);
+}
+function fanPreviewContent(page) {
+  let snippets;
+  if (page.id === 'life' || page.id === 'study') snippets = state.posts.filter(post => post.type === page.id).slice(0, 2).map(post => ({ title: post.title, text: post.content.slice(0, 100) }));
+  else if (page.id === 'talk') snippets = state.topics.slice(0, 2).map(topic => ({ title: topic.title, text: topic.content.slice(0, 100) }));
+  else if (page.id === 'about') snippets = [{ title: state.profile?.name || '土豆', text: state.profile?.bio || state.profile?.intro || '' }];
+  else snippets = [{ title: '土豆的记事簿', text: '生活、学习与小小心事。' }];
+  return `<div class="fan-preview-copy"><span>${page.en}</span><h2>${page.title}</h2><p>${page.desc}</p><div class="fan-preview-stories">${snippets.map(item => `<article><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p></article>`).join('')}</div><small>滑动选页 · 松开前往</small></div>`;
+}
+function selectFanPage(index, preview = true) {
+  fanSelection = Math.max(0, Math.min(fanPages.length - 1, index));
+  const page = fanPages[fanSelection];
+  const panel = document.querySelector('#fan-panel');
+  if (!panel) return;
+  for (const button of panel.querySelectorAll('[data-fan-page]')) button.classList.toggle('is-selected', button.dataset.fanPage === page.id);
+  for (const leaf of panel.querySelectorAll('[data-fan-leaf]')) leaf.classList.toggle('is-selected', leaf.dataset.fanLeaf === page.id);
+  const knob = panel.querySelector('.fan-knob');
+  const point = fanPoint(page.angle, 264);
+  knob.style.left = `${point.x / 3}%`;
+  knob.style.top = `${point.y / 3}%`;
+  knob.setAttribute('aria-valuenow', String(fanSelection));
+  knob.setAttribute('aria-valuetext', page.title);
+  if (!preview) return;
+  const layer = document.querySelector('#fan-preview');
+  if (page.id === route()) {
+    layer.hidden = true;
+    document.body.classList.remove('fan-previewing');
+    return;
+  }
+  document.body.classList.add('fan-previewing');
+  layer.hidden = false;
+  layer.innerHTML = fanPreviewContent(page);
+  fanPreviewAnimation?.cancel();
+  if (layer.animate && !motionReduced()) fanPreviewAnimation = layer.animate([
+    { opacity: 0, transform: 'translateY(16px)', filter: 'blur(6px)' },
+    { opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }
+  ], { duration: 280, easing: 'cubic-bezier(.22,1,.36,1)' });
+}
+function openFanNavigation() {
+  if (adminMode || route() === 'home') return;
+  const root = document.querySelector('#fan-navigation');
+  const panel = document.querySelector('#fan-panel');
+  const start = panel.hidden ? { opacity: 0, transform: 'scale(.12) rotate(-30deg)' } : { opacity: getComputedStyle(panel).opacity, transform: getComputedStyle(panel).transform };
+  fanPanelAnimation?.cancel();
+  fanOpen = true;
+  panel.innerHTML = `${fanPaperArtwork()}<svg class="fan-arc" viewBox="0 0 300 300" aria-hidden="true"><path d="M36 0 A264 264 0 0 0 300 264"/></svg><span class="fan-caption">一扇 · 一页</span>${fanPages.map((page, index) => { const point = fanPoint(page.angle); return `<button class="fan-page" type="button" data-fan-page="${page.id}" style="left:${point.x / 3}%;top:${point.y / 3}%" ${page.id === route() ? 'aria-current="page"' : ''}><small aria-hidden="true">0${index + 1}</small><span>${page.title}</span></button>`; }).join('')}<button type="button" class="fan-knob" role="slider" aria-label="滑动选择页面，回车进入" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><svg class="fan-charm" viewBox="0 0 44 64" aria-hidden="true"><defs><radialGradient id="fan-charm-jade" cx="35%" cy="25%" r="80%"><stop stop-color="#fffaf0"/><stop offset=".55" stop-color="#f3d5dd"/><stop offset="1" stop-color="#c998b3"/></radialGradient></defs><circle class="charm-focus-ring" cx="22" cy="23" r="21"/><path class="charm-cord" d="M22 36v10"/><g class="charm-fringe"><ellipse cx="22" cy="47" rx="3" ry="3.5"/><path d="M19 50q-2 5-2 10 5 3 10 0 0-5-2-10Z"/><path class="charm-threads" d="m20 51-1 9m3-9v10m2-10 1 9"/></g><g class="charm-flower"><path transform="rotate(0 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(72 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(144 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(216 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(288 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><g class="charm-veins"><path transform="rotate(0 22 23)" d="M22 19v-6"/><path transform="rotate(72 22 23)" d="M22 19v-6"/><path transform="rotate(144 22 23)" d="M22 19v-6"/><path transform="rotate(216 22 23)" d="M22 19v-6"/><path transform="rotate(288 22 23)" d="M22 19v-6"/></g><circle class="charm-heart" cx="22" cy="23" r="4"/><circle class="charm-glint" cx="20.8" cy="21.8" r="1.2"/></g></svg></button><p class="fan-help">轻移扇坠<br>松开翻页</p>`;
+  panel.hidden = false;
+  root.classList.add('is-open');
+  const toggle = root.querySelector('#fan-toggle');
+  toggle.setAttribute('aria-expanded', 'true');
+  toggle.setAttribute('aria-label', '收起扇形导航');
+  selectFanPage(fanPages.findIndex(page => page.id === route()), false);
+  if (panel.animate && !motionReduced()) fanPanelAnimation = panel.animate([
+    start,
+    { opacity: 1, transform: 'scale(1) rotate(0)' }
+  ], { duration: 480, easing: 'cubic-bezier(.22,1,.36,1)' });
+  panel.querySelector('.fan-knob').focus({ preventScroll: true });
+}
+function clearFanPreview() {
+  document.body.classList.remove('fan-previewing');
+  const preview = document.querySelector('#fan-preview');
+  if (preview) preview.hidden = true;
+  fanPreviewAnimation?.cancel();
+}
+function closeFanNavigation(animate = true, focus = true, keepPreview = false) {
+  const root = document.querySelector('#fan-navigation');
+  if (!root) return;
+  const panel = root.querySelector('#fan-panel');
+  const toggle = root.querySelector('#fan-toggle');
+  const start = !panel.hidden && fanPanelAnimation ? { opacity: getComputedStyle(panel).opacity, transform: getComputedStyle(panel).transform } : { opacity: 1, transform: 'scale(1) rotate(0)' };
+  fanOpen = false;
+  fanDrag = null;
+  root.classList.remove('is-open');
+  toggle.setAttribute('aria-expanded', 'false');
+  toggle.setAttribute('aria-label', '打开扇形导航');
+  if (!keepPreview) clearFanPreview();
+  fanPanelAnimation?.cancel();
+  fanPanelAnimation = null;
+  if (!panel.hidden && animate && panel.animate && !motionReduced()) {
+    const animation = panel.animate([start, { opacity: 0, transform: 'scale(.12) rotate(-30deg)' }], { duration: 280, easing: 'cubic-bezier(.4,0,1,1)' });
+    fanPanelAnimation = animation;
+    animation.finished.then(() => { if (fanPanelAnimation === animation) { panel.hidden = true; fanPanelAnimation = null; } }, () => {});
+  } else panel.hidden = true;
+  if (focus && !root.hidden) toggle.focus({ preventScroll: true });
+}
+function navigateFanSelection() {
+  const page = fanPages[fanSelection].id;
+  closeFanNavigation(true, false, page !== route());
+  if (page === route()) return;
+  fanNavigatePending = true;
+  location.hash = `#${page}`;
+}
+async function blurPageTransition(commit) {
+  const version = ++paperVersion;
+  paperAnimation?.cancel();
+  blurNavigationAnimation?.cancel();
+  document.querySelector('#paper-transition').hidden = true;
+  if (!app.animate || motionReduced()) { clearFanPreview(); document.body.classList.remove('page-blur-transition'); commit(); return; }
+  document.body.classList.add('page-blur-transition');
+  let committed = false;
+  const showDestination = () => {
+    commit();
+    // Keep this rendered view from restarting its CSS arrival when the blur ends.
+    if (app.firstElementChild) app.firstElementChild.style.animation = 'none';
+    committed = true;
+  };
+  try {
+    const preview = document.querySelector('#fan-preview');
+    const previewing = document.body.classList.contains('fan-previewing');
+    fanPreviewAnimation?.cancel();
+    if (previewing && preview?.animate) fanPreviewAnimation = preview.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 220, easing: 'ease-in', fill: 'forwards' });
+    blurNavigationAnimation = app.animate([{ opacity: previewing ? .24 : 1, filter: previewing ? 'blur(8px)' : 'blur(0)', transform: 'translateY(0)' }, { opacity: .4, filter: 'blur(14px)', transform: 'translateY(-8px)' }], { duration: 280, easing: 'ease-in-out', fill: 'forwards' });
+    await blurNavigationAnimation.finished;
+    if (version !== paperVersion) return;
+    blurNavigationAnimation.cancel();
+    clearFanPreview();
+    showDestination();
+    blurNavigationAnimation = app.animate([
+      { opacity: .4, filter: 'blur(14px)', transform: 'translateY(12px)' },
+      { opacity: .8, filter: 'blur(6px)', transform: 'translateY(4px)', offset: .5 },
+      { opacity: 1, filter: 'blur(0)', transform: 'translateY(0)' }
+    ], { duration: 480, easing: 'ease-out', fill: 'both' });
+    await blurNavigationAnimation.finished;
+  } catch {
+    if (version === paperVersion && !committed) { clearFanPreview(); showDestination(); }
+  }
+  finally { if (version === paperVersion) { blurNavigationAnimation?.cancel(); blurNavigationAnimation = null; document.body.classList.remove('page-blur-transition'); } }
+}
+const fanRoot = !adminMode && document.querySelector('#fan-navigation');
+if (fanRoot) {
+  const previewFanItem = target => {
+    if (!fanOpen) return;
+    const item = target.closest('[data-fan-page]');
+    if (!item) return;
+    const index = fanPages.findIndex(page => page.id === item.dataset.fanPage);
+    if (index >= 0 && index !== fanSelection) selectFanPage(index);
+  };
+  fanRoot.addEventListener('pointerover', event => {
+    if (event.pointerType !== 'touch' && !fanDrag) previewFanItem(event.target);
+  });
+  fanRoot.addEventListener('focusin', event => previewFanItem(event.target));
+  fanRoot.addEventListener('click', event => {
+    if (event.target.closest('#fan-toggle')) return fanOpen ? closeFanNavigation() : openFanNavigation();
+    const item = event.target.closest('[data-fan-page]');
+    if (item) { selectFanPage(fanPages.findIndex(page => page.id === item.dataset.fanPage)); navigateFanSelection(); }
+  });
+  fanRoot.addEventListener('pointerdown', event => {
+    const panel = event.target.closest('#fan-panel');
+    if (!panel || !fanOpen || event.button !== 0) return;
+    previewFanItem(event.target);
+    fanDrag = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
+  });
+  fanRoot.addEventListener('pointermove', event => {
+    if (!fanDrag || event.pointerId !== fanDrag.id) return;
+    if (Math.hypot(event.clientX - fanDrag.x, event.clientY - fanDrag.y) < 6 && !fanDrag.moved) return;
+    if (!fanDrag.moved) document.querySelector('#fan-panel').setPointerCapture(event.pointerId);
+    fanDrag.moved = true;
+    const rect = document.querySelector('#fan-panel').getBoundingClientRect();
+    const angle = Math.atan2(event.clientY - rect.top, rect.right - event.clientX) * 180 / Math.PI;
+    const nearest = fanPages.reduce((best, page, index) => Math.abs(page.angle - angle) < Math.abs(fanPages[best].angle - angle) ? index : best, 0);
+    if (nearest !== fanSelection) selectFanPage(nearest);
+  });
+  fanRoot.addEventListener('pointerup', event => {
+    if (!fanDrag || event.pointerId !== fanDrag.id) return;
+    const moved = fanDrag.moved;
+    fanDrag = null;
+    if (moved) { event.preventDefault(); navigateFanSelection(); }
+  });
+  fanRoot.addEventListener('pointercancel', () => { fanDrag = null; });
+  fanRoot.addEventListener('keydown', event => {
+    if (event.key === 'Escape') { event.preventDefault(); closeFanNavigation(); }
+    else if (event.target.closest('.fan-knob')) {
+      if (['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)) {
+        event.preventDefault();
+        const index = event.key === 'Home' ? 0 : event.key === 'End' ? 4 : fanSelection + (['ArrowRight','ArrowDown'].includes(event.key) ? 1 : -1);
+        selectFanPage(index);
+      } else if (['Enter',' '].includes(event.key)) { event.preventDefault(); navigateFanSelection(); }
+    }
+  });
+  document.addEventListener('pointerdown', event => { if (fanOpen && !event.target.closest('#fan-navigation')) closeFanNavigation(); });
+}
 function pageHead(eyebrow, title, desc, action = '') { return `<div class="page-head"><div class="page-head-copy"><a class="back-to-directory" href="#home?item=home-chapters">← 返回目录</a><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p>${desc}</p>${action ? `<div class="page-head-action">${action}</div>` : ''}</div>${['talk', 'study'].includes(route()) ? '' : '<img class="page-head-art" src="./assets/rin-saber-chibi.png" alt="" aria-hidden="true">'}</div>`; }
 const lifeArchiveState = { year: '', month: '' };
 function lifeArchivePosts() {
   return state.posts.filter(post => post.type === 'life').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
 }
 function lifePostCard(post) {
-  return `<article id="post-${esc(post.id)}" class="post-card life-entry"><div class="post-top"><span class="tag">${esc(post.tag || '日常碎片')}</span><span class="life-entry-star" aria-hidden="true">✳</span></div><h2>${esc(post.title)}</h2><p>${esc(post.content)}</p><div class="post-foot"><span>${post.updatedAt ? `✎ 编辑于 ${date(post.updatedAt)}` : '写给今天的自己'}</span>${state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></span>` : '<span aria-hidden="true">↗</span>'}</div></article>`;
+  return `<article id="post-${esc(post.id)}" class="post-card life-entry"><div class="post-top"><span class="tag">${esc(post.tag || '日常碎片')}</span><span class="life-entry-star" aria-hidden="true">✳</span></div><h2>${esc(post.title)}</h2><p>${esc(post.content)}</p>${postImageGallery(post.images)}<div class="post-foot"><span>${post.updatedAt ? `✎ 编辑于 ${date(post.updatedAt)}` : '写给今天的自己'}</span>${state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></span>` : '<span aria-hidden="true">↗</span>'}</div></article>`;
 }
 function lifeArchiveView() {
   const posts = lifeArchivePosts();
@@ -314,7 +547,7 @@ function studySection(post) {
   return /工作|职场|实习|会议/.test(post.tag || '') ? 'work' : 'learning';
 }
 function studyPostCard(post, index) {
-  return `<article id="post-${esc(post.id)}" class="post-card paper-card"><div class="post-top"><div class="post-label"><span class="post-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span><span class="tag">${esc(post.tag || (studySection(post) === 'work' ? '工作记录' : '学习笔记'))}</span></div><time class="date" datetime="${esc(post.createdAt)}">${date(post.createdAt)}</time></div><h2>${esc(post.title)}</h2><p>${esc(post.content)}</p><div class="post-foot"><span>${post.updatedAt ? `✎ 编辑于 ${date(post.updatedAt)}` : '🥔 写给今天的自己'}</span>${state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></span>` : '<span>✦</span>'}</div></article>`;
+  return `<article id="post-${esc(post.id)}" class="post-card paper-card"><div class="post-top"><div class="post-label"><span class="post-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span><span class="tag">${esc(post.tag || (studySection(post) === 'work' ? '工作记录' : '学习笔记'))}</span></div><time class="date" datetime="${esc(post.createdAt)}">${date(post.createdAt)}</time></div><h2>${esc(post.title)}</h2><p>${esc(post.content)}</p>${postImageGallery(post.images)}<div class="post-foot"><span>${post.updatedAt ? `✎ 编辑于 ${date(post.updatedAt)}` : '🥔 写给今天的自己'}</span>${state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></span>` : '<span>✦</span>'}</div></article>`;
 }
 const studyCalendarState = { learning: { month: '', day: '' }, work: { month: '', day: '' } };
 function archivedStudyPosts(section) {
@@ -370,11 +603,40 @@ function studyLane(section, title, English, icon, caption) {
 function readingPlanCard() {
   const plan = state.readingPlan || {};
   const hasBook = Boolean(plan.book);
-  const progress = Math.min(100, Math.max(0, Number(plan.progress) || 0));
-  return `<div class="study-companion study-companion-compact"><button class="study-runner" type="button" aria-label="和五条悟一起为阅读加油"><img src="./assets/study-runner.png" width="1415" height="1111" alt="在阅读计划旁边奔跑的五条悟"></button><aside id="reading-plan" class="side-note paper-card reading-plan-card" aria-labelledby="reading-plan-title"><div class="reading-plan-heading"><span class="emoji" aria-hidden="true">📚</span><div><span class="study-kicker">READING PLAN</span><h3 id="reading-plan-title">阅读计划</h3></div></div>${hasBook ? `<p class="reading-book">《${esc(plan.book)}》</p>${plan.author ? `<p class="reading-author">${esc(plan.author)} 著</p>` : ''}${plan.goal ? `<p class="reading-goal"><span>目标</span>${esc(plan.goal)}</p>` : ''}<div class="reading-progress-label"><span>阅读进度</span><strong>${progress}%</strong></div><progress max="100" value="${progress}">${progress}%</progress>${plan.note ? `<p class="reading-note">${esc(plan.note)}</p>` : ''}` : '<p class="reading-empty">还没有设定阅读计划。下一本想读的书，从这里开始。</p>'}${state.admin ? '<button class="quiet-button reading-edit" type="button" data-action="edit-reading-plan">✎ 编辑计划</button>' : ''}<span class="runner-hint" role="status">点点他，给阅读计划加点动力 ↗</span></aside></div>`;
+  const progress = hasBook ? Math.min(100, Math.max(0, Number(plan.progress) || 0)) : 0;
+  const wave = '<svg class="reading-wave" viewBox="0 0 240 24" preserveAspectRatio="none" aria-hidden="true"><path d="M0 8 Q15 0 30 8 T60 8 T90 8 T120 8 T150 8 T180 8 T210 8 T240 8 V24 H0Z"/></svg>';
+  const progressBar = `<div class="reading-progress-label"><span>${hasBook ? '阅读进度' : '等待翻开第一页'}</span><strong>${progress}%</strong></div><div class="reading-wave-track" role="progressbar" aria-label="阅读进度" aria-valuemin="0" aria-valuemax="100" aria-valuenow="${progress}"><div class="reading-wave-idle">${wave}</div><div class="reading-wave-fill" style="width:${progress}%">${wave}${wave}</div></div>`;
+  return `<div class="study-companion study-companion-compact"><button class="study-runner" type="button" aria-label="和五条悟一起为阅读加油"><img src="./assets/study-runner.png" width="1415" height="1111" alt="在阅读计划旁边奔跑的五条悟"></button><aside id="reading-plan" class="side-note paper-card reading-plan-card" aria-labelledby="reading-plan-title"><div class="reading-plan-heading"><span class="emoji" aria-hidden="true">📚</span><div><span class="study-kicker">READING PLAN</span><h3 id="reading-plan-title">阅读计划</h3></div></div>${hasBook ? `<p class="reading-book">《${esc(plan.book)}》</p>${plan.author ? `<p class="reading-author">${esc(plan.author)} 著</p>` : ''}${plan.goal ? `<p class="reading-goal"><span>目标</span>${esc(plan.goal)}</p>` : ''}${progressBar}<div class="reading-reflection"><h4>阅读心得</h4><p>${esc(plan.note || "读到的触动，慢慢记在这里。")}</p><button type="button" class="quiet-button" data-action="open-reading-book" data-id="current">查看阅读日志 · ${(plan.logs || []).length} 条 ↗</button></div>` : `<p class="reading-empty">还没有设定阅读计划。下一本想读的书，从这里开始。</p>${progressBar}`}${state.admin ? '<button class="quiet-button reading-edit" type="button" data-action="edit-reading-plan">✎ 编辑计划</button>' : ''}<span class="runner-hint" role="status">点点他，给阅读计划加点动力 ↗</span></aside></div>`;
+}
+let libraryExpanded = true;
+function readingHistoryView() {
+  const books = state.readingHistory || [];
+  const groups = Array.from({ length: Math.ceil(books.length / 5) }, (_, index) => books.slice(index * 5, index * 5 + 5));
+  return `<section class="reading-library ${libraryExpanded ? 'is-open' : ''}" id="reading-library" aria-labelledby="reading-library-title"><header class="reading-library-heading"><div><span class="study-kicker">THE BOOKS THAT STAY</span><h2 id="reading-library-title">历史书库 <i>✳</i></h2><p>翻开读过的书，也翻开当时的自己。</p></div><div class="library-controls"><span class="reading-library-count">${books.length} 本已读</span>${books.length ? `<button class="quiet-button library-toggle" data-action="toggle-library" aria-expanded="${libraryExpanded}" aria-controls="library-fans">${libraryExpanded ? '收拢书页' : '展开书页'} ↗</button>` : ''}</div></header>${books.length ? `<p class="library-guide">轻选一本，让书页浮起 · 点击查看心得与更新日志</p><div id="library-fans" ${libraryExpanded ? '' : 'inert'}>${groups.map((group, groupIndex) => `<div class="library-fan" aria-label="第 ${groupIndex + 1} 组藏书">${group.map((book, index) => {
+    const position = index - (group.length - 1) / 2;
+    return `<button type="button" class="library-cover cover-tone-${(groupIndex * 5 + index) % 4}" id="read-${esc(book.id)}" data-action="open-reading-book" data-id="${esc(book.id)}" aria-haspopup="dialog" aria-label="查看《${esc(book.book)}》阅读记录" style="--position:${position};--angle:${position * 5}deg;--rise:${Math.abs(position) * 7}px;--stack:${index}"><span class="book-cover-top">READ & REMEMBER <span>${String(groupIndex * 5 + index + 1).padStart(2, '0')}</span></span><span class="book-cover-title">${esc(book.book)}</span><span class="book-cover-author">${esc(book.author || '一本读过的书')}</span><span class="book-cover-flower" aria-hidden="true">✳</span><span class="book-cover-foot">✓ 已读完 <span>翻阅 ↗</span></span></button>`;
+  }).join('')}</div>`).join('')}</div>` : `<div class="library-empty-scene"><div class="library-empty-pages" aria-hidden="true"><span>下一页</span></div><div><h3>给下一本好书，留一个位置。</h3><p>阅读进度达到 100% 后，会自动收录书籍与一路写下的心得。</p>${state.admin ? '<button class="quiet-button" data-action="edit-reading-plan">开始记录一本书 ↗</button>' : ''}</div></div>`}</section>`;
+}
+function readingLogList(logs = [], bookId = '') {
+  return logs.length ? `<ol class="reading-log-list">${[...logs].reverse().map(log => `<li><div class="reading-log-top"><span>${esc(log.kind || '阅读更新')} · ${Number(log.progress) || 0}%</span><small>${log.createdAt ? new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(log.createdAt)) : '原有记录 · 日期未记录'}</small></div>${log.note ? `<p>${esc(log.note)}</p>` : '<p class="reading-log-quiet">这次记录了阅读进度。</p>'}${log.editedAt ? '<small class="reading-log-edited">已编辑</small>' : ''}${state.admin && bookId ? `<button type="button" class="quiet-button" data-action="edit-reading-log" data-id="${esc(bookId)}" data-log="${esc(log.id)}">编辑这条记录</button>` : ''}</li>`).join('')}</ol>` : '<p class="reading-log-quiet">还没有更新记录，保存阅读进度或心得后会出现在这里。</p>';
+}
+function readingBookModal(id) {
+  const book = id === 'current' ? state.readingPlan : state.readingHistory.find(item => item.id === id);
+  if (!book) return;
+  openModal(`<section class="reading-detail"><span class="journal-kicker">A BOOK, A JOURNEY</span><h2>${esc(book.book)}</h2><p class="reading-detail-byline">${esc(book.author || '作者未填写')} · ${id === 'current' ? `${Number(book.progress) || 0}% 已读` : book.completedAt ? `${date(book.completedAt)} 读完` : '已读完 · 日期未记录'}</p>${state.admin ? `<button class="quiet-button" data-action="${id === 'current' ? 'edit-reading-plan' : 'edit-reading-book'}" data-id="${esc(id)}">✎ 编辑${id === 'current' ? '阅读计划' : '书籍与心得'}</button>` : ''}<div class="reading-detail-reflection"><h3>阅读心得</h3><p>${esc(book.note || '还没有写下心得。')}</p>${book.goal ? `<small>阅读目标 · ${esc(book.goal)}</small>` : ''}</div><h3 class="reading-log-heading">阅读更新日志 <small>${(book.logs || []).length} 次记录</small></h3><div class="reading-log-scroll">${readingLogList(book.logs, id === 'current' ? '' : id)}</div></section>`);
+}
+function readingBookEditor(id) {
+  const book = state.readingHistory.find(item => item.id === id);
+  if (!book || !state.admin) return;
+  openModal(`<h2>编辑书库记录</h2><p>修改书籍资料或补充心得，保存后会留下更新日志。</p><form id="reading-book-form" data-id="${esc(id)}"><label for="history-book">书名</label><input class="field" id="history-book" name="book" maxlength="100" required value="${esc(book.book)}"><label for="history-author">作者</label><input class="field" id="history-author" name="author" maxlength="80" value="${esc(book.author)}"><label for="history-date">读完日期（可选）</label><input class="field" type="date" id="history-date" name="completedAt" value="${book.completedAt ? dateKey(book.completedAt) : ''}"><label for="history-goal">阅读目标</label><input class="field" id="history-goal" name="goal" maxlength="160" value="${esc(book.goal)}"><label for="history-note">阅读心得</label><textarea class="field" id="history-note" name="note" maxlength="2000">${esc(book.note)}</textarea><p class="form-error" role="alert"></p><button class="btn" type="submit">保存更新</button></form>`);
+}
+function readingLogEditor(id, logId) {
+  const log = state.readingHistory.find(book => book.id === id)?.logs?.find(item => item.id === logId);
+  if (!log || !state.admin) return;
+  openModal(`<h2>编辑阅读日志</h2><p>保留原始记录时间，修正进度或心得。</p><form id="reading-log-form" data-id="${esc(id)}" data-log="${esc(logId)}"><label for="log-progress">当时的阅读进度</label><input class="field" type="number" min="0" max="100" step="1" name="progress" id="log-progress" required value="${Number(log.progress) || 0}"><label for="log-note">这次的心得</label><textarea class="field" id="log-note" name="note" maxlength="2000">${esc(log.note)}</textarea><p class="form-error" role="alert"></p><button class="btn" type="submit">保存日志</button></form>`);
 }
 function studyPage() {
-  return `<div class="container page page-study">${pageHead('GROWING NOTES', '学习与工作 📖', '把每一点进步，认真收进日子里。')}<nav class="study-index" aria-label="学习与工作分类"><button type="button" class="study-index-link" data-study-jump="study-learning"><span class="study-index-number">01</span><span><strong>学习内容</strong><small>读到的、想到的、试过的</small></span><span aria-hidden="true">↗</span></button><button type="button" class="study-index-link" data-study-jump="study-work"><span class="study-index-number">02</span><span><strong>工作内容</strong><small>做过的、完成的、正在推进的</small></span><span aria-hidden="true">↗</span></button></nav>${studyLane('learning', '学习内容', 'LEARNING', '✏️', '一点点积累，慢慢长成喜欢的样子。')}${readingPlanCard()}${studyLane('work', '工作内容', 'WORK', '📎', '把每个认真完成的瞬间，留在这里。')}${bottomSearch()}</div>`;
+  return `<div class="container page page-study">${pageHead('GROWING NOTES', '学习与工作 📖', '把每一点进步，认真收进日子里。')}<nav class="study-index" aria-label="学习与工作分类"><button type="button" class="study-index-link" data-study-jump="study-learning"><span class="study-index-number">01</span><span><strong>学习内容</strong><small>读到的、想到的、试过的</small></span><span aria-hidden="true">↗</span></button><button type="button" class="study-index-link" data-study-jump="study-work"><span class="study-index-number">02</span><span><strong>工作内容</strong><small>做过的、完成的、正在推进的</small></span><span aria-hidden="true">↗</span></button></nav>${studyLane('learning', '学习内容', 'LEARNING', '✏️', '一点点积累，慢慢长成喜欢的样子。')}${readingPlanCard()}${readingHistoryView()}${studyLane('work', '工作内容', 'WORK', '📎', '把每个认真完成的瞬间，留在这里。')}${bottomSearch()}</div>`;
 }
 function todaysQuote() {
   const day = Math.floor(Date.parse(localDay()) / 86400000);
@@ -394,9 +656,20 @@ function hobbyItems(profile) {
   if (Array.isArray(profile.hobbyDetails)) return profile.hobbyDetails;
   return String(profile.interests || '').split(/[/／、，,|]+/).map(name => name.trim()).filter(Boolean).map(name => ({ name, detail: '' }));
 }
+function hobbyDetailHtml(value) {
+  const text = String(value || '');
+  let html = '', cursor = 0;
+  for (const match of text.matchAll(/\[([^\]\n]+)\]\(([^\s)]+)\)/g)) {
+    html += esc(text.slice(cursor, match.index));
+    const href = schoolLink(match[2]);
+    html += href ? `<a class="hobby-detail-link" href="${esc(href)}" target="_blank" rel="noopener noreferrer">${esc(match[1])}<i aria-hidden="true">↗</i></a>` : esc(match[0]);
+    cursor = match.index + match[0].length;
+  }
+  return html + esc(text.slice(cursor));
+}
 function hobbyGrid(profile) {
   const items = hobbyItems(profile);
-  return `<div class="profile-hobbies"><div class="hobby-label">🥔 爱好</div><div class="hobby-grid">${items.length ? items.map((item, index) => `<div class="hobby-cell"><span class="hobby-cell-number">${String(index + 1).padStart(2, '0')}</span><strong>${esc(item.name)}</strong><p>${item.detail ? esc(item.detail) : '还没有写下介绍'}</p></div>`).join('') : '<div class="hobby-cell hobby-cell-empty">还没有填写爱好</div>'}</div></div>`;
+  return `<div class="profile-hobbies"><div class="hobby-label">🥔 爱好</div><div class="hobby-grid">${items.length ? items.map((item, index) => `<div class="hobby-cell"><span class="hobby-cell-number">${String(index + 1).padStart(2, '0')}</span><strong>${esc(item.name)}</strong><p>${item.detail ? hobbyDetailHtml(item.detail) : '还没有写下介绍'}</p></div>`).join('') : '<div class="hobby-cell hobby-cell-empty">还没有填写爱好</div>'}</div></div>`;
 }
 const educationStages = [
   ['educationPrimary', '小学'], ['educationMiddle', '初中'], ['educationHigh', '高中'],
@@ -451,7 +724,7 @@ function contactRows(profile) {
     ['💬 微信', profile.wechat, ''],
     ['⌘ GitHub', github.name || (github.href ? 'GitHub 主页' : ''), github.href]
   ];
-  return rows.filter(([, value]) => value).map(([label, value, href]) => `<div><span>${label}</span>${href ? `<a href="${esc(href)}"${/^https?:/.test(href) ? ' target="_blank" rel="noopener noreferrer"' : ''}>${esc(value)}</a>` : esc(value)}</div>`).join('');
+  return rows.filter(([, value]) => value).map(([label, value, href]) => `<div><span>${label}</span>${href ? `<a href="${esc(href)}"${/^https?:/.test(href) ? ' class="contact-external-link" target="_blank" rel="noopener noreferrer"' : ''}>${esc(value)}${/^https?:/.test(href) ? '<i aria-hidden="true">↗</i>' : ''}</a>` : esc(value)}</div>`).join('');
 }
 function about() {
   const p = state.profile;
@@ -565,18 +838,18 @@ function passwordModal() {
 }
 function postModal(type, post = null, section = 'learning') {
   const selected = post ? studySection(post) : section;
-  openModal(`<h2>${post ? '编辑动态 ✎' : '写一篇新动态 ✎'}</h2><p>${post ? '修改后会保留原来的发表日期。' : '把今天想留住的事情写下来吧。'}</p><form id="post-form" ${post ? `data-id="${esc(post.id)}"` : ''}><input type="hidden" name="type" value="${type}">${type === 'study' ? `<label for="post-section">内容分类</label><select class="field" id="post-section" name="section"><option value="learning" ${selected === 'learning' ? 'selected' : ''}>学习内容</option><option value="work" ${selected === 'work' ? 'selected' : ''}>工作内容</option></select>` : ''}<label for="post-title">标题</label><input class="field" id="post-title" name="title" maxlength="100" required value="${esc(post?.title)}" placeholder="今天想写什么？"><label for="post-tag">小标签</label><input class="field" id="post-tag" name="tag" maxlength="30" value="${esc(post?.tag)}" placeholder="比如：${type === 'study' ? '学习笔记 / 工作记录' : '日常碎片'}"><label for="post-content">正文</label><textarea class="field" id="post-content" name="content" maxlength="5000" required placeholder="慢慢写，别着急...">${esc(post?.content)}</textarea><button class="btn" type="submit">${post ? '保存修改' : '发布这篇动态 🥔'}</button></form>`);
+  openModal(`<h2>${post ? '编辑动态 ✎' : '写一篇新动态 ✎'}</h2><p>${post ? '修改后会保留原来的发表日期。' : '把今天想留住的事情写下来吧。'}</p><form id="post-form" ${post ? `data-id="${esc(post.id)}"` : ''}><input type="hidden" name="type" value="${type}">${type === 'study' ? `<label for="post-section">内容分类</label><select class="field" id="post-section" name="section"><option value="learning" ${selected === 'learning' ? 'selected' : ''}>学习内容</option><option value="work" ${selected === 'work' ? 'selected' : ''}>工作内容</option></select>` : ''}<label for="post-title">标题</label><input class="field" id="post-title" name="title" maxlength="100" required value="${esc(post?.title)}" placeholder="今天想写什么？"><label for="post-tag">小标签</label><input class="field" id="post-tag" name="tag" maxlength="30" value="${esc(post?.tag)}" placeholder="比如：${type === 'study' ? '学习笔记 / 工作记录' : '日常碎片'}"><label for="post-content">正文</label><textarea class="field" id="post-content" name="content" maxlength="5000" required placeholder="慢慢写，别着急...">${esc(post?.content)}</textarea>${postImageEditor(post?.images)}<button class="btn" type="submit">${post ? '保存修改' : '发布这篇动态 🥔'}</button></form>`);
 }
 function readingPlanModal() {
   const plan = state.readingPlan || {};
-  openModal(`<h2>编辑阅读计划 📚</h2><p>更新正在读的书和阅读进度，访客会看到最新计划。</p><form id="reading-plan-form"><label for="reading-book">书名</label><input class="field" id="reading-book" name="book" maxlength="100" value="${esc(plan.book)}" placeholder="正在读哪本书？"><label for="reading-author">作者（可选）</label><input class="field" id="reading-author" name="author" maxlength="80" value="${esc(plan.author)}"><label for="reading-goal">阅读目标</label><input class="field" id="reading-goal" name="goal" maxlength="160" value="${esc(plan.goal)}" placeholder="例如：每天读 20 页"><label for="reading-progress">阅读进度（0–100%）</label><input class="field" id="reading-progress" type="number" name="progress" min="0" max="100" step="1" value="${Number(plan.progress) || 0}"><label for="reading-note">读书随记（可选）</label><textarea class="field" id="reading-note" name="note" maxlength="300" placeholder="记下一句话或一个小发现">${esc(plan.note)}</textarea><button class="btn" type="submit">保存阅读计划</button></form>`);
+  openModal(`<h2>编辑阅读计划 📚</h2><p>更新正在读的书和阅读进度，访客会看到最新计划。进度达到 100% 会自动收录到历史书库，换书后记录仍会保留。</p><form id="reading-plan-form"><label for="reading-book">书名</label><input class="field" id="reading-book" name="book" maxlength="100" value="${esc(plan.book)}" placeholder="正在读哪本书？"><label for="reading-author">作者（可选）</label><input class="field" id="reading-author" name="author" maxlength="80" value="${esc(plan.author)}"><label for="reading-goal">阅读目标</label><input class="field" id="reading-goal" name="goal" maxlength="160" value="${esc(plan.goal)}" placeholder="例如：每天读 20 页"><label for="reading-progress">阅读进度（0–100%）</label><input class="field" id="reading-progress" type="number" name="progress" min="0" max="100" step="1" value="${Number(plan.progress) || 0}"><label for="reading-note">阅读心得（可选）</label><textarea class="field" id="reading-note" name="note" maxlength="2000" placeholder="写下读到这里的想法、喜欢的句子或新的理解…">${esc(plan.note)}</textarea><button class="btn" type="submit">保存阅读计划</button></form>`);
 }
 function topicModal(topic) { openModal(`<h2>编辑留言 ✎</h2><p>修改后会保留原来的留言日期和回复。</p><form id="topic-edit-form" data-id="${esc(topic.id)}"><label for="edit-topic-author">昵称</label><input class="field" id="edit-topic-author" name="author" maxlength="30" required value="${esc(topic.author)}"><label for="edit-topic-title">标题</label><input class="field" id="edit-topic-title" name="title" maxlength="100" required value="${esc(topic.title)}"><label for="edit-topic-content">留言内容</label><textarea class="field" id="edit-topic-content" name="content" maxlength="2000" required>${esc(topic.content)}</textarea><button class="btn" type="submit">保存修改</button></form>`); }
 function hobbyEditorRow(item = {}) {
   return `<div class="hobby-row"><div class="hobby-row-head"><strong>爱好卡片</strong><button type="button" class="quiet-button" data-hobby-remove>移除</button></div><label>爱好名称<input class="field hobby-name" maxlength="32" value="${esc(item.name)}" placeholder="例如：动漫"></label><label>详细介绍<textarea class="field hobby-detail" maxlength="200" placeholder="写写喜欢它的原因、最近的发现…">${esc(item.detail)}</textarea></label></div>`;
 }
 function hobbyEditor(profile) {
-  return `<fieldset class="hobby-editor"><legend>爱好细节</legend><p>每项会显示在“关于我”的田字格中，最多 12 项。</p><div class="hobby-rows">${hobbyItems(profile).map(hobbyEditorRow).join('')}</div><button type="button" class="quiet-button hobby-add" data-hobby-add>＋ 添加一项爱好</button></fieldset>`;
+  return `<fieldset class="hobby-editor"><legend>爱好细节</legend><p>每项会显示在“关于我”的田字格中，最多 12 项。详细介绍支持超链接，格式：[显示文字](https://网址)。</p><div class="hobby-rows">${hobbyItems(profile).map(hobbyEditorRow).join('')}</div><button type="button" class="quiet-button hobby-add" data-hobby-add>＋ 添加一项爱好</button></fieldset>`;
 }
 function profileModal() {
   const p = state.profile;
@@ -589,8 +862,68 @@ function profileModal() {
     ['phone', '电话', 'tel', 40], ['qq', '🐧 QQ', 'text', 30],
     ['wechat', '微信', 'text', 60], ['githubContact', 'GitHub'], ['contactNote', '联系备注', 'textarea', 300]
   ];
-  openModal(`<h2>编辑个人资料 🎀</h2><form id="profile-form"><label for="profile-avatar">上传头像（PNG、JPEG、WebP，最多 2 MB）</label><input class="field" id="profile-avatar" type="file" name="avatarFile" accept="image/png,image/jpeg,image/webp"><div class="avatar-preview">${p.avatar ? `<img src="${esc(p.avatar)}" alt="当前头像">` : '🌸'}</div>${fields.map(([key, label, type, max]) => key === 'hobbies' ? hobbyEditor(p) : key === 'educationStages' ? educationEditor(p) : key === 'githubContact' ? githubEditor(p) : `<label for="profile-${key}"${key === 'qq' ? ' aria-label="QQ 号码"' : ''}>${label}</label>${type === 'textarea' ? `<textarea class="field" id="profile-${key}" name="${key}" maxlength="${max}">${esc(p[key])}</textarea>` : `<input class="field" id="profile-${key}" type="${type}" name="${key}" value="${esc(p[key])}" maxlength="${max}">`}`).join('')}<button class="btn" type="submit">保存资料</button></form>`);
+  openModal(`<h2>编辑个人资料 🎀</h2><form id="profile-form"><label for="profile-avatar">上传头像（PNG、JPEG、WebP，最多 2 MB）</label><input class="field" id="profile-avatar" type="file" name="avatarFile" accept="image/png,image/jpeg,image/webp"><div class="avatar-preview">${p.avatar ? `<img src="${esc(p.avatar)}" alt="当前头像">` : '🌸'}</div><button type="button" class="quiet-button" data-crop-avatar ${p.avatar ? '' : 'hidden'}>裁剪头像</button>${fields.map(([key, label, type, max]) => key === 'hobbies' ? hobbyEditor(p) : key === 'educationStages' ? educationEditor(p) : key === 'githubContact' ? githubEditor(p) : `<label for="profile-${key}"${key === 'qq' ? ' aria-label="QQ 号码"' : ''}>${label}</label>${type === 'textarea' ? `<textarea class="field" id="profile-${key}" name="${key}" maxlength="${max}">${esc(p[key])}</textarea>` : `<input class="field" id="profile-${key}" type="${type}" name="${key}" value="${esc(p[key])}" maxlength="${max}">`}`).join('')}<button class="btn" type="submit">保存资料</button></form>`);
 }
+function postImageGallery(images = []) {
+  return images.length ? `<div class="post-images">${images.map((url, index) => `<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="动态配图 ${index + 1}" loading="lazy"></a>`).join('')}</div>` : '';
+}
+function imageDraft(url) {
+  return `<div class="image-draft" data-src="${esc(url)}"><img src="${esc(url)}" alt="待发布的配图"><button type="button" data-crop-image aria-label="裁剪图片" title="裁剪图片">✂</button><button type="button" data-remove-image aria-label="移除图片" title="移除图片">×</button></div>`;
+}
+function postImageEditor(images = []) {
+  return `<label for="post-images">图片（最多 9 张，每张不超过 2 MB）</label><input class="field" id="post-images" type="file" accept="image/png,image/jpeg,image/webp" multiple aria-describedby="post-image-error"><div class="image-drafts">${images.map(imageDraft).join('')}</div><p id="post-image-error" class="form-error" role="alert"></p>`;
+}
+document.addEventListener('click', event => {
+  const remove = event.target.closest('[data-remove-image]');
+  if (remove && !remove.closest('form').querySelector('[type="submit"]').disabled) remove.closest('.image-draft').remove();
+});
+document.addEventListener('change', async event => {
+  if (!['post-images', 'profile-avatar'].includes(event.target.id)) return;
+  const input = event.target, form = input.form;
+  const avatar = input.id === 'profile-avatar';
+  const drafts = form.querySelector('.image-drafts');
+  let error = form.querySelector('.form-error');
+  if (!error) { error = document.createElement('p'); error.className = 'form-error'; error.setAttribute('role', 'alert'); input.after(error); }
+  const submit = form.querySelector('[type="submit"]');
+  if (submit.disabled) { input.value = ''; return; }
+  const files = [...input.files];
+  input.disabled = true; submit.disabled = true; error.textContent = '';
+  try {
+    if (!avatar && drafts.children.length + files.length > 9) throw new Error('最多添加 9 张图片');
+    const images = await Promise.all(files.map(imageData));
+    for (const source of images) {
+      if (!form.isConnected) break;
+      const image = await cropImage(source, avatar);
+      if (!image) break;
+      if (avatar) {
+        input.dataset.image = image;
+        form.querySelector('[data-crop-avatar]').hidden = false;
+        form.querySelector('.avatar-preview').innerHTML = `<img src="${esc(image)}" alt="头像预览">`;
+      } else drafts.insertAdjacentHTML('beforeend', imageDraft(image));
+    }
+  } catch (problem) { error.textContent = problem.message; }
+  finally { input.value = ''; input.disabled = false; submit.disabled = false; }
+});
+document.addEventListener('click', async event => {
+  const button = event.target.closest('[data-crop-image], [data-crop-avatar]');
+  if (!button) return;
+  const form = button.closest('form'), submit = form.querySelector('[type="submit"]');
+  if (submit.disabled) return;
+  submit.disabled = true;
+  try {
+    if (button.hasAttribute('data-crop-avatar')) {
+      const input = form.querySelector('#profile-avatar');
+      const preview = form.querySelector('.avatar-preview img');
+      const image = await cropImage(input.dataset.image || preview.src, true);
+      if (image) { input.dataset.image = image; preview.src = image; }
+      return;
+    }
+    const draft = button.closest('.image-draft');
+    const image = await cropImage(draft.dataset.src);
+    if (image) { draft.dataset.src = image; draft.querySelector('img').src = image; }
+  } catch (error) { toast(error.message); }
+  finally { submit.disabled = false; }
+});
 function imageData(file) {
   if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) throw new Error('请选择 PNG、JPEG 或 WebP 图片');
   if (file.size > 2_000_000) throw new Error('图片不能超过 2 MB');
@@ -823,6 +1156,17 @@ document.addEventListener('click', async event => {
     if (action === 'edit-topic') { const topic = state.topics.find(topic => topic.id === id); if (topic) topicModal(topic); }
     if (action === 'edit-profile') profileModal();
     if (action === 'edit-reading-plan' && state.admin) readingPlanModal();
+    if (action === 'toggle-library') {
+      libraryExpanded = !libraryExpanded;
+      const library = document.querySelector('#reading-library');
+      library.classList.toggle('is-open', libraryExpanded);
+      library.querySelector('#library-fans').inert = !libraryExpanded;
+      button.setAttribute('aria-expanded', String(libraryExpanded));
+      button.textContent = libraryExpanded ? '收拢书页 ↗' : '展开书页 ↗';
+    }
+    if (action === 'open-reading-book') readingBookModal(id);
+    if (action === 'edit-reading-book' && state.admin) readingBookEditor(id);
+    if (action === 'edit-reading-log' && state.admin) readingLogEditor(id, button.dataset.log);
     if (action === 'change-password') passwordModal();
     if (action === 'logout') { await request('/api/logout', { method: 'POST' }); state.admin = false; await requestModalClose(); render(); toast('已退出登录'); }
     if (action === 'delete-post' && confirm('确定删除这篇动态吗？')) { await request(`/api/posts/${id}`, { method: 'DELETE' }); state.posts = state.posts.filter(p => p.id !== id); render(); toast('动态已删除'); }
@@ -830,7 +1174,7 @@ document.addEventListener('click', async event => {
   } catch (error) { toast(error.message); }
 });
 document.addEventListener('submit', async event => {
-  const form = event.target; if (!['login-form','password-form','post-form','profile-form','reading-plan-form','mood-form','topic-form','topic-edit-form'].includes(form.id) && !form.matches('.reply-form')) return;
+  const form = event.target; if (!['login-form','password-form','post-form','profile-form','reading-plan-form','reading-book-form','reading-log-form','mood-form','topic-form','topic-edit-form'].includes(form.id) && !form.matches('.reply-form')) return;
   event.preventDefault(); const button = form.querySelector('button[type="submit"]'); button.disabled = true;
   const originalButtonText = button.textContent;
   if (form.matches('.reply-form')) {
@@ -842,6 +1186,16 @@ document.addEventListener('submit', async event => {
   if (loginError) { loginError.hidden = true; loginError.textContent = ''; form.elements.password.removeAttribute('aria-invalid'); button.textContent = '正在登录…'; }
   try {
     const values = formData(form);
+    if (form.id === 'post-form') {
+      values.images = [];
+      for (const item of form.querySelectorAll('.image-draft')) {
+        if (item.dataset.src.startsWith('data:')) {
+          const uploaded = await request('/api/images', { method: 'POST', body: JSON.stringify({ image: item.dataset.src }) });
+          item.dataset.src = uploaded.url;
+        }
+        values.images.push(item.dataset.src);
+      }
+    }
     if (form.id === 'login-form') { const result = await request('/api/login', { method: 'POST', body: JSON.stringify(values) }); state.admin = result.admin; await requestModalClose(); render(); toast('欢迎回来，站长 🥔'); }
     if (form.id === 'password-form') {
       if (values.newPassword !== values.confirmPassword) throw new Error('两次输入的新密码不一致');
@@ -855,15 +1209,24 @@ document.addEventListener('submit', async event => {
         detail: row.querySelector('.hobby-detail').value.trim()
       }));
       if (values.hobbyDetails.some(item => !item.name && item.detail)) throw new Error('请为每张爱好卡片填写名称');
-      const avatarFile = form.querySelector('#profile-avatar')?.files[0];
+      const avatarImage = form.querySelector('#profile-avatar')?.dataset.image;
       delete values.avatarFile;
-      if (avatarFile) await request('/api/profile/avatar', { method: 'POST', body: JSON.stringify({ image: await imageData(avatarFile) }) });
+      if (avatarImage) await request('/api/profile/avatar', { method: 'POST', body: JSON.stringify({ image: avatarImage }) });
       state.profile = await request('/api/profile', { method: 'PUT', body: JSON.stringify(values) });
       await requestModalClose(); render(); toast('资料已保存');
     }
+    if (['reading-book-form', 'reading-log-form'].includes(form.id)) {
+      const id = form.dataset.id;
+      const endpoint = `/api/reading-history/${encodeURIComponent(id)}${form.id === 'reading-log-form' ? `/logs/${encodeURIComponent(form.dataset.log)}` : ''}`;
+      const updated = await request(endpoint, { method: 'PUT', body: JSON.stringify(values) });
+      state.readingHistory = state.readingHistory.map(book => book.id === id ? updated : book);
+      state.readingPlan = await request('/api/reading-plan');
+      render(); readingBookModal(id); toast('阅读记录已更新');
+    }
     if (form.id === 'reading-plan-form') {
       state.readingPlan = await request('/api/reading-plan', { method: 'PUT', body: JSON.stringify(values) });
-      await requestModalClose(); render(); toast('阅读计划已保存');
+      state.readingHistory = await request('/api/reading-history');
+      await requestModalClose(); render(); toast(state.readingPlan.progress === 100 ? '已读完，记录已收录到历史书库' : '阅读计划已保存');
     }
     if (form.id === 'mood-form') { const { date: day, mood, note } = values; const entry = await request(`/api/moods/${encodeURIComponent(day)}`, { method: 'PUT', body: JSON.stringify({ mood, note }) }); state.moods = state.moods.filter(item => item.date !== entry.date).concat(entry); await requestModalClose(); render(); toast('心情已保存'); }
     if (form.id === 'topic-form') { const topic = await request('/api/topics', { method: 'POST', body: JSON.stringify(values) }); state.topics.unshift(topic); await requestModalClose(); render(); topicConversation(topic.id); toast('话题已发布'); }
@@ -887,7 +1250,7 @@ document.addEventListener('submit', async event => {
       loginError.hidden = false;
       if (error.message === '密码不正确') form.elements.password.setAttribute('aria-invalid', 'true');
       button.textContent = '进入管理后台';
-    } else if ((['profile-form', 'password-form', 'topic-form'].includes(form.id) || form.matches('.reply-form'))) {
+    } else if ((['profile-form', 'password-form', 'topic-form', 'reading-plan-form', 'reading-book-form', 'reading-log-form'].includes(form.id) || form.matches('.reply-form'))) {
       let message = form.querySelector('.form-error');
       if (!message) { message = document.createElement('p'); message.className = 'form-error'; message.setAttribute('role', 'alert'); button.before(message); }
       message.textContent = error.message;

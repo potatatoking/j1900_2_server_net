@@ -23,6 +23,18 @@ async function setup() {
   return { context, handlers, node, requests, run: code => vm.runInContext(code, context) };
 }
 
+test('hobby hyperlinks preserve surrounding text and escape untrusted markup', async () => {
+  const { run, context } = await setup();
+  context.detail = 'Steam ID: [O_O POTATO](https://steamcommunity.com/id/potatatoes/) 1113416840\n其他介绍 <img src=x onerror=alert(1)>';
+  const html = run('hobbyDetailHtml(detail)');
+  assert.match(html, /href="https:\/\/steamcommunity\.com\/id\/potatatoes\/"/);
+  assert.match(html, /target="_blank" rel="noopener noreferrer"/);
+  assert.match(html, /O_O POTATO/);
+  assert.match(html, /1113416840\n其他介绍 &lt;img/);
+  context.detail = '[危险](javascript:alert) [账号](https://name:secret@example.com/)';
+  assert.doesNotMatch(run('hobbyDetailHtml(detail)'), /<a\b/);
+});
+
 test('conversation keeps drafts per topic and submits to the selected topic', async () => {
   const { run, handlers, node, requests } = await setup();
   run("topicConversation('first')");
@@ -90,4 +102,18 @@ test('publication status is displayed inside the open dialog', async () => {
   run("toast('留言已发送')");
   assert.equal(status.hidden, false);
   assert.equal(status.textContent, '留言已发送');
+});
+
+test('library renders escaped book titles and exposes journal editing only to administrators', async () => {
+  const { run, node } = await setup();
+  run(`state.readingHistory = [{ id: 'book-one', book: '<script>测试书</script>', author: '作者', note: '完整心得', logs: [{ id: 'log-one', progress: 70, kind: '进度更新', createdAt: '2026-10-01T10:00:00Z', note: '当时的心得' }] }];`);
+  const shelf = run('readingHistoryView()');
+  assert.match(shelf, /library-fan/);
+  assert.match(shelf, /&lt;script&gt;测试书&lt;\/script&gt;/);
+  run("readingBookModal('book-one')");
+  assert.match(node.innerHTML, /当时的心得/);
+  assert.doesNotMatch(node.innerHTML, /data-action="edit-reading-log"/);
+  run("state.admin = true; readingBookModal('book-one')");
+  assert.match(node.innerHTML, /data-action="edit-reading-book"/);
+  assert.match(node.innerHTML, /data-action="edit-reading-log"/);
 });

@@ -4,25 +4,29 @@ import fs from 'node:fs/promises';
 import vm from 'node:vm';
 
 const source = (await fs.readFile(new URL('../public/app.js', import.meta.url), 'utf8')).replace(/\nload\(\);\s*$/, '');
-function harness(reduced = false) {
+function harness(reduced = false, admin = false) {
   const animations = [];
-  const animate = () => {
+  const animate = (keyframes, options) => {
     let resolve, reject;
     const finished = new Promise((yes, no) => { resolve = yes; reject = no; });
-    const animation = { finished, finish: resolve, cancel: () => reject(new Error('cancelled')) };
+    const animation = { keyframes, options, finished, finish: resolve, cancel: () => reject(new Error('cancelled')) };
     animations.push(animation);
     return animation;
   };
   const sheet = { animate };
   const layer = { hidden: true, animate, classList: { toggle() {} }, querySelector: selector => selector === '.turn-sheet' ? sheet : {} };
-  const node = { addEventListener() {} };
+  const handlers = {};
+  const node = { animate, open: false, firstElementChild: { style: {} }, querySelector: () => null, addEventListener(event, callback) { (handlers[event] ??= []).push(callback); } };
+  const bodyClasses = new Set();
+  const body = { dataset: { page: 'life' }, classList: { add: name => bodyClasses.add(name), remove: name => bodyClasses.delete(name), contains: name => bodyClasses.has(name) } };
+  const commits = [];
   const context = vm.createContext({
-    document: { querySelector: selector => selector === '#paper-transition' ? layer : node, addEventListener() {} },
+    document: { body, querySelector: selector => selector === '#paper-transition' ? layer : node, addEventListener() {} },
     window: { addEventListener() {}, matchMedia: () => ({ matches: reduced }) },
-    location: { protocol: 'file:', hash: '' }
+    location: { protocol: 'file:', pathname: admin ? '/admin' : '/', hash: '' }, scrollTo() {}, commits
   });
   vm.runInContext(source, context);
-  return { layer, animations, turn: vm.runInContext('paperTransition', context), update: vm.runInContext('updateContent', context) };
+  return { context, handlers, body, bodyClasses, node, commits, layer, animations, turn: vm.runInContext('paperTransition', context), blur: vm.runInContext('blurPageTransition', context), update: vm.runInContext('updateContent', context), change: vm.runInContext('changePage', context) };
 }
 
 test('a newer turn cancels the old destination and clears the paper overlay', async () => {
@@ -98,4 +102,98 @@ test('reduced motion updates content synchronously without measuring or animatin
   let updated = false;
   h.update({ animate() { assert.fail('must not animate'); } }, () => { updated = true; });
   assert.equal(updated, true);
+});
+
+test('fan navigation commits after the old view blurs and completes the new view reveal', async () => {
+  const h = harness();
+  let commits = 0;
+  const navigation = h.blur(() => commits++);
+  assert.equal(commits, 0);
+  h.animations[0].finish();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(commits, 1);
+  assert.equal(h.node.firstElementChild.style.animation, 'none', 'the CSS arrival must not mask or replay the blur');
+  h.animations[1].finish();
+  await navigation;
+  assert.equal(h.layer.hidden, true);
+  assert.equal(h.bodyClasses.has('page-blur-transition'), false);
+});
+
+test('every public inner page uses the same blur for ordinary links and deep links', async () => {
+  for (const target of ['#life', '#study', '#study?item=study-work', '#about', '#about?item=profile', '#talk']) {
+    const h = harness();
+    h.body.dataset.page = 'home';
+    h.context.location.hash = target;
+    vm.runInContext('render = () => { commits.push(route()); document.body.dataset.page = route(); }', h.context);
+    const navigation = h.change();
+    assert.deepEqual(h.commits, []);
+    assert.equal(h.animations[0].keyframes[1].filter, 'blur(14px)');
+    assert.equal(h.layer.hidden, true);
+    h.animations[0].finish();
+    await new Promise(resolve => setImmediate(resolve));
+    assert.deepEqual(h.commits, [target.slice(1).split('?')[0]]);
+    h.animations[1].finish();
+    await navigation;
+    assert.equal(h.bodyClasses.has('page-blur-transition'), false);
+  }
+});
+
+test('same-page anchors skip route animations and administrator links retain paper navigation', async () => {
+  const same = harness();
+  same.body.dataset.page = 'about';
+  same.context.location.hash = '#about?item=profile';
+  vm.runInContext('render = () => commits.push(route())', same.context);
+  await same.change();
+  assert.deepEqual(same.commits, ['about']);
+  assert.equal(same.animations.length, 0);
+  const admin = harness(false, true);
+  admin.context.location.hash = '#about';
+  vm.runInContext('render = () => commits.push(route())', admin.context);
+  const navigation = admin.change();
+  assert.equal(admin.layer.hidden, false);
+  assert.equal(admin.animations[0].keyframes[1].filter, undefined);
+  admin.animations[0].finish();
+  await new Promise(resolve => setImmediate(resolve));
+  admin.animations[1].finish();
+  await navigation;
+  assert.deepEqual(admin.commits, ['about']);
+});
+
+test('fan labels preview study on hover, focus and touch before navigation', () => {
+  for (const action of ['pointerover', 'focusin', 'pointerdown']) {
+    const h = harness();
+    vm.runInContext("fanOpen = true; fanSelection = 1; selectFanPage = index => { fanSelection = index; commits.push(fanPages[index].id); }", h.context);
+    const item = { dataset: { fanPage: 'study' } };
+    const target = { closest: selector => selector === '[data-fan-page]' ? item : selector === '#fan-panel' ? {} : null };
+    for (const callback of h.handlers[action]) callback({ target, pointerType: action === 'pointerdown' ? 'touch' : 'mouse', button: 0, pointerId: 1, clientX: 100, clientY: 100 });
+    assert.deepEqual(h.commits, ['study'], action);
+    assert.equal(h.context.location.hash, '', 'preview must not navigate before confirmation');
+    if (action !== 'pointerdown') {
+      for (const callback of h.handlers[action]) callback({ target, pointerType: 'mouse' });
+      assert.equal(h.commits.length, 1, 'moving across the same label must not restart its preview');
+    }
+  }
+});
+
+test('a newer paper navigation interrupts the fan transition without rendering its stale destination', async () => {
+  const h = harness();
+  const commits = [];
+  const fan = h.blur(() => commits.push('fan'));
+  await h.turn(() => commits.push('latest'), 'latest', false, false);
+  await fan;
+  assert.deepEqual(commits, ['latest']);
+  assert.equal(h.layer.hidden, true);
+});
+
+test('fan navigation honors reduced motion and recovers from an animation failure', async () => {
+  const reduced = harness(true);
+  let commits = 0;
+  await reduced.blur(() => commits++);
+  assert.equal(commits, 1);
+  assert.equal(reduced.animations.length, 0);
+  const h = harness();
+  const navigation = h.blur(() => commits++);
+  h.animations[0].cancel();
+  await navigation;
+  assert.equal(commits, 2);
 });

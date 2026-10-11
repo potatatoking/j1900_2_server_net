@@ -72,6 +72,7 @@ catch (error) {
   await fs.writeFile(dataFile, JSON.stringify(db, null, 2));
 }
 db.moods ??= [];
+db.readingHistory ??= [];
 db.readingPlan ??= { book: '', author: '', goal: '', progress: 0, note: '' };
 db.profile.hobbyDetails ??= String(db.profile.interests || '').split(/[/／、，,|]+/).map(name => name.trim()).filter(Boolean).slice(0, 12).map(name => ({ name, detail: '' }));
 for (const key of ['phone', 'qq', 'wechat', 'github', 'githubUrl', 'educationPrimary', 'educationMiddle', 'educationHigh', 'educationBachelor', 'educationMaster', 'educationDoctor', 'educationPostdoc']) db.profile[key] ??= '';
@@ -92,11 +93,43 @@ function save() {
   });
   return writeQueue;
 }
+function archiveReadingPlan(completedAt = new Date().toISOString()) {
+  const plan = db.readingPlan;
+  if (!plan.book || Number(plan.progress) !== 100) return false;
+  const existing = db.readingHistory.find(book => book.id === plan.archiveId);
+  if (existing) {
+    Object.assign(existing, { book: plan.book, author: plan.author, goal: plan.goal, note: plan.note, logs: plan.logs || [] });
+  } else {
+    const id = crypto.randomUUID();
+    db.readingHistory.unshift({ id, book: plan.book, author: plan.author, goal: plan.goal, note: plan.note, logs: plan.logs || [], completedAt, recordedAt: new Date().toISOString() });
+    plan.archiveId = id;
+  }
+  return true;
+}
+function readingBaseline(book) {
+  return { id: crypto.randomUUID(), createdAt: null, progress: Number(book.progress ?? 100), note: book.note || '', kind: '原有记录' };
+}
+let readingMigration = false;
+for (const book of db.readingHistory) {
+  if (!book.logs) { book.logs = [readingBaseline(book)]; readingMigration = true; }
+}
+if (db.readingPlan.book && !db.readingPlan.logs) { db.readingPlan.logs = [readingBaseline(db.readingPlan)]; readingMigration = true; }
+// 已完成的旧计划也收录，未知的完成日期不补造。
+if (archiveReadingPlan(null) || readingMigration) await save();
 function json(res, status, value, extra = {}) {
   res.writeHead(status, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store', ...extra });
   res.end(JSON.stringify(value));
 }
 function clean(value, max) { return String(value ?? '').trim().slice(0, max); }
+async function postImages(value = []) {
+  if (!Array.isArray(value) || value.length > 9) throw new Error('最多添加 9 张图片');
+  for (const url of value) {
+    if (typeof url !== 'string' || !/^\/assets\/uploads\/[\w-]+\.(png|jpg|webp)$/.test(url)) throw new Error('图片地址无效，请重新上传');
+    try { await fs.access(path.join(publicDir, url)); }
+    catch { throw new Error('图片不存在，请重新上传'); }
+  }
+  return value;
+}
 function hobbyNames(value) {
   return clean(value, 300).split(/[/／、，,|]+/).map(name => clean(name, 32)).filter(Boolean).slice(0, 12);
 }
@@ -216,6 +249,39 @@ async function api(req, res, url) {
       await save(); return json(res, 200, db.profile);
     }
   }
+  if (route === '/api/reading-history' && req.method === 'GET') return json(res, 200, db.readingHistory);
+  const readingLogMatch = route.match(/^\/api\/reading-history\/([\w-]+)\/logs\/([\w-]+)$/);
+  if (readingLogMatch && req.method === 'PUT') {
+    if (!requireAdmin(req, res)) return;
+    const book = db.readingHistory.find(item => item.id === readingLogMatch[1]);
+    const log = book?.logs?.find(item => item.id === readingLogMatch[2]);
+    if (!log) return json(res, 404, { error: '未找到这条阅读记录' });
+    const input = await body(req);
+    const progress = Number(input.progress);
+    if (!Number.isInteger(progress) || progress < 0 || progress > 100) return json(res, 400, { error: '阅读进度须为 0 到 100 的整数' });
+    Object.assign(log, { progress, note: clean(input.note, 2000), editedAt: new Date().toISOString() });
+    if (db.readingPlan.archiveId === book.id) db.readingPlan.logs = book.logs;
+    await save(); return json(res, 200, book);
+  }
+  const readingBookId = route.match(/^\/api\/reading-history\/([\w-]+)$/)?.[1];
+  if (readingBookId && req.method === 'PUT') {
+    if (!requireAdmin(req, res)) return;
+    const book = db.readingHistory.find(item => item.id === readingBookId);
+    if (!book) return json(res, 404, { error: '未找到这本书' });
+    const input = await body(req);
+    const title = clean(input.book, 100);
+    if (!title) return json(res, 400, { error: '请填写书名' });
+    const completedAt = input.completedAt ? String(input.completedAt) : null;
+    if (completedAt && (!/^\d{4}-\d{2}-\d{2}$/.test(completedAt) || !Number.isFinite(Date.parse(completedAt)) || new Date(completedAt).toISOString().slice(0, 10) !== completedAt)) return json(res, 400, { error: '请填写有效的读完日期' });
+    const changes = { book: title, author: clean(input.author, 80), goal: clean(input.goal, 160), note: clean(input.note, 2000), completedAt: completedAt ? `${completedAt}T12:00:00+08:00` : null };
+    if (Object.entries(changes).some(([key, value]) => book[key] !== value)) {
+      Object.assign(book, changes);
+      book.logs ??= [];
+      book.logs.push({ id: crypto.randomUUID(), createdAt: new Date().toISOString(), progress: 100, note: book.note, kind: '书库资料更新' });
+      if (db.readingPlan.archiveId === book.id) Object.assign(db.readingPlan, { book: book.book, author: book.author, goal: book.goal, note: book.note, logs: book.logs });
+    }
+    await save(); return json(res, 200, book);
+  }
   if (route === '/api/reading-plan') {
     if (req.method === 'GET') return json(res, 200, db.readingPlan);
     if (req.method === 'PUT') {
@@ -223,17 +289,27 @@ async function api(req, res, url) {
       const input = await body(req);
       const progress = Number(input.progress || 0);
       if (!Number.isInteger(progress) || progress < 0 || progress > 100) return json(res, 400, { error: '阅读进度须为 0 到 100 的整数' });
+      const previous = db.readingPlan;
+      const book = clean(input.book, 100);
+      if (progress === 100 && !book) return json(res, 400, { error: '请填写读完的书名' });
       db.readingPlan = {
-        book: clean(input.book, 100),
+        book,
         author: clean(input.author, 80),
         goal: clean(input.goal, 160),
         progress,
-        note: clean(input.note, 300)
+        note: clean(input.note, 2000)
       };
+      const sameBook = previous.book === book;
+      db.readingPlan.logs = sameBook ? [...(previous.logs || [])] : [];
+      if (book && (!sameBook || ['author', 'goal', 'progress', 'note'].some(key => previous[key] !== db.readingPlan[key]))) {
+        db.readingPlan.logs.push({ id: crypto.randomUUID(), createdAt: new Date().toISOString(), progress, note: db.readingPlan.note, kind: progress === 100 && (!sameBook || previous.progress !== 100) ? '完成阅读' : !sameBook ? '开始阅读' : previous.progress !== progress ? '进度更新' : '心得与资料更新' });
+      }
+      if (previous.book === book && previous.archiveId) db.readingPlan.archiveId = previous.archiveId;
+      archiveReadingPlan();
       await save(); return json(res, 200, db.readingPlan);
     }
   }
-  if (route === '/api/profile/avatar' && req.method === 'POST') {
+  if (['/api/profile/avatar', '/api/images'].includes(route) && req.method === 'POST') {
     if (!requireAdmin(req, res)) return;
     const input = await body(req, 3_000_000);
     const match = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})$/.exec(input.image || '');
@@ -249,6 +325,7 @@ async function api(req, res, url) {
     await fs.mkdir(uploadDir, { recursive: true });
     const avatar = `/assets/uploads/${crypto.randomUUID()}.${extension}`;
     await fs.writeFile(path.join(uploadDir, path.basename(avatar)), bytes);
+    if (route === '/api/images') return json(res, 201, { url: avatar });
     db.profile.avatar = avatar;
     await save();
     return json(res, 200, { avatar });
@@ -276,7 +353,10 @@ async function api(req, res, url) {
       const title = clean(input.title, 100), content = clean(input.content, 5000), tag = clean(input.tag, 30);
       const section = type === 'study' ? (input.section === 'work' ? 'work' : 'learning') : undefined;
       if (!type || !title || !content) return json(res, 400, { error: '请填写完整的标题和内容' });
-      const post = { id: crypto.randomUUID(), type, title, content, tag, ...(section ? { section } : {}), createdAt: new Date().toISOString() };
+      let images;
+      try { images = await postImages(input.images); }
+      catch (error) { return json(res, 400, { error: error.message }); }
+      const post = { id: crypto.randomUUID(), type, title, content, tag, images, ...(section ? { section } : {}), createdAt: new Date().toISOString() };
       db.posts.push(post); await save(); return json(res, 201, post);
     }
   }
@@ -291,7 +371,10 @@ async function api(req, res, url) {
       const title = clean(input.title, 100), content = clean(input.content, 5000), tag = clean(input.tag, 30);
       const section = type === 'study' ? (input.section === 'work' ? 'work' : 'learning') : undefined;
       if (!type || !title || !content) return json(res, 400, { error: '请填写完整的标题和内容' });
-      Object.assign(post, { type, title, content, tag, updatedAt: new Date().toISOString() });
+      let images;
+      try { images = await postImages(input.images ?? post.images); }
+      catch (error) { return json(res, 400, { error: error.message }); }
+      Object.assign(post, { type, title, content, tag, images, updatedAt: new Date().toISOString() });
       if (section) post.section = section;
       else delete post.section;
       await save(); return json(res, 200, post);

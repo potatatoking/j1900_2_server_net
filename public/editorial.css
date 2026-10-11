@@ -141,7 +141,8 @@ button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);fil
 .study-companion .runner-hint{display:block;margin-top:17px;padding-top:12px;border-top:1px solid #e5dbe7;color:#9b849f;font:10px/1.8 sans-serif}
 
 .modal .login-error{margin:9px 0 0;color:#a43e58;font-size:12px;line-height:1.6}.modal .field[aria-invalid="true"]{border-color:#b34d65}
-.avatar img{display:block;width:100%;height:100%;border-radius:50%;object-fit:cover}
+.avatar{position:relative;overflow:hidden;aspect-ratio:1}
+.avatar img{position:absolute;inset:0;display:block;width:100%;height:100%;min-width:0;min-height:0;border-radius:50%;object-fit:cover}
 .profile-card .meta>div{overflow-wrap:anywhere}
 .profile-card .meta .meta-detail{margin:7px 0 2px 0;padding-left:0;white-space:pre-wrap;line-height:1.7;color:#745c69}
 .profile-hobbies{padding:4px 0 2px}
@@ -163,7 +164,8 @@ button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);fil
 .modal #profile-form .hobby-row .hobby-detail{min-height:72px}
 .hobby-add{margin-top:12px}
 .avatar-preview{display:grid;place-items:center;width:80px;height:80px;margin:12px 0 18px;border-radius:50%;background:#f7d7e0;font-size:38px;overflow:hidden}
-.avatar-preview img{width:100%;height:100%;object-fit:cover}
+.avatar-preview{position:relative}
+.avatar-preview img{position:absolute;inset:0;display:block;width:100%;height:100%;min-width:0;min-height:0;object-fit:cover}
 .modal #profile-form{max-height:min(65vh,680px);overflow-y:auto;padding-right:5px}
 .modal #profile-form textarea{min-height:90px}
 .modal .form-error{color:#a43e58;font-size:12px;line-height:1.6}
@@ -576,3 +578,163 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .page-about .quote-note .saber-scene[aria-pressed=true] .saber-lift{transform:translateY(-5px) rotate(-1deg)}
 @media(max-width:600px){.page-about .about-content.quote-note{padding:20px 18px 16px;margin-top:26px}.quote-note-label small{font-size:7px;letter-spacing:.08em}.page-about .quote-note .saber-lift{grid-template-columns:minmax(0,1fr) 70px;gap:10px}.page-about .quote-note .saber-character{width:70px}.page-about .quote-note .saber-frame{font-size:14px;padding:14px}.page-about .quote-note .saber-hint{text-align:center}}
 @media(prefers-reduced-motion:reduce){.page-about .quote-note .saber-scene[aria-pressed=true] .saber-lift{transform:none}}
+
+/* 持续流动的浪花只作装饰，填充宽度对应真实阅读进度。 */
+.reading-wave-track{height:25px;position:relative;overflow:hidden;isolation:isolate;border-radius:999px;background:#eee5f0;border:1px solid #ddcfe3;box-shadow:inset 0 2px 5px #7961840b}
+.reading-wave-idle,.reading-wave-fill{position:absolute;inset:0;overflow:hidden;border-radius:inherit}
+.reading-wave-idle{color:#ccb6d4;opacity:.4}
+.reading-wave-fill{right:auto;color:#a184b3;background:linear-gradient(0deg,#ad8fbd 0%,#bca3c9 52%,transparent 53%);transition:width .65s cubic-bezier(.22,1,.36,1)}
+.reading-wave{position:absolute;left:0;bottom:0;width:200%;height:100%;fill:currentColor;animation:reading-wave-drift 4s linear infinite;pointer-events:none}
+.reading-wave-fill .reading-wave:first-child{color:#cfb7d9;opacity:.8;animation-duration:5.5s;animation-direction:reverse;bottom:3px}
+.reading-wave-fill .reading-wave:last-child{opacity:.85;animation-delay:-2s}
+@keyframes reading-wave-drift{to{transform:translateX(-50%)}}
+@media(prefers-reduced-motion:reduce){.reading-wave{animation:none}.reading-wave-fill{transition:none}}
+
+
+/* 扇页书库：纸张展开、选书抬升，日志保持清楚易读。 */
+.reading-reflection{margin-top:18px;padding-top:15px;border-top:1px dashed #d9cadf}
+.reading-reflection h4{margin:0 0 7px;color:#846487;font-size:12px;font-weight:500}
+.reading-reflection p{font-size:12px;line-height:1.9;color:#927c90;white-space:pre-wrap;overflow-wrap:anywhere;max-height:150px;overflow:auto}
+.reading-reflection .quiet-button{font-size:10px}
+.reading-library{margin:32px 0 58px;padding-top:28px;border-top:1px solid #d9c9d6;scroll-margin-top:28px}
+.reading-library-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
+.reading-library-heading h2{font:500 30px/1.5 'Songti SC','STSong',serif;color:#77566c;margin:5px 0}
+.reading-library-heading h2 i{font-style:normal;color:#baa0b5;font-size:26px;margin-left:8px}
+.reading-library-heading p,.library-guide{font-size:12px;color:#9a8293;margin:0}
+.library-controls{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0}
+.reading-library-count{padding:8px 14px;border-radius:999px;background:#ebe1ed;color:#95779f;font-size:11px}
+.library-toggle{font-size:11px}.library-guide{text-align:center;font-size:10px;letter-spacing:.06em;margin:10px 0}
+.library-fan{--spread:clamp(42px,12vw,135px);position:relative;height:330px;isolation:isolate;perspective:1000px}
+.library-fan::after{content:'';position:absolute;bottom:25px;left:12%;right:12%;height:20px;border-radius:50%;background:#a88b9b12;filter:blur(10px);z-index:-1}
+.library-cover{position:absolute;left:50%;top:35px;width:180px;height:230px;border:1px solid #cfb7c9;border-radius:4px 14px 14px 4px;padding:19px 19px 18px 25px;background:linear-gradient(90deg,#b99db7 0 6px,#e9dce9 6px 10px,#eee3ef 10px 100%);box-shadow:3px 4px 0 #fff8f0,4px 6px 0 #cbb7c6,0 10px 22px #72536920;color:#70536d;text-align:left;cursor:pointer;display:flex;flex-direction:column;transform-origin:50% 110%;transform:translateX(calc(-50% + var(--position) * 8px)) rotate(calc(var(--position) * 2deg));transition:transform 650ms cubic-bezier(.22,1,.36,1),box-shadow 300ms;z-index:calc(10 + var(--stack));scroll-margin-top:80px}
+.library-cover.cover-tone-1{background:linear-gradient(90deg,#b8b7a1 0 6px,#e1e2d4 6px 10px,#f0efdf 10px 100%);border-color:#c7c7b3;color:#727459}
+.library-cover.cover-tone-2{background:linear-gradient(90deg,#c89f9f 0 6px,#eddbd6 6px 10px,#f4e4dc 10px 100%);border-color:#dbc1b7;color:#946d68}
+.library-cover.cover-tone-3{background:linear-gradient(90deg,#a1b5c1 0 6px,#d5e1e5 6px 10px,#e4edf0 10px 100%);border-color:#b9cbd2;color:#657f8b}
+.is-open .library-cover{transform:translateX(calc(-50% + var(--position) * var(--spread))) translateY(var(--rise)) rotate(var(--angle))}
+.book-cover-top{display:flex;justify-content:space-between;gap:8px;font:7px/1.5 sans-serif;letter-spacing:.12em;opacity:.7}
+.book-cover-title{display:block;font:500 23px/1.45 'Songti SC','STSong',serif;margin:18px 0 6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.book-cover-author{font-size:10px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.book-cover-flower{position:absolute;bottom:43px;right:17px;font:44px/1 Georgia,serif;opacity:.16}
+.book-cover-foot{margin-top:auto;padding-top:14px;border-top:1px solid #99849933;display:flex;justify-content:space-between;font-size:9px}
+.is-open .library-cover:focus-visible,.is-open .library-cover:hover{z-index:30;transform:translateX(calc(-50% + var(--position) * var(--spread))) translateY(-25px) rotate(0deg);box-shadow:3px 5px 0 #fff8f0,4px 7px 0 #cbb7c6,0 20px 30px #72536928}
+.library-cover:focus-visible{outline:2px solid #a47799;outline-offset:5px}
+.library-empty-scene{display:flex;align-items:center;justify-content:center;gap:38px;min-height:230px;padding:30px;background:radial-gradient(ellipse at center,#ece1eb60,transparent 70%)}
+.library-empty-pages{position:relative;flex-shrink:0;width:95px;height:125px;border:1px solid #d5c0cf;border-radius:3px 10px 10px 3px;background:#eee3eb;transform:rotate(-10deg);box-shadow:5px 4px #fff8ef,7px 6px #d9c6d2;display:grid;place-items:center;color:#b69bb0;font:18px 'Songti SC',serif}
+.library-empty-pages::before{content:'';position:absolute;inset:0;border:1px solid #d6c7d0;border-radius:inherit;background:#f3e9dc;transform:rotate(20deg);transform-origin:bottom;z-index:-1}
+.library-empty-scene h3{font:400 20px/1.6 'Songti SC',serif;color:#95788e}.library-empty-scene p{max-width:340px;font-size:12px;line-height:1.9;color:#a38a9b}
+.modal:has(.reading-detail){width:min(660px,calc(100vw - 28px));border-radius:22px 22px 22px 6px;background:#fffaf6}
+.reading-detail>h2{font-family:'Songti SC',serif;overflow-wrap:anywhere;margin-top:12px}
+.reading-detail-byline{font-size:12px;color:#a0869a}
+.reading-detail-reflection{margin:20px 0;padding:17px 20px;background:#f0e6ee;border-radius:4px 24px 20px 18px}
+.reading-detail h3{font-size:14px;font-weight:500;color:#856480;margin:0 0 10px}
+.reading-detail-reflection p{font-size:13px;line-height:1.9;white-space:pre-wrap;overflow-wrap:anywhere;color:#856e7f;max-height:220px;overflow:auto}
+.reading-detail-reflection small{font-size:11px;color:#aa90a1}
+.reading-log-heading{display:flex;justify-content:space-between;gap:12px}.reading-log-heading small{font-size:10px;font-weight:400;color:#ac95a6}
+.reading-log-scroll{max-height:36dvh;overflow:auto;overscroll-behavior:contain;padding:4px 12px 4px 6px}
+.reading-log-list{list-style:none;margin:0;padding:0 0 0 17px;border-left:1px solid #e1cbd9}
+.reading-log-list li{position:relative;margin:0 0 24px}.reading-log-list li::before{content:'';position:absolute;left:-21px;top:5px;width:7px;height:7px;border-radius:50%;background:#b694ac}
+.reading-log-top{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#95738d;font-size:12px}.reading-log-top small,.reading-log-edited{font-size:10px;color:#ad97a7}
+.reading-log-list p{font-size:12px;line-height:1.9;color:#8c7486;white-space:pre-wrap;overflow-wrap:anywhere;margin:8px 0}
+.reading-log-quiet{font-size:12px;color:#b09baa}.reading-log-list .quiet-button{font-size:10px;margin-left:10px}
+@media(max-width:600px){.library-fan{--spread:clamp(30px,10vw,56px);height:290px}.library-cover{width:130px;height:195px;padding:15px 12px 15px 18px}.book-cover-title{font-size:19px;margin-top:14px}.book-cover-top{font-size:6px;letter-spacing:0}.book-cover-foot{font-size:8px}.reading-library-heading h2{font-size:26px}.library-empty-scene{gap:22px;padding:20px 10px}.library-empty-scene h3{font-size:17px}.library-empty-pages{width:75px;height:110px}.reading-log-top{flex-direction:column;gap:4px}}
+@media(prefers-reduced-motion:reduce){.library-cover{transition:none}}
+
+/* 内页右上角的扇形滑动导航，围绕入口按钮释放和收回。 */
+.fan-navigation{position:fixed;top:122px;right:max(24px,calc((100vw - 1120px)/2));width:46px;height:46px;z-index:65}
+.fan-navigation[hidden],.fan-panel[hidden],.fan-preview[hidden]{display:none}
+.fan-toggle{position:relative;z-index:3;width:54px;height:54px;left:-4px;top:-4px;padding:4px 0 0;border:1px solid #cbb5a4;border-radius:50% 50% 38% 38%;background:linear-gradient(145deg,#fffaf0,#edddd6);color:#88677b;box-shadow:inset 0 0 0 3px #fff9ed,0 5px 16px #765b7020;cursor:pointer;display:grid;place-content:center;gap:0;transition:background .2s,box-shadow .2s,transform .3s}
+.fan-toggle-icon{width:35px;height:27px;overflow:visible;fill:#a68b76;transition:transform .45s cubic-bezier(.22,1,.36,1);transform-origin:50% 85%}
+.mini-fan-paper{fill:#e5c7ce;stroke:#a98879;stroke-width:1}
+.mini-fan-folds{fill:none;stroke:#b69389;stroke-width:.85}
+.mini-fan-edge{fill:none;stroke:#fff4db;stroke-width:2}
+.fan-toggle small{font:9px/1.5 'Songti SC',serif;letter-spacing:.18em;padding-left:.18em}
+.fan-toggle:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 3px #fff9ed,0 7px 20px #765b7030}
+.is-open .fan-toggle{background:linear-gradient(145deg,#fff7e8,#e4cbd4);box-shadow:inset 0 0 0 3px #fff6e8,0 0 0 5px #f6f0eb99,0 5px 15px #785c7525}
+.is-open .fan-toggle-icon{transform:rotate(-12deg)}
+.fan-tassel{position:absolute;top:49px;left:39px;width:1px;height:21px;background:#b19078;transform-origin:50% 0;pointer-events:none;transform:rotate(-9deg);transition:transform .45s}
+.fan-tassel::before{content:'';position:absolute;top:17px;left:-2px;width:5px;height:6px;border-radius:50%;background:#c09892;box-shadow:inset 0 1px #f4dfc4}
+.fan-tassel::after{content:'';position:absolute;top:23px;left:-3px;width:7px;height:12px;border-radius:2px 2px 40% 40%;background:repeating-linear-gradient(90deg,#b88792 0 1px,#e1b9ba 1px 2px)}
+.is-open .fan-tassel{transform:rotate(12deg)}
+.fan-toggle:focus-visible,.fan-page:focus-visible,.fan-knob:focus-visible{outline:2px solid #a17b94;outline-offset:4px}
+.fan-panel{position:absolute;right:23px;top:23px;width:300px;height:300px;transform-origin:100% 0;touch-action:none;user-select:none;isolation:isolate}
+.fan-paper{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none;filter:drop-shadow(-5px 8px 7px #80645123)}
+.fan-paper-leaf{fill:url(#fan-silk);stroke:#d7b9aa;stroke-width:.35;transition:fill .3s;transform-origin:300px 0;animation:fan-fold-open .48s cubic-bezier(.22,1,.36,1) both}
+.fan-paper-leaf.is-valley{fill:#ead6d8}
+.fan-paper-leaf.is-selected{fill:#efd2d6}
+.fan-paper-leaf.is-valley.is-selected{fill:#dfbcc8}
+.fan-rib{fill:none;stroke:#b89e86;stroke-width:1.2;stroke-linecap:round;transform-origin:300px 0;animation:fan-fold-open .48s cubic-bezier(.22,1,.36,1) both}
+.fan-rib.is-guard{stroke:#ad8e74;stroke-width:3}
+.fan-paper-trim{fill:none;stroke:#c7a27d;stroke-width:1;opacity:.7}
+.fan-pivot{fill:#ab8b71;stroke:#ead3b0;stroke-width:3}
+.fan-blossoms{fill:#c790a1;opacity:.5}
+.fan-blossoms>path{fill:none;stroke:#b28d7e;stroke-width:1}
+.fan-navigation:not(.is-open) .fan-paper-leaf,.fan-navigation:not(.is-open) .fan-rib{animation:fan-fold-close .28s ease-in both}
+@keyframes fan-fold-open{from{transform:rotate(calc(-1 * var(--rib-angle,0deg)));opacity:.35}to{transform:rotate(0deg);opacity:1}}
+@keyframes fan-fold-close{from{transform:rotate(0deg);opacity:1}to{transform:rotate(calc(-1 * var(--rib-angle,0deg)));opacity:.2}}
+.fan-arc{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#b491795c;stroke-width:1;stroke-dasharray:1 5;pointer-events:none}
+.fan-caption{position:absolute;right:36px;top:33px;color:#a88778;font:italic 13px 'Songti SC',serif;transform:rotate(-12deg);letter-spacing:.15em}
+.fan-help{position:absolute;right:27px;top:90px;margin:0;color:#a48389;font-size:9px;line-height:1.9;text-align:right;letter-spacing:.15em;pointer-events:none}
+.fan-page{position:absolute;transform:translate(-50%,-50%);border:1px solid transparent;background:transparent;color:#77596d;font:13px/1.5 'Songti SC','STSong',serif;white-space:nowrap;padding:7px 10px;cursor:pointer;border-radius:45% 45% 35% 35%;transition:color .2s,background .2s,box-shadow .2s,border-color .2s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.fan-page small{font:italic 8px Georgia,serif;color:#b08d83;letter-spacing:.15em}
+.fan-page[aria-current=page] span::after{content:'·';margin-left:2px}
+.fan-page.is-selected{color:#72445e;background:#fff8e8d9;border-color:#c3a18d80;box-shadow:0 3px 8px #987a8d18}
+.fan-knob{position:absolute;transform:translate(-50%,-23px);width:44px;height:64px;padding:0;border:0;border-radius:24px;background:transparent;cursor:grab;display:grid;place-items:center;transition:left .25s cubic-bezier(.22,1,.36,1),top .25s cubic-bezier(.22,1,.36,1);z-index:2;-webkit-tap-highlight-color:transparent}
+.fan-charm{width:44px;height:64px;overflow:visible;pointer-events:none;filter:drop-shadow(0 3px 3px #76596e35);transition:filter .2s}
+.charm-flower>path{fill:url(#fan-charm-jade);stroke:#b49379;stroke-width:.75}
+.charm-veins{fill:none;stroke:#fffaee;stroke-width:1;stroke-linecap:round;opacity:.85}
+.charm-heart{fill:#c1a070;stroke:#fff5d4;stroke-width:1}
+.charm-glint{fill:#fff9df}
+.charm-cord{fill:none;stroke:#ad8b72;stroke-width:1.1}
+.charm-fringe{fill:#ba8fa0;stroke:#a77c8d;stroke-width:.6;transform-origin:22px 38px;transition:transform .3s}
+.charm-threads{fill:none;stroke:#efd0cc;stroke-width:.7}
+.charm-focus-ring{fill:none;stroke:#b9947f;stroke-width:.8;stroke-dasharray:1 4;opacity:0;transition:opacity .2s}
+.fan-knob:focus-visible{outline:none}
+.fan-knob:focus-visible .charm-focus-ring,.fan-knob:hover .charm-focus-ring{opacity:.85}
+.fan-knob:hover .fan-charm,.fan-knob:focus-visible .fan-charm{filter:drop-shadow(0 3px 5px #9c6b864a)}
+.fan-knob:hover .charm-fringe{transform:rotate(-10deg)}
+.fan-knob:active{cursor:grabbing}
+.fan-knob:active .charm-fringe{transform:rotate(12deg)}
+#app{transition:filter 240ms ease,opacity 240ms ease}
+.fan-previewing #app{filter:blur(8px);opacity:.24}
+.fan-preview{position:fixed;inset:0;z-index:60;background:#f5efe8c9;pointer-events:none;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:80px 40px 40px}
+.fan-preview-copy{width:min(700px,100%);padding-right:100px;color:#826376}
+.fan-preview-copy>span{font-size:10px;letter-spacing:.2em;color:#b18ba2}
+.fan-preview-copy>h2{font:400 clamp(36px,6vw,64px)/1.4 'Songti SC','STSong',serif;margin:18px 0 8px}
+.fan-preview-copy>p{font-size:13px;line-height:1.9;color:#a08495}
+.fan-preview-stories{border-top:1px solid #d9c7d3;margin-top:30px}
+.fan-preview-stories article{padding:14px 0;border-bottom:1px solid #ded0d9}
+.fan-preview-stories h3{font:400 22px/1.6 'Songti SC',serif;margin:0 0 5px}
+.fan-preview-stories p{font-size:12px;color:#a28a9a;line-height:1.9;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.fan-preview-copy>small{display:block;margin-top:25px;color:#b397a8;font-size:10px;letter-spacing:.12em}
+@media(max-width:600px){.fan-navigation{top:106px;right:20px}.fan-panel{width:270px;height:270px}.fan-caption{font-size:11px;right:27px;top:27px}.fan-help{right:23px;top:79px;font-size:8px}.fan-page{font-size:11px;padding:5px 7px}.fan-page small{font-size:7px}.fan-preview{padding:200px 26px 35px;align-items:flex-start}.fan-preview-copy{padding:60px 0 0}.fan-preview-stories{margin-top:16px}.fan-preview-stories article:nth-child(n+2){display:none}}
+@media(prefers-reduced-motion:reduce){.fan-toggle,.fan-toggle-icon,.fan-tassel,.fan-knob,.fan-charm,.charm-fringe,.charm-focus-ring,.fan-paper-leaf,#app{transition:none}.fan-paper-leaf,.fan-rib{animation:none!important}}
+
+.hobby-detail-link{color:#90647e;text-decoration:none;border-bottom:1px solid #c5a3b6;padding-bottom:1px;overflow-wrap:anywhere}.hobby-detail-link i{font:11px/1 sans-serif;margin-left:4px;color:#b78da4}.hobby-detail-link:hover{color:#70465f;border-bottom-color:currentColor}.hobby-detail-link:focus-visible{outline:2px solid #b78da4;outline-offset:3px;border-radius:2px}
+
+/* 页面虚化由父层负责，避免内页的二次淡入遮住虚化过程。 */
+body.page-blur-transition #app>.container{animation:none}
+body.page-blur-transition #app{transition:none}
+.post-images, .image-drafts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; margin: 16px 0; }
+.post-images a { display: block; min-width: 0; }
+.post-images img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
+.image-draft { position: relative; min-width: 0; }
+.image-draft img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; border-radius: 6px; }
+.image-draft button { position: absolute; right: 4px; top: 4px; width: 30px; height: 30px; border: 1px solid #ccc; border-radius: 50%; background: white; color: #333; cursor: pointer; font-size: 22px; }
+.image-draft button[data-crop-image] { right: auto; left: 4px; }
+.image-crop-dialog { box-sizing: border-box; width: min(600px, calc(100% - 24px)); max-height: calc(100dvh - 24px); padding: 20px; border: 1px solid #ccc; border-radius: 8px; color: #333; background: #fff; overflow-y: auto; }
+.image-crop-dialog::backdrop { background: rgb(0 0 0 / 55%); }
+.image-crop-dialog h2 { margin: 0 0 14px; font-size: 20px; }
+.crop-stage { width: 100%; height: min(400px, 48dvh); background: #eee; overflow: hidden; }
+.crop-stage > img { display: block; max-width: 100%; }
+.crop-tools, .crop-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+.crop-tools label { display: flex; gap: 8px; align-items: center; margin-right: auto; }
+.crop-tools button { width: 36px; height: 36px; font-size: 22px; }
+.crop-tools button, .crop-tools select, .crop-actions button { border: 1px solid #bbb; border-radius: 4px; background: #fff; color: #333; cursor: pointer; }
+.crop-tools select, .crop-actions button { min-height: 36px; padding: 6px 12px; }
+.crop-actions { justify-content: flex-end; }
+.crop-actions .btn { background: #76596c; color: white; }
+.image-crop-dialog button:disabled, .image-crop-dialog select:disabled { opacity: .45; cursor: default; }
+.page-about .meta a.contact-external-link { color: #9b627f; text-decoration: underline; text-underline-offset: 4px; text-decoration-thickness: 1px; }
+.page-about .meta a.contact-external-link:hover { color: #73475f; }
+.contact-external-link i { margin-left: 4px; font-style: normal; text-decoration: none; display: inline-block; }
+.contact-external-link:focus-visible { outline: 2px solid #a86280; outline-offset: 4px; }
