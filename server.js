@@ -147,11 +147,15 @@ function limited(req) {
   return recent.length > 30;
 }
 async function body(req, maxLength = 20_000) {
-  let text = '';
+  const chunks = [];
+  let length = 0;
   for await (const chunk of req) {
-    text += chunk;
-    if (text.length > maxLength) throw new Error('内容太长了');
+    length += chunk.length;
+    if (length > maxLength) throw new Error('内容太长了');
+    chunks.push(chunk);
   }
+  // TCP chunks can split a Chinese character or emoji across byte boundaries.
+  const text = Buffer.concat(chunks).toString('utf8');
   try { return JSON.parse(text || '{}'); } catch { throw new Error('JSON 格式错误'); }
 }
 function requireAdmin(req, res) {
