@@ -43,6 +43,16 @@ test('public entry points and assets load and split UTF-8 requests preserve Chin
       assert.equal(resource.status, 200, asset);
     }
   }
+  const fontCss = await fetch(`${base}/fonts.css`).then(response => response.text());
+  assert.doesNotMatch(fontCss, /url\(https?:/);
+  for (const family of ['sans', 'serif']) {
+    const fontPath = fontCss.match(new RegExp(`url\\((\\.\\/vendor/fonts/noto-${family}-sc-[^)]+)\\)`))?.[1];
+    assert.ok(fontPath, `${family} font is bundled`);
+    const response = await fetch(new URL(fontPath, base));
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('content-type'), 'font/woff2');
+    assert.equal(Buffer.from(await response.arrayBuffer()).subarray(0, 4).toString(), 'wOF2');
+  }
   const input = { author: '访客🥔', title: '中文标题', content: '你好，世界🌸' };
   const bytes = Buffer.from(JSON.stringify(input));
   // Deliberately deliver the first byte of each multibyte character separately.

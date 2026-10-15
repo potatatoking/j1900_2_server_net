@@ -3,21 +3,21 @@
 body.is-entry,body:not(.is-entry){background:var(--journal-paper);color:var(--journal-ink)}
 body .top-ribbon{display:none}
 body.is-entry .site-header,body:not(.is-entry) .site-header{display:flex;width:calc(100% - 96px);max-width:1440px;height:100px;padding:0;margin:auto;border-radius:0;border-bottom:1px solid var(--journal-line);background:transparent;box-shadow:none}
-.brand{font-family:Georgia,'Songti SC','STSong',serif;font-size:23px;font-weight:600;gap:11px;color:var(--journal-ink)}
-.brand-mark{background:none;transform:none;width:26px;color:var(--journal-accent);font-size:23px}.brand small{font:9px/1.4 sans-serif;color:var(--journal-muted);letter-spacing:.17em}
+.brand{font-family:var(--font-serif);font-size:23px;font-weight:600;gap:11px;color:var(--journal-ink)}
+.brand-mark{background:none;transform:none;width:26px;color:var(--journal-accent);font-size:23px}.brand small{font:9px/1.4 var(--font-sans);color:var(--journal-muted);letter-spacing:.17em}
 .main-nav{gap:28px;font-size:12px;font-weight:400;color:#6c5b65}.main-nav a{position:relative;padding:8px 0}.main-nav a.active{color:var(--journal-ink)}.main-nav a.active::after{position:absolute;bottom:0;height:1px;width:100%;background:var(--journal-accent)}
 .header-heart{border:1px solid #bfaab5;background:transparent;color:var(--journal-accent);width:38px;height:38px}
 body.is-entry .app{min-height:0}.journal-home{max-width:1440px;width:calc(100% - 96px);margin:auto}
 .journal-hero{display:grid;grid-template-columns:1.08fr 1fr;gap:28px;min-height:650px;padding:62px 0 60px;align-items:center}
-.journal-kicker{font:10px/1.6 -apple-system,BlinkMacSystemFont,sans-serif;letter-spacing:.14em;color:var(--journal-muted);margin:0;text-transform:uppercase;overflow-wrap:anywhere}.journal-kicker>span{display:inline-block;width:6px;height:6px;background:#9c657e;border-radius:50%;margin:0 9px 1px 0}
-.journal-intro h1{font-family:'Songti SC','STSong','Noto Serif CJK SC',Georgia,serif;font-size:clamp(49px,5.8vw,89px);line-height:1.2;letter-spacing:-.055em;font-weight:500;margin:28px 0 30px}.journal-intro h1 em{font-style:normal;color:#966d80}.title-flower{display:inline-block;font-family:Georgia,serif;color:#a786a4;font-size:.8em;margin-left:32px;vertical-align:5%;animation:flower-turn 35s linear infinite}.journal-intro-bottom{display:flex;align-items:end;justify-content:space-between;gap:20px;padding-right:16px}.journal-intro-bottom p{font-size:12px;line-height:2.1;margin:0;color:#78646f}.journal-cta{font-size:12px;white-space:nowrap;padding-bottom:9px;border-bottom:1px solid #937587}.journal-cta span{display:inline-block;margin-left:22px;font-size:22px;transition:transform .25s}.journal-cta:hover span{transform:translate(3px,-3px)}
-.journal-collage{position:relative;height:518px;min-width:0}.collage-main{position:absolute;top:43px;right:3%;width:72%;height:377px;margin:0;transform:rotate(5deg);background:#ece2dc;padding:8px 8px 0;border:1px solid #cbbbba;box-shadow:4px 9px 15px #4936430b}.collage-main img{display:block;width:100%;height:calc(100% - 28px);object-fit:cover}.collage-main figcaption{display:flex;justify-content:space-between;font:7px/28px sans-serif;letter-spacing:.13em;color:#66555c}.collage-small{position:absolute;left:0;bottom:19px;width:45%;height:240px;background:#fcf9f3;margin:0;padding:9px 9px 0;transform:rotate(-9deg);box-shadow:4px 9px 20px #49364318}.collage-small img{width:100%;height:calc(100% - 38px);object-fit:cover;display:block}.collage-small figcaption{text-align:center;font:12px/38px 'Songti SC',serif;letter-spacing:.13em}.collage-script{position:absolute;left:3%;top:2px;font:italic 34px/.96 Georgia,serif;color:#947885;transform:rotate(-9deg);z-index:2}.collage-seal{position:absolute;right:0;top:5px;border:1px solid #9d758a;border-radius:50%;width:100px;height:100px;background:#e8d9e0;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:12px;letter-spacing:.14em;line-height:1.6;transform:rotate(12deg);z-index:3}.collage-seal span{font-size:25px;line-height:1.1}.collage-character{position:absolute;right:8%;bottom:43px;width:160px;height:auto;filter:drop-shadow(1px 4px 2px #49364315)}.collage-note{position:absolute;right:2%;bottom:8px;font-size:10px;color:#917583;letter-spacing:.14em}
-.journal-section-label{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 0;border-top:1px solid var(--journal-line)}.journal-section-label h2{font-size:13px;font-weight:400;margin:0;letter-spacing:.06em}.journal-section-label>span{font:9px/1.5 sans-serif;letter-spacing:.1em;color:var(--journal-muted)}.chapter-grid{display:grid;grid-template-columns:repeat(4,1fr);padding:0 0 54px}.chapter-link{border-top:1px solid var(--journal-line);border-bottom:1px solid var(--journal-line);border-right:1px solid var(--journal-line);padding:22px 24px 20px;transition:background .25s}.chapter-link:first-child{padding-left:0}.chapter-link:last-child{border-right:0}.chapter-link:hover,.chapter-link:focus-visible{background:#eadfe4}.chapter-meta{display:flex;justify-content:space-between;align-items:center;gap:6px;font:8px/1.5 sans-serif;letter-spacing:.08em;color:#82727b}.chapter-arrow{font-size:20px;color:#795b6c;transition:transform .25s}.chapter-link:hover .chapter-arrow{transform:translate(3px,-3px)}.chapter-link h3{font:400 27px/1.3 'Songti SC','STSong',serif;letter-spacing:-.02em;margin:21px 0 8px}.chapter-link p{font-size:11px;color:#82727b;margin:0 0 23px}.chapter-count{font-size:9px;color:#876977;letter-spacing:.03em}
-.journal-latest .journal-section-label{border-top:0;padding-top:16px;padding-bottom:27px}.journal-latest h2{font:400 25px/1.3 'Songti SC',serif;letter-spacing:0}.journal-latest h2 em{font:italic 19px Georgia,serif;color:#9c8391;margin-left:14px}.journal-latest-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:7%;align-items:start}.journal-entry{display:grid;grid-template-columns:25px 1fr 18px;gap:19px;padding:26px 0;border-top:1px solid var(--journal-line);transition:color .2s}.journal-entry-index{font:italic 18px Georgia,serif;color:#b494a3}.journal-entry-category{font-size:10px;color:#8b7381}.journal-entry h3{font:400 22px/1.5 'Songti SC','STSong',serif;margin:9px 0}.journal-entry p{font-size:12px;line-height:1.9;color:#8b7882;margin:0;overflow-wrap:anywhere}.journal-entry:hover h3{color:#a16582}.journal-letter{position:relative;background:#e8dde3;padding:33px 35px 30px;overflow:hidden}.letter-star{position:absolute;right:24px;top:17px;font:58px Georgia,serif;color:#baa3b6}.journal-letter h3{font:400 32px/1.45 'Songti SC',serif;margin:26px 0 16px}.journal-letter p{font-size:12px;color:#78606f;line-height:2;margin:0 0 22px;overflow-wrap:anywhere}.journal-letter a{font-size:11px;border-bottom:1px solid #b9a0af;padding-bottom:6px}.journal-empty{font-size:14px;color:var(--journal-muted);padding:35px 0}.journal-search{margin:56px 0 0;max-width:640px}.journal-search .search-panel{background:transparent;padding:0;border:0;box-shadow:none}.journal-search .search-panel label{font-size:11px;color:#806b79;font-weight:400}.journal-search .search-field{background:#fcf8f5;border-radius:999px;border:1px solid #cbb5c2;padding:4px 18px;gap:11px}.journal-search .search-field input{font-size:12px;height:40px}.journal-search .search-results{background:#fcf8f5}.journal-signoff{padding:66px 0 70px;text-align:center}.journal-signoff p{font-size:11px;letter-spacing:.12em;color:#927989;margin:0 0 15px}.journal-signoff a{font:400 clamp(28px,3.5vw,46px)/1.5 'Songti SC',serif}.journal-signoff a span{display:inline-block;margin-left:15px;color:#a27f92;transition:transform .25s}.journal-signoff a:hover span{transform:translate(5px,-5px)}.journal-signoff>span{display:block;font:8px/1.4 sans-serif;letter-spacing:.2em;color:#9d8291;margin-top:27px}
+.journal-kicker{font:10px/1.6 var(--font-sans);letter-spacing:.14em;color:var(--journal-muted);margin:0;text-transform:uppercase;overflow-wrap:anywhere}.journal-kicker>span{display:inline-block;width:6px;height:6px;background:#9c657e;border-radius:50%;margin:0 9px 1px 0}
+.journal-intro h1{font-family:var(--font-serif);font-size:clamp(49px,5.8vw,89px);line-height:1.2;letter-spacing:-.055em;font-weight:500;margin:28px 0 30px}.journal-intro h1 em{font-style:normal;color:#966d80}.title-flower{display:inline-block;font-family:var(--font-serif);color:#a786a4;font-size:.8em;margin-left:32px;vertical-align:5%;animation:flower-turn 35s linear infinite}.journal-intro-bottom{display:flex;align-items:end;justify-content:space-between;gap:20px;padding-right:16px}.journal-intro-bottom p{font-size:12px;line-height:2.1;margin:0;color:#78646f}.journal-cta{font-size:12px;white-space:nowrap;padding-bottom:9px;border-bottom:1px solid #937587}.journal-cta span{display:inline-block;margin-left:22px;font-size:22px;transition:transform .25s}.journal-cta:hover span{transform:translate(3px,-3px)}
+.journal-collage{position:relative;height:518px;min-width:0}.collage-main{position:absolute;top:43px;right:3%;width:72%;height:377px;margin:0;transform:rotate(5deg);background:#ece2dc;padding:8px 8px 0;border:1px solid #cbbbba;box-shadow:4px 9px 15px #4936430b}.collage-main img{display:block;width:100%;height:calc(100% - 28px);object-fit:cover}.collage-main figcaption{display:flex;justify-content:space-between;font:7px/28px var(--font-sans);letter-spacing:.13em;color:#66555c}.collage-small{position:absolute;left:0;bottom:19px;width:45%;height:240px;background:#fcf9f3;margin:0;padding:9px 9px 0;transform:rotate(-9deg);box-shadow:4px 9px 20px #49364318}.collage-small img{width:100%;height:calc(100% - 38px);object-fit:cover;display:block}.collage-small figcaption{text-align:center;font:12px/38px var(--font-serif);letter-spacing:.13em}.collage-script{position:absolute;left:3%;top:2px;font:italic 34px/.96 var(--font-serif);color:#947885;transform:rotate(-9deg);z-index:2}.collage-seal{position:absolute;right:0;top:5px;border:1px solid #9d758a;border-radius:50%;width:100px;height:100px;background:#e8d9e0;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:12px;letter-spacing:.14em;line-height:1.6;transform:rotate(12deg);z-index:3}.collage-seal span{font-size:25px;line-height:1.1}.collage-character{position:absolute;right:8%;bottom:43px;width:160px;height:auto;filter:drop-shadow(1px 4px 2px #49364315)}.collage-note{position:absolute;right:2%;bottom:8px;font-size:10px;color:#917583;letter-spacing:.14em}
+.journal-section-label{display:flex;justify-content:space-between;align-items:center;gap:20px;padding:18px 0;border-top:1px solid var(--journal-line)}.journal-section-label h2{font-size:13px;font-weight:400;margin:0;letter-spacing:.06em}.journal-section-label>span{font:9px/1.5 var(--font-sans);letter-spacing:.1em;color:var(--journal-muted)}.chapter-grid{display:grid;grid-template-columns:repeat(4,1fr);padding:0 0 54px}.chapter-link{border-top:1px solid var(--journal-line);border-bottom:1px solid var(--journal-line);border-right:1px solid var(--journal-line);padding:22px 24px 20px;transition:background .25s}.chapter-link:first-child{padding-left:0}.chapter-link:last-child{border-right:0}.chapter-link:hover,.chapter-link:focus-visible{background:#eadfe4}.chapter-meta{display:flex;justify-content:space-between;align-items:center;gap:6px;font:8px/1.5 var(--font-sans);letter-spacing:.08em;color:#82727b}.chapter-arrow{font-size:20px;color:#795b6c;transition:transform .25s}.chapter-link:hover .chapter-arrow{transform:translate(3px,-3px)}.chapter-link h3{font:400 27px/1.3 var(--font-serif);letter-spacing:-.02em;margin:21px 0 8px}.chapter-link p{font-size:11px;color:#82727b;margin:0 0 23px}.chapter-count{font-size:9px;color:#876977;letter-spacing:.03em}
+.journal-latest .journal-section-label{border-top:0;padding-top:16px;padding-bottom:27px}.journal-latest h2{font:400 25px/1.3 var(--font-serif);letter-spacing:0}.journal-latest h2 em{font:italic 19px var(--font-serif);color:#9c8391;margin-left:14px}.journal-latest-grid{display:grid;grid-template-columns:1.55fr 1fr;gap:7%;align-items:start}.journal-entry{display:grid;grid-template-columns:25px 1fr 18px;gap:19px;padding:26px 0;border-top:1px solid var(--journal-line);transition:color .2s}.journal-entry-index{font:italic 18px var(--font-serif);color:#b494a3}.journal-entry-category{font-size:10px;color:#8b7381}.journal-entry h3{font:400 22px/1.5 var(--font-serif);margin:9px 0}.journal-entry p{font-size:12px;line-height:1.9;color:#8b7882;margin:0;overflow-wrap:anywhere}.journal-entry:hover h3{color:#a16582}.journal-letter{position:relative;background:#e8dde3;padding:33px 35px 30px;overflow:hidden}.letter-star{position:absolute;right:24px;top:17px;font:58px var(--font-serif);color:#baa3b6}.journal-letter h3{font:400 32px/1.45 var(--font-serif);margin:26px 0 16px}.journal-letter p{font-size:12px;color:#78606f;line-height:2;margin:0 0 22px;overflow-wrap:anywhere}.journal-letter a{font-size:11px;border-bottom:1px solid #b9a0af;padding-bottom:6px}.journal-empty{font-size:14px;color:var(--journal-muted);padding:35px 0}.journal-search{margin:56px 0 0;max-width:640px}.journal-search .search-panel{background:transparent;padding:0;border:0;box-shadow:none}.journal-search .search-panel label{font-size:11px;color:#806b79;font-weight:400}.journal-search .search-field{background:#fcf8f5;border-radius:999px;border:1px solid #cbb5c2;padding:4px 18px;gap:11px}.journal-search .search-field input{font-size:12px;height:40px}.journal-search .search-results{background:#fcf8f5}.journal-signoff{padding:66px 0 70px;text-align:center}.journal-signoff p{font-size:11px;letter-spacing:.12em;color:#927989;margin:0 0 15px}.journal-signoff a{font:400 clamp(28px,3.5vw,46px)/1.5 var(--font-serif)}.journal-signoff a span{display:inline-block;margin-left:15px;color:#a27f92;transition:transform .25s}.journal-signoff a:hover span{transform:translate(5px,-5px)}.journal-signoff>span{display:block;font:8px/1.4 var(--font-sans);letter-spacing:.2em;color:#9d8291;margin-top:27px}
 body.is-entry .site-footer,body:not(.is-entry) .site-footer{display:flex;background:transparent;backdrop-filter:none;border-top:1px solid var(--journal-line);padding:23px 48px;min-height:80px;font-size:10px;color:#8a727f}.site-footer span:first-child{color:#795e6e;font-weight:400}
 a:focus-visible,button:focus-visible{outline:2px solid #8d5977;outline-offset:5px}
 /* Carry the paper and fine rules through reading and guestbook pages. */
-body:not(.is-entry) .container{max-width:1200px;padding-left:40px;padding-right:40px}body:not(.is-entry) .page{padding-top:45px}body:not(.is-entry) .page-head{border:0;border-bottom:1px solid var(--journal-line);border-radius:0;box-shadow:none;background:transparent;padding:0 0 30px;min-height:155px}body:not(.is-entry) .page-head::before,body:not(.is-entry) .page-head::after{display:none}.page-head h1{font-family:'Songti SC','STSong',serif;font-size:40px;font-weight:500}.page-head-art{opacity:.9}body:not(.is-entry) .paper-card{border:1px solid #ded1d7;border-radius:3px;box-shadow:none;background:#faf6f2}.post-top{background:#f0e7e9}.post-card::before,.topic::before{display:none}.side-note::before,.talk-side::before{display:none}.side-note{transform:none}.date-group-title,.date-group-title small{color:#785b6c;text-shadow:none}.search-panel{box-shadow:none;border-radius:3px;background:#f9f4f0}.btn{border-radius:3px;box-shadow:none}.btn:hover{box-shadow:none}.field{border-radius:3px}.about-content::before{height:2px}.post-card h2,.topic h3{font-family:'Songti SC','STSong',serif;font-weight:500}.post-card p,.topic>p{line-height:2}
+body:not(.is-entry) .container{max-width:1200px;padding-left:40px;padding-right:40px}body:not(.is-entry) .page{padding-top:45px}body:not(.is-entry) .page-head{border:0;border-bottom:1px solid var(--journal-line);border-radius:0;box-shadow:none;background:transparent;padding:0 0 30px;min-height:155px}body:not(.is-entry) .page-head::before,body:not(.is-entry) .page-head::after{display:none}.page-head h1{font-family:var(--font-serif);font-size:40px;font-weight:500}.page-head-art{opacity:.9}body:not(.is-entry) .paper-card{border:1px solid #ded1d7;border-radius:3px;box-shadow:none;background:#faf6f2}.post-top{background:#f0e7e9}.post-card::before,.topic::before{display:none}.side-note::before,.talk-side::before{display:none}.side-note{transform:none}.date-group-title,.date-group-title small{color:#785b6c;text-shadow:none}.search-panel{box-shadow:none;border-radius:3px;background:#f9f4f0}.btn{border-radius:3px;box-shadow:none}.btn:hover{box-shadow:none}.field{border-radius:3px}.about-content::before{height:2px}.post-card h2,.topic h3{font-family:var(--font-serif);font-weight:500}.post-card p,.topic>p{line-height:2}
 @keyframes flower-turn{to{transform:rotate(360deg)}}
 @media(min-width:1500px){.journal-hero{min-height:735px}.journal-collage{height:575px}.collage-main{height:430px}.collage-small{height:265px}}
 @media(max-width:1000px){body.is-entry .site-header,body:not(.is-entry) .site-header,.journal-home{width:calc(100% - 56px)}.main-nav{gap:17px}.journal-hero{min-height:580px;padding:48px 0}.journal-intro h1{font-size:60px}.journal-intro-bottom{align-items:start;flex-direction:column}.journal-collage{height:450px}.collage-main{height:325px;right:2%;width:80%;top:47px}.collage-small{height:195px;width:48%;bottom:6px}.collage-character{width:130px;bottom:21px}.collage-seal{width:83px;height:83px;right:-6px}.collage-script{font-size:28px}.collage-note{bottom:-17px}.chapter-link{padding-left:17px;padding-right:17px}.chapter-link h3{font-size:23px}.journal-letter{padding:28px}.journal-entry{gap:13px}.journal-latest-grid{gap:5%}}
@@ -30,17 +30,17 @@ button.journal-cta{background:transparent;border:0;border-bottom:1px solid #9375
 .mood-picker{margin-top:28px;padding-top:19px;border-top:1px solid var(--journal-line);max-width:430px}
 .mood-label{font-size:11px;color:#806878}.mood-options{display:flex;gap:9px;margin-top:12px}.mood-options button{border:1px solid #d3bfc9;border-radius:30px;background:transparent;color:#795b6c;padding:7px 16px;font-size:11px;transition:background .2s,transform .2s}.mood-options button span{font-size:15px;margin-right:4px}.mood-options button:hover{background:#eee0e7;transform:translateY(-2px)}.mood-options button[aria-pressed="true"]{background:#805e73;color:#fff;border-color:#805e73}.mood-picker p{min-height:20px;margin:12px 0 0;font-size:11px;line-height:1.8;color:#896c7e}
 .artwork-switch{display:block;position:relative;border:0;padding:0;background:none;width:100%;height:calc(100% - 28px);overflow:hidden}.collage-main .artwork-switch img{height:100%;transition:transform .5s}.artwork-switch:hover img{transform:scale(1.035)}.artwork-hint{position:absolute;top:14px;left:12px;background:#faf6f2ee;color:#684b5b;font-size:10px;padding:7px 12px;border-radius:30px;box-shadow:0 2px 8px #49364315}.character-greeting{padding:0;border:0;background:none;z-index:4;cursor:pointer}.character-greeting img{display:block;width:100%;height:auto}.character-greeting>span{display:block;position:absolute;right:8px;bottom:-5px;border:1px solid #d6c0cc;border-radius:20px;background:#faf6f2;color:#806176;padding:3px 10px;font-size:9px;transform:rotate(-5deg)}
-.journal-chapters{scroll-margin-top:28px}.journal-chapters:focus{outline:none}.explore-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;border-top:1px solid var(--journal-line);padding:32px 0 28px}.explore-heading h2{font:400 30px/1.4 'Songti SC',serif;margin:8px 0}.explore-heading h2 em{font:italic 21px Georgia,serif;color:#a08293;margin-left:14px}.explore-heading p{font-size:11px;color:#89717f;margin:0}.random-note{background:#e8dce3;border:1px solid #d6c2ce;border-radius:30px;color:#715466;padding:11px 19px;white-space:nowrap;font-size:11px;transition:background .2s,transform .2s}.random-note>span{font-size:20px;vertical-align:middle;margin-right:7px;display:inline-block}.random-note:hover{background:#e0cfda;transform:translateY(-2px)}.random-note:hover>span{transform:rotate(20deg)}.random-note:disabled{opacity:.5;cursor:default}
+.journal-chapters{scroll-margin-top:28px}.journal-chapters:focus{outline:none}.explore-heading{display:flex;align-items:center;justify-content:space-between;gap:24px;border-top:1px solid var(--journal-line);padding:32px 0 28px}.explore-heading h2{font:400 30px/1.4 var(--font-serif);margin:8px 0}.explore-heading h2 em{font:italic 21px var(--font-serif);color:#a08293;margin-left:14px}.explore-heading p{font-size:11px;color:#89717f;margin:0}.random-note{background:#e8dce3;border:1px solid #d6c2ce;border-radius:30px;color:#715466;padding:11px 19px;white-space:nowrap;font-size:11px;transition:background .2s,transform .2s}.random-note>span{font-size:20px;vertical-align:middle;margin-right:7px;display:inline-block}.random-note:hover{background:#e0cfda;transform:translateY(-2px)}.random-note:hover>span{transform:rotate(20deg)}.random-note:disabled{opacity:.5;cursor:default}
 @media(max-width:700px){body.is-entry .site-header{padding:15px 0;height:78px}.mood-picker{margin-top:23px;padding-top:16px;max-width:none}.mood-options button{padding:7px 17px}.explore-heading{align-items:flex-start;flex-direction:column;gap:18px;padding:25px 0}.explore-heading h2{font-size:27px}.explore-heading h2 em{font-size:18px;margin-left:9px}.random-note{padding:8px 15px}.collage-note{bottom:-12px}.character-greeting>span{right:0}}
 /* A shared, navigation-free masthead and a layered opening sequence. */
 body:not(.is-entry) .site-header{height:88px;flex-wrap:nowrap}
-.opening-welcome{font:400 12px/1.7 'Songti SC',serif;letter-spacing:.2em;color:#99758a;margin:18px 0 -14px}
+.opening-welcome{font:400 12px/1.7 var(--font-serif);letter-spacing:.2em;color:#99758a;margin:18px 0 -14px}
 .opening-line{display:block}
 .journal-hero{position:relative;isolation:isolate}
 .journal-hero::before{content:'';position:absolute;z-index:-1;right:-2%;top:8%;width:62%;height:80%;background:radial-gradient(ellipse,#e5cddc80,transparent 68%);pointer-events:none}
 button.journal-cta{display:inline-flex;align-items:center;gap:18px;background:#78546b;color:#fff;border:1px solid #78546b;border-radius:40px;padding:12px 19px;box-shadow:0 6px 18px #78546b18;transition:background .2s,transform .2s}
 button.journal-cta span{margin:0;font-size:20px}button.journal-cta:hover{background:#644359;transform:translateY(-3px)}
-.opening-invitation{display:flex;align-items:center;justify-content:space-between;width:100%;gap:18px;margin:0 0 27px;padding:18px 0;background:none;border:0;color:#806777;font-size:11px;text-align:left;letter-spacing:.06em}.opening-index{font:9px/1.5 sans-serif;letter-spacing:.16em;color:#aa91a0}.opening-down{display:grid;place-items:center;width:40px;height:40px;border:1px solid #c9b5c1;border-radius:50%;font-size:20px;transition:background .2s,transform .2s}.opening-invitation:hover .opening-down{background:#e8dce3;transform:translateY(4px)}
+.opening-invitation{display:flex;align-items:center;justify-content:space-between;width:100%;gap:18px;margin:0 0 27px;padding:18px 0;background:none;border:0;color:#806777;font-size:11px;text-align:left;letter-spacing:.06em}.opening-index{font:9px/1.5 var(--font-sans);letter-spacing:.16em;color:#aa91a0}.opening-down{display:grid;place-items:center;width:40px;height:40px;border:1px solid #c9b5c1;border-radius:50%;font-size:20px;transition:background .2s,transform .2s}.opening-invitation:hover .opening-down{background:#e8dce3;transform:translateY(4px)}
 @media(prefers-reduced-motion:no-preference){
 .journal-intro>.journal-kicker,.opening-welcome,.opening-line,.journal-intro-bottom,.mood-picker,.opening-invitation{animation:opening-rise .85s cubic-bezier(.16,1,.3,1) both}
 .opening-welcome{animation-delay:.08s}.opening-line:nth-child(1){animation-delay:.14s}.opening-line:nth-child(2){animation-delay:.26s}.opening-line:nth-child(3){animation-delay:.38s}.journal-intro-bottom{animation-delay:.48s}.mood-picker{animation-delay:.58s}.opening-invitation{animation-delay:.7s}
@@ -59,7 +59,7 @@ button.journal-cta span{margin:0;font-size:20px}button.journal-cta:hover{backgro
 .turn-sheet::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,transparent 45%,#846a7b0d 70%,#fff9 90%,#7b5b7626);pointer-events:none}
 .turn-spine{position:absolute;left:3%;top:0;bottom:0;width:6px;background:linear-gradient(90deg,#ab8eaa35,#fff6,#ab8eaa15)}
 .turn-copy{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:25px;padding:40px;text-align:center;color:#72526a}
-.turn-copy>span,.turn-page-number{font:9px/1.5 sans-serif;letter-spacing:.25em;color:#a18a98}.turn-copy i{font:normal 70px/1 Georgia,serif;color:#b597ac}.turn-copy strong{font:400 clamp(25px,4vw,52px)/1.5 'Songti SC',serif;letter-spacing:.08em}.turn-copy small{font-size:11px;letter-spacing:.12em;color:#a18a98}.turn-page-number{position:absolute;bottom:40px;right:40px}
+.turn-copy>span,.turn-page-number{font:9px/1.5 var(--font-sans);letter-spacing:.25em;color:#a18a98}.turn-copy i{font:normal 70px/1 var(--font-serif);color:#b597ac}.turn-copy strong{font:400 clamp(25px,4vw,52px)/1.5 var(--font-serif);letter-spacing:.08em}.turn-copy small{font-size:11px;letter-spacing:.12em;color:#a18a98}.turn-page-number{position:absolute;bottom:40px;right:40px}
 .paper-transition.is-reverse .turn-sheet{transform-origin:right center;background:linear-gradient(270deg,#c9b6bf 0,#e2d4d9 2%,#f4eee8 7%,#f7f1eb 65%,#e7dce2 100%)}.paper-transition.is-reverse .turn-spine{left:auto;right:3%}
 .chapter-link{position:relative;overflow:hidden}.chapter-link::after{content:'';position:absolute;right:0;bottom:0;width:28px;height:28px;background:linear-gradient(135deg,#d5becb 49%,#f4efe9 51%);transform:translate(29px,29px);transition:transform .35s;box-shadow:-2px -2px 4px #60445610}.chapter-link:hover::after,.chapter-link:focus-visible::after{transform:none}
 @media(prefers-reduced-motion:no-preference){.reveal-item{transition:opacity .65s ease var(--reveal-delay,0ms),translate .65s cubic-bezier(.2,.7,.2,1) var(--reveal-delay,0ms)}.reveal-pending{opacity:0;translate:0 24px}.reveal-pending:focus-within{opacity:1;translate:none}}
@@ -70,26 +70,26 @@ body{overflow-x:clip}
 /* Tactile title page: warm paper grain, a pressed binding and layered edges. */
 .journal-intro{position:relative;isolation:isolate;min-width:0;padding:38px 30px 42px 48px;border:1px solid #d7c9bc;border-radius:5px 12px 12px 5px;background:radial-gradient(ellipse at 85% 12%,#fffdf399,transparent 65%),repeating-linear-gradient(0deg,#8a695006 0 1px,transparent 1px 4px),repeating-linear-gradient(93deg,#96735205 0 1px,transparent 1px 5px),linear-gradient(90deg,#d8c7b7 0,#eee1cf 12px,#faf2e3 30px,#f8efdf 90%,#ede0cc 100%);box-shadow:inset 2px 0 3px #fff9,inset -1px 0 3px #ae92742b,3px 3px 0 #eee3d3,4px 4px 0 #c7b6a5,6px 6px 0 #f7eddf,7px 7px 0 #cbbba9,10px 12px 0 -2px #c7afbc,14px 23px 32px -18px #69485355}
 .journal-intro::before{content:'';position:absolute;inset:0 auto 0 15px;width:9px;background:linear-gradient(90deg,#94755e15,#fff8 42%,#94755e21 65%,transparent);border-left:1px solid #b6a28c42;pointer-events:none}
-.journal-intro::after{content:'— 01 —';position:absolute;bottom:13px;left:0;right:0;text-align:center;font:italic 10px/1.5 Georgia,serif;color:#ac937d;letter-spacing:.2em;pointer-events:none}
+.journal-intro::after{content:'— 01 —';position:absolute;bottom:13px;left:0;right:0;text-align:center;font:italic 10px/1.5 var(--font-serif);color:#ac937d;letter-spacing:.2em;pointer-events:none}
 .journal-intro h1{font-size:clamp(46px,4.7vw,73px);text-shadow:0 1px 0 #fff7}
 .journal-intro .journal-kicker{font-size:8px;letter-spacing:.12em}.journal-intro .mood-picker{border-top-color:#cbb69c66}.journal-intro .mood-options button{background:#fff9eb44;border-color:#bfa89d80}.journal-intro .mood-options button[aria-pressed="true"]{background:#805e73;border-color:#805e73}
 .journal-intro-bottom{align-items:center;min-height:112px;padding-right:0;gap:16px}
 button.journal-cta{position:relative;isolation:isolate;flex:none;flex-direction:column;justify-content:flex-start;align-items:center;gap:12px;width:78px;min-height:110px;padding:19px 7px 28px;border:0;border-radius:0;background:none;color:#fff3e6;font-size:11px;letter-spacing:.06em;box-shadow:none;filter:drop-shadow(3px 6px 3px #57334535);transform:rotate(3deg);transform-origin:50% 0;transition:transform .3s,filter .3s}
 button.journal-cta::before{content:'';position:absolute;inset:0;z-index:-1;clip-path:polygon(0 0,100% 0,100% 100%,50% 84%,0 100%);background:repeating-linear-gradient(90deg,#ffffff08 0 1px,transparent 1px 3px),linear-gradient(90deg,#604157,#97718c 13%,#805b75 38%,#946c88 77%,#5f3c55);border-top:3px solid #54364c;box-shadow:inset 0 4px 5px #43203c33}
 button.journal-cta::after{content:'';position:absolute;top:7px;bottom:25px;left:6px;right:6px;border-left:1px dashed #e7cadb66;border-right:1px dashed #e7cadb66;pointer-events:none}
-button.journal-cta span{font:25px/1 Georgia,serif;margin:0;color:#ecd9de}
+button.journal-cta span{font:25px/1 var(--font-serif);margin:0;color:#ecd9de}
 button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);filter:drop-shadow(3px 8px 4px #57334540)}button.journal-cta:hover span{transform:translateY(2px)}button.journal-cta:focus-visible{outline:2px solid #80546e;outline-offset:5px}button.journal-cta:active{transform:translateY(7px)}
 @media(min-width:701px) and (max-width:1000px){.journal-hero{grid-template-columns:1.2fr 1fr;gap:22px}.journal-intro{padding:30px 20px 38px 34px}.journal-intro h1{font-size:clamp(34px,4.6vw,46px)}.journal-intro-bottom{flex-direction:row;gap:10px}.journal-intro-bottom p{font-size:10px}.journal-intro .mood-options{gap:5px}.journal-intro .mood-options button{padding:6px 10px}}
 @media(max-width:700px){.journal-intro{padding:30px 25px 38px 36px;border-radius:4px 9px 9px 4px}.journal-intro::before{left:11px;width:7px}.journal-intro h1{font-size:clamp(37px,9.2vw,62px)}.journal-intro-bottom{align-items:center;gap:12px;min-height:104px}.journal-intro-bottom p{font-size:10px}.journal-intro .mood-picker{margin-top:18px}.journal-intro .mood-options button{padding:7px 12px}.journal-intro .journal-kicker{font-size:7px}.journal-intro .mood-picker p{font-size:10px}button.journal-cta{width:70px;min-height:104px;padding:17px 5px 26px;font-size:10px;gap:11px}}
 @media(max-width:370px){.journal-intro{padding-left:28px;padding-right:18px}.journal-intro h1{font-size:33px}.journal-intro-bottom p{font-size:9px}.journal-intro .mood-options button{padding:6px 9px}}
 @media(prefers-reduced-motion:reduce){button.journal-cta{transition:none}button.journal-cta:hover,button.journal-cta:active{transform:rotate(3deg)}}
 /* The public mood is a journal entry; only the signed-in owner gets an edit control. */
-.mood-topline{display:flex;align-items:center;justify-content:space-between;gap:12px}.mood-label{font-size:12px;letter-spacing:.06em}.mood-edit{font-size:10px;color:#84576c;border-bottom:1px solid #b99cad;padding:4px 0}.mood-current{display:flex;align-items:center;gap:10px;margin-top:13px;color:#6e4d62}.mood-current-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#e8dbe2;font-size:20px}.mood-current strong{font:400 20px/1.3 'Songti SC',serif}.mood-current time{font:10px/1.4 sans-serif;color:#9a8190;margin-left:auto}.mood-picker .mood-empty{color:#9b8691}
-.mood-history{border-top:1px solid var(--journal-line);padding:22px 0 25px}.mood-history-heading{display:flex;align-items:end;justify-content:space-between;gap:15px}.mood-history-heading h2{font:400 23px/1.3 'Songti SC',serif;margin:5px 0 0}.mood-history-heading>span{font-size:10px;color:#9a8190}.mood-history-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:20px}.mood-history-item{position:relative;min-height:100px;padding:15px 16px;border:1px solid #dbcdd2;background:#f8f2ed}.mood-history-item time{display:block;font:10px/1.5 sans-serif;color:#9a8190}.mood-history-item strong{display:block;margin-top:9px;font:400 18px/1.35 'Songti SC',serif;color:#60485a}.mood-history-item strong span{color:#956e86}.mood-history-item p{font-size:10px;line-height:1.6;color:#8c7380;margin:8px 0 0;overflow-wrap:anywhere}.mood-history-item button{position:absolute;right:14px;top:12px;font-size:10px;color:#84576c;text-decoration:underline}.mood-history-empty{font-size:11px;color:#9a8190;margin:0;padding:5px 0}
+.mood-topline{display:flex;align-items:center;justify-content:space-between;gap:12px}.mood-label{font-size:12px;letter-spacing:.06em}.mood-edit{font-size:10px;color:#84576c;border-bottom:1px solid #b99cad;padding:4px 0}.mood-current{display:flex;align-items:center;gap:10px;margin-top:13px;color:#6e4d62}.mood-current-icon{display:grid;place-items:center;width:36px;height:36px;border-radius:50%;background:#e8dbe2;font-size:20px}.mood-current strong{font:400 20px/1.3 var(--font-serif)}.mood-current time{font:10px/1.4 var(--font-sans);color:#9a8190;margin-left:auto}.mood-picker .mood-empty{color:#9b8691}
+.mood-history{border-top:1px solid var(--journal-line);padding:22px 0 25px}.mood-history-heading{display:flex;align-items:end;justify-content:space-between;gap:15px}.mood-history-heading h2{font:400 23px/1.3 var(--font-serif);margin:5px 0 0}.mood-history-heading>span{font-size:10px;color:#9a8190}.mood-history-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin-top:20px}.mood-history-item{position:relative;min-height:100px;padding:15px 16px;border:1px solid #dbcdd2;background:#f8f2ed}.mood-history-item time{display:block;font:10px/1.5 var(--font-sans);color:#9a8190}.mood-history-item strong{display:block;margin-top:9px;font:400 18px/1.35 var(--font-serif);color:#60485a}.mood-history-item strong span{color:#956e86}.mood-history-item p{font-size:10px;line-height:1.6;color:#8c7380;margin:8px 0 0;overflow-wrap:anywhere}.mood-history-item button{position:absolute;right:14px;top:12px;font-size:10px;color:#84576c;text-decoration:underline}.mood-history-empty{font-size:11px;color:#9a8190;margin:0;padding:5px 0}
 @media(max-width:700px){.mood-history{padding:18px 0 23px}.mood-history-heading h2{font-size:21px}.mood-history-heading>span{font-size:9px}.mood-history-list{grid-template-columns:repeat(2,minmax(0,1fr))}.mood-current strong{font-size:18px}}
 
 .collage-note{max-width:72%;text-align:right;line-height:1.6}
-.collage-small img{height:calc(100% - 48px)}.collage-small figcaption{min-height:48px;padding:2px 3px;display:flex;align-items:center;justify-content:center;font:9px/1.45 "Songti SC",serif;letter-spacing:.03em}
+.collage-small img{height:calc(100% - 48px)}.collage-small figcaption{min-height:48px;padding:2px 3px;display:flex;align-items:center;justify-content:center;font:9px/1.45 var(--font-serif);letter-spacing:.03em}
 
 .back-to-directory{display:inline-block;margin-bottom:15px;color:#967083;font-size:12px;line-height:1.5;text-decoration:none}.back-to-directory:hover{text-decoration:underline;color:#704b5e}.back-to-directory:focus-visible{outline:2px solid #967083;outline-offset:4px}
 
@@ -110,11 +110,11 @@ button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);fil
 /* Saber holds the note at the height of her raised palms. */
 .saber-scene{display:block;width:100%;margin:38px auto 0;padding:16px 0 0;border:0;background:none;color:#765a6b;text-align:center;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .saber-lift{display:flex;flex-direction:column;align-items:center;position:relative;transition:transform .45s cubic-bezier(.2,.8,.3,1);transform-origin:50% 90%}
-.saber-frame{display:block;position:relative;z-index:2;width:min(100%,340px);padding:19px 24px;border:1px solid #c5a3b5;border-radius:4px;background:linear-gradient(135deg,#fffaf0,#f4e7e9);box-shadow:3px 4px 0 #e7d6dd,0 7px 16px #73526512;font:15px/1.9 'Songti SC',serif}
+.saber-frame{display:block;position:relative;z-index:2;width:min(100%,340px);padding:19px 24px;border:1px solid #c5a3b5;border-radius:4px;background:linear-gradient(135deg,#fffaf0,#f4e7e9);box-shadow:3px 4px 0 #e7d6dd,0 7px 16px #73526512;font:15px/1.9 var(--font-serif)}
 .saber-frame::before{content:'';position:absolute;inset:6px;border:1px solid #ceb7b64d;pointer-events:none}
-.saber-frame-label{display:block;margin-bottom:8px;color:#ad8693;font:8px/1.5 sans-serif;letter-spacing:.19em}
+.saber-frame-label{display:block;margin-bottom:8px;color:#ad8693;font:8px/1.5 var(--font-sans);letter-spacing:.19em}
 .saber-character{display:block;position:relative;z-index:1;width:240px;max-width:90%;height:auto;margin-top:-29px;filter:drop-shadow(0 6px 3px #6e52621a);user-select:none;-webkit-user-drag:none}
-.saber-hint{display:block;margin-top:13px;font:11px/1.8 sans-serif;color:#9a7889}
+.saber-hint{display:block;margin-top:13px;font:11px/1.8 var(--font-sans);color:#9a7889}
 .saber-spark{position:absolute;right:14px;top:10px;color:#bda06a;opacity:0;transition:opacity .25s}
 .saber-scene[aria-pressed="true"] .saber-lift{transform:translateY(-14px) rotate(-3deg)}
 .saber-scene[aria-pressed="true"] .saber-spark{opacity:1}
@@ -126,8 +126,8 @@ button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);fil
 .greeting-perch{display:flex;flex-direction:column;align-items:center;transform-origin:50% 90%}
 .greeting-perch img{position:relative;z-index:2;display:block;width:220px;max-width:100%;height:auto;margin-bottom:-23px;filter:drop-shadow(0 4px 2px #65405718);user-select:none;-webkit-user-drag:none}
 .greeting-frame{display:block;position:relative;width:100%;max-width:300px;padding:31px 10px 15px;border:1px solid #c5a7bf;border-radius:5px;background:linear-gradient(135deg,#faf3f7,#eee3f1);box-shadow:3px 4px 0 #e4d7e4;transition:background .2s}
-.greeting-copy{display:block;font:13px/1.8 'Songti SC',serif}
-.greeting-hint{display:block;margin-top:6px;color:#ab879e;font:10px/1.7 sans-serif}
+.greeting-copy{display:block;font:13px/1.8 var(--font-serif)}
+.greeting-hint{display:block;margin-top:6px;color:#ab879e;font:10px/1.7 var(--font-sans)}
 .greeting-scene:focus-visible{outline:2px solid #967083;outline-offset:6px;border-radius:5px}
 .greeting-scene[aria-pressed="true"] .greeting-frame{background:#f7e5ed;border-color:#ab7b98}
 @media(hover:hover){.greeting-scene:hover .greeting-frame{border-color:#966581}}
@@ -138,7 +138,7 @@ button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);fil
 .study-runner img{display:block;width:100%;height:auto;filter:drop-shadow(0 3px 2px #54446118);user-select:none;-webkit-user-drag:none}
 .study-runner:focus-visible{outline:2px solid #967083;outline-offset:4px;border-radius:8px}
 .study-companion .side-note{display:block}
-.study-companion .runner-hint{display:block;margin-top:17px;padding-top:12px;border-top:1px solid #e5dbe7;color:#9b849f;font:10px/1.8 sans-serif}
+.study-companion .runner-hint{display:block;margin-top:17px;padding-top:12px;border-top:1px solid #e5dbe7;color:#9b849f;font:10px/1.8 var(--font-sans)}
 
 .modal .login-error{margin:9px 0 0;color:#a43e58;font-size:12px;line-height:1.6}.modal .field[aria-invalid="true"]{border-color:#b34d65}
 .avatar{position:relative;overflow:hidden;aspect-ratio:1}
@@ -150,8 +150,8 @@ button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);fil
 .hobby-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;padding:1px;border:1px solid #dcc6d0;border-radius:3px;background:#dcc6d0;overflow:hidden}
 .hobby-cell{min-width:0;min-height:112px;padding:13px 12px;background:#fffaf8;text-align:left}
 .hobby-cell:nth-child(4n+2),.hobby-cell:nth-child(4n+3){background:#faf4f6}
-.profile-card .meta .hobby-cell-number{display:block;width:auto;color:#caa7b5;font:italic 11px/1 Georgia,serif}
-.hobby-cell strong{display:block;margin-top:8px;color:#735364;font:17px/1.35 'Songti SC','STSong',serif}
+.profile-card .meta .hobby-cell-number{display:block;width:auto;color:#caa7b5;font:italic 11px/1 var(--font-serif)}
+.hobby-cell strong{display:block;margin-top:8px;color:#735364;font:17px/1.35 var(--font-serif)}
 .profile-card .hobby-cell p{margin:7px 0 0;color:#967c8b;font-size:11px;line-height:1.65;white-space:pre-wrap}
 .hobby-cell-empty{grid-column:1/-1;min-height:60px;color:#a68c9a;font-size:12px}
 .hobby-editor{margin:18px 0;padding:14px;border:1px solid #e6d2db;border-radius:4px}
@@ -171,11 +171,11 @@ button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);fil
 .modal .form-error{color:#a43e58;font-size:12px;line-height:1.6}
 .saber-quote-original,.saber-quote-translation,.saber-quote-source{display:block}
 .saber-quote-original{font-size:15px;line-height:1.6}
-.saber-quote-translation{margin-top:7px;color:#8d7180;font:11px/1.55 sans-serif}
-.saber-quote-source{margin-top:9px;color:#a48291;font:10px/1.4 sans-serif}
+.saber-quote-translation{margin-top:7px;color:#8d7180;font:11px/1.55 var(--font-sans)}
+.saber-quote-source{margin-top:9px;color:#a48291;font:10px/1.4 var(--font-sans)}
 .saber-frame{min-height:132px}
 
-.admin-nav{display:flex;flex-wrap:wrap;gap:18px;align-items:center;max-width:1120px;margin:0 auto;padding:16px 20px;border-bottom:1px solid #ded1d7;font-size:12px;color:#805c74}.admin-nav strong{margin-right:auto}.admin-nav a:hover{text-decoration:underline}.admin-login{position:relative;display:block;margin:60px auto 100px;background:#fffaf7}.admin-login h1{font:400 30px/1.5 'Songti SC',serif}.admin-site .site-header{gap:16px}
+.admin-nav{display:flex;flex-wrap:wrap;gap:18px;align-items:center;max-width:1120px;margin:0 auto;padding:16px 20px;border-bottom:1px solid #ded1d7;font-size:12px;color:#805c74}.admin-nav strong{margin-right:auto}.admin-nav a:hover{text-decoration:underline}.admin-login{position:relative;display:block;margin:60px auto 100px;background:#fffaf7}.admin-login h1{font:400 30px/1.5 var(--font-serif)}.admin-site .site-header{gap:16px}
 
 /* The two shelves keep today's notes in view and tuck older pages away by month. */
 .study-index{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin:28px 0 48px}
@@ -183,19 +183,19 @@ button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);fil
 .study-index-link:nth-child(2){background:#f7f1ed;border-color:#dfd4d1}
 .study-index-link:hover{transform:translateY(-3px);border-color:#ad90b8}
 .study-index-link:focus-visible,.study-calendar button:focus-visible{outline:2px solid #8e70a8;outline-offset:2px}
-.study-index-number{font:italic 29px Georgia,serif;color:#b39bc4}
+.study-index-number{font:italic 29px var(--font-serif);color:#b39bc4}
 .study-index-link:nth-child(2) .study-index-number{color:#bb9d91}
 .study-index-link strong,.study-index-link small{display:block}
-.study-index-link strong{font:24px/1.3 'Songti SC','STSong',serif}
+.study-index-link strong{font:24px/1.3 var(--font-serif)}
 .study-index-link small{margin-top:6px;color:#a08c9c;font-size:11px}
-.study-index-link>span:last-child{margin-left:auto;font:23px Georgia,serif;color:#aa93ac}
+.study-index-link>span:last-child{margin-left:auto;font:23px var(--font-serif);color:#aa93ac}
 .study-lane{scroll-margin-top:30px;margin:0 0 72px}
 .study-lane-head{display:flex;align-items:center;gap:20px;padding:0 0 20px;border-bottom:1px solid #d9cbd5}
 .study-lane-icon{display:grid;place-items:center;width:62px;height:62px;flex:none;border-radius:50%;background:#ece4f1;font-size:26px}
 .study-lane-work .study-lane-icon{background:#eee5df}
-.study-kicker{font:700 10px/1.5 sans-serif;letter-spacing:.2em;color:#a187ac}
+.study-kicker{font:700 10px/1.5 var(--font-sans);letter-spacing:.2em;color:#a187ac}
 .study-lane-work .study-kicker{color:#ae8d83}
-.study-lane-head h2{margin:3px 0;color:#674b60;font:31px/1.3 'Songti SC','STSong',serif}
+.study-lane-head h2{margin:3px 0;color:#674b60;font:31px/1.3 var(--font-serif)}
 .study-lane-head p{margin:0;color:#9c8795;font-size:12px}
 .study-lane-head .btn{margin-left:auto;white-space:nowrap}
 .study-today{display:grid;gap:18px;margin-top:28px}
@@ -217,7 +217,7 @@ button.journal-cta:hover{background:none;transform:rotate(0) translateY(4px);fil
 .study-calendar-weekdays,.study-calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;text-align:center}
 .study-calendar-weekdays{margin-bottom:5px;color:#aa96a4;font-size:10px}
 .study-calendar-weekdays span{line-height:25px}
-.study-calendar-day{position:relative;display:grid;place-items:center;width:30px;height:30px;margin:auto;border:0;border-radius:50%;background:transparent;color:#a795a2;font:11px/1 sans-serif}
+.study-calendar-day{position:relative;display:grid;place-items:center;width:30px;height:30px;margin:auto;border:0;border-radius:50%;background:transparent;color:#a795a2;font:11px/1 var(--font-sans)}
 button.study-calendar-day{color:#6f566e;cursor:pointer;transition:transform .18s,background .18s,color .18s}
 button.study-calendar-day:hover{transform:scale(1.1);background:#ecdeec}
 button.study-calendar-day[aria-pressed="true"]{background:#987c9e;color:#fff}
@@ -241,8 +241,8 @@ button.study-calendar-day[aria-pressed="true"]{background:#987c9e;color:#fff}
 .reading-plan-card{scroll-margin-top:28px}
 .reading-plan-heading{display:flex;align-items:center;gap:13px}
 .reading-plan-heading .emoji{width:46px;height:46px;flex:none;font-size:22px}
-.reading-plan-heading h3{font:23px/1.3 'Songti SC','STSong',serif}
-.reading-plan-card .reading-book{margin:17px 0 3px;color:#674b60;font:18px/1.45 'Songti SC','STSong',serif}
+.reading-plan-heading h3{font:23px/1.3 var(--font-serif)}
+.reading-plan-card .reading-book{margin:17px 0 3px;color:#674b60;font:18px/1.45 var(--font-serif)}
 .reading-plan-card .reading-author{margin:0 0 11px;color:#a08698;font-size:11px}
 .reading-plan-card .reading-goal{display:flex;gap:8px;margin:11px 0;color:#846d80;font-size:12px}
 .reading-goal span{color:#a48da0;white-space:nowrap}
@@ -259,27 +259,27 @@ button.study-calendar-day[aria-pressed="true"]{background:#987c9e;color:#fff}
 /* 生活归档：开放的时间线、月份书签与圆形手写便笺。 */
 .life-archive-layout{display:grid;grid-template-columns:200px minmax(0,1fr);gap:55px;margin-top:40px;align-items:start}
 .life-archive-index{position:sticky;top:28px;padding-top:8px}
-.life-archive-index h2{font:500 29px/1.5 'Songti SC',serif;color:#765463;margin:12px 0 8px}
+.life-archive-index h2{font:500 29px/1.5 var(--font-serif);color:#765463;margin:12px 0 8px}
 .life-archive-index h2>span{display:inline-block;color:#b77b92;font-size:35px;margin-left:12px;transform:rotate(-14deg)}
 .life-archive-index>p{font-size:12px;color:#9b818b;margin-bottom:28px}
 .life-year-nav{display:grid;gap:6px;border-left:1px solid #d8bdc7;padding-left:16px}
 .life-year-nav button{display:flex;justify-content:space-between;align-items:center;border:0;background:none;text-align:left;padding:10px 6px;color:#967d87;font-size:13px}
 .life-year-nav button[aria-pressed=true]{color:#914e6c;font-weight:700}
 .life-year-nav button[aria-pressed=true]::before{content:'';width:7px;height:7px;background:#a86280;border-radius:50%;position:absolute;left:-3px}
-.life-year-nav small{font:italic 12px Georgia,serif;color:#ad919e}
+.life-year-nav small{font:italic 12px var(--font-serif);color:#ad919e}
 .life-archive-note{margin:38px -3px 0;width:196px;min-height:194px;padding:27px 18px;text-align:center;background:#eadde0;border-radius:46% 54% 44% 56% / 55% 43% 57% 45%;transform:rotate(-5deg);color:#947181}
 .life-archive-note>span{font-size:35px;line-height:1;color:#b17e91}
-.life-archive-note p{font:14px/1.9 'Songti SC',serif;margin:12px 0 8px}
-.life-archive-note small{font:italic 11px Georgia,serif}
+.life-archive-note p{font:14px/1.9 var(--font-serif);margin:12px 0 8px}
+.life-archive-note small{font:italic 11px var(--font-serif)}
 .life-month-nav{display:flex;gap:8px 20px;flex-wrap:wrap;border-bottom:1px solid #d9c6ce;padding-bottom:13px}
 .life-month-nav button{position:relative;background:none;border:0;padding:7px 0;color:#947b87;font-size:12px}
 .life-month-nav button[aria-pressed=true]{color:#884c68}
 .life-month-nav button[aria-pressed=true]::after{content:'';position:absolute;bottom:-14px;left:0;right:0;height:3px;background:#a86280;border-radius:60% 40%}
-.life-month-nav small{margin-left:5px;font:italic 10px Georgia,serif;opacity:.7}
+.life-month-nav small{margin-left:5px;font:italic 10px var(--font-serif);opacity:.7}
 .life-year-nav button:hover,.life-month-nav button:hover{color:#78425f}
 .life-year-nav button:focus-visible,.life-month-nav button:focus-visible{outline:2px solid #a86280;outline-offset:4px;border-radius:2px}
-.life-archive-summary{display:flex;justify-content:space-between;gap:14px;padding:21px 0 30px;font:14px 'Songti SC',serif;color:#7e5d6d}
-.life-archive-summary small{font:11px/1.6 sans-serif;color:#9e8792}
+.life-archive-summary{display:flex;justify-content:space-between;gap:14px;padding:21px 0 30px;font:14px var(--font-serif);color:#7e5d6d}
+.life-archive-summary small{font:11px/1.6 var(--font-sans);color:#9e8792}
 .life-timeline{position:relative}
 .life-day{display:grid;grid-template-columns:86px minmax(0,1fr);gap:26px;position:relative;padding-bottom:40px}
 .life-day::before{content:'';position:absolute;left:85px;top:16px;bottom:0;border-left:1px solid #d9c1cb}
@@ -287,19 +287,19 @@ button.study-calendar-day[aria-pressed="true"]{background:#987c9e;color:#fff}
 .life-date{position:relative;padding-top:1px}
 .life-date::after{content:'';position:absolute;right:-4px;top:13px;width:7px;height:7px;border:1px solid #ae7c91;background:#f4efe9;border-radius:50%}
 .life-date time{display:flex;flex-direction:column;align-items:flex-start;gap:6px;color:#a07b8b}
-.life-date strong{font:italic 43px/1 Georgia,serif;color:#9c627e;letter-spacing:-.07em}
-.life-date span{font:10px/1.4 sans-serif;letter-spacing:.04em}
+.life-date strong{font:italic 43px/1 var(--font-serif);color:#9c627e;letter-spacing:-.07em}
+.life-date span{font:10px/1.4 var(--font-sans);letter-spacing:.04em}
 .life-date small{font-size:10px;opacity:.8}
 .life-day-entries{min-width:0}
 body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bottom:1px solid #dfccd4;border-radius:0;background:transparent;box-shadow:none;overflow:visible}
 .page-life .life-entry+.life-entry{margin-top:28px}
 .page-life .life-entry .post-top{margin:0;padding:0;min-height:25px;border:0;background:transparent}
 .page-life .life-entry .tag{padding:2px 0;border-radius:0;background:none;color:#a77d91;font-size:10px;letter-spacing:.12em}
-.life-entry-star{color:#b98b9e;font:25px Georgia,serif;transform:rotate(12deg)}
+.life-entry-star{color:#b98b9e;font:25px var(--font-serif);transform:rotate(12deg)}
 .page-life .life-entry h2{margin:10px 0 14px;font-size:26px;line-height:1.5;color:#715060}
 .page-life .life-entry p{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-size:14px;line-height:2.1;color:#826b77}
 .page-life .life-entry .post-foot{border:0;margin-top:17px;padding:0;color:#aa8a9a;font-size:10px}
-.life-empty{padding:50px 15px;color:#9b7a8b;font:15px/2 'Songti SC',serif;text-align:center}
+.life-empty{padding:50px 15px;color:#9b7a8b;font:15px/2 var(--font-serif);text-align:center}
 @media(max-width:850px){.life-archive-layout{grid-template-columns:155px minmax(0,1fr);gap:25px}.life-archive-note{width:150px;min-height:160px;padding:22px 10px}.life-day{grid-template-columns:67px minmax(0,1fr);gap:20px}.life-day::before{left:66px}.life-archive-index h2{font-size:23px}.life-archive-index h2>span{font-size:26px;margin-left:6px}}
 @media(max-width:600px){.life-archive-layout{grid-template-columns:1fr;gap:22px;margin-top:25px}.life-archive-index{position:static;padding:0}.life-archive-index h2{margin:5px 0;font-size:26px}.life-archive-index>p{margin:5px 0 16px}.life-year-nav{display:flex;gap:18px;border-left:0;padding:0;flex-wrap:wrap}.life-year-nav button{gap:12px;padding:5px 0}.life-year-nav button[aria-pressed=true]::before{display:none}.life-year-nav button[aria-pressed=true]{text-decoration:underline;text-underline-offset:6px}.life-archive-note{display:none}.life-month-nav{gap:5px 16px}.life-archive-summary{padding:20px 0 25px;flex-wrap:wrap}.life-day{grid-template-columns:55px minmax(0,1fr);gap:18px;padding-bottom:30px}.life-day::before{left:54px}.life-date strong{font-size:35px}.life-date span{font-size:8px}.life-date small{font-size:9px}.page-life .life-entry h2{font-size:22px}.page-life .life-entry p{font-size:13px}.life-entry-star{font-size:20px}}
 
@@ -337,15 +337,15 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .talk-bubble-open:focus-visible{outline:2px solid #9e6688;outline-offset:5px}
 .bubble-meta{display:flex;gap:12px;justify-content:space-between;font-size:10px;color:#9a7b8c}
 .bubble-meta time{white-space:nowrap;font-size:9px}
-.talk-bubble h2{font:500 25px/1.5 'Songti SC',serif;margin:15px 0 12px;overflow-wrap:anywhere}
+.talk-bubble h2{font:500 25px/1.5 var(--font-serif);margin:15px 0 12px;overflow-wrap:anywhere}
 .talk-bubble p{font-size:13px;line-height:1.9;margin:0;color:#8a7280;white-space:pre-wrap;overflow-wrap:anywhere}
 .bubble-invitation{display:flex;justify-content:space-between;gap:12px;margin-top:24px;font-size:10px;color:#a17b91}
 .bubble-admin{display:flex;justify-content:flex-end;gap:14px;padding:0 27px 18px}
 .talk-new-invitation{text-align:center;margin:38px 0 0;padding:25px 0;color:#9d7a8f}
-.talk-new-invitation>span{font:42px Georgia,serif;color:#b791a6}.talk-new-invitation p{font:17px 'Songti SC',serif}
+.talk-new-invitation>span{font:42px var(--font-serif);color:#b791a6}.talk-new-invitation p{font:17px var(--font-serif)}
 .talk-empty{grid-column:1/-1;text-align:center;padding:45px 0;font-size:14px;color:#a17b91}
 .modal:has(.conversation){border-radius:30px 30px 30px 10px;width:min(600px,calc(100vw - 28px));padding:28px;max-height:90dvh;overflow-y:auto;background:#fffafc}
-.conversation>label{margin-top:15px}.conversation>h2{font-family:'Songti SC',serif;font-size:23px;margin:20px 0 16px;overflow-wrap:anywhere}
+.conversation>label{margin-top:15px}.conversation>h2{font-family:var(--font-serif);font-size:23px;margin:20px 0 16px;overflow-wrap:anywhere}
 .conversation .field{border-radius:14px}
 .conversation-scroll{max-height:32dvh;overflow-y:auto;overscroll-behavior:contain;padding:4px 10px 13px 1px;display:grid;gap:16px}
 .conversation-message{margin-right:22px;padding:15px 18px;background:#f1e6ee;border-radius:19px 19px 19px 4px;min-width:0}
@@ -408,12 +408,12 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .journal-chapters .chapter-link p{font-size:11px;line-height:1.8;margin:0 0 15px;color:#947f87}
 .journal-chapters .chapter-count{font-size:10px;color:var(--chapter-accent)}
 .journal-chapters .chapter-count::before{content:'—';margin-right:8px;opacity:.6}
-.journal-chapters .book-page-number{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);color:#ae968b;font:italic 9px/1 Georgia,serif;letter-spacing:.1em;pointer-events:none}
+.journal-chapters .book-page-number{position:absolute;bottom:12px;left:50%;transform:translateX(-50%);color:#ae968b;font:italic 9px/1 var(--font-serif);letter-spacing:.1em;pointer-events:none}
 @media(min-width:701px){
   .journal-chapters{min-height:100vh;min-height:100svh;box-sizing:border-box;display:flex;flex-direction:column;padding:clamp(24px,4svh,48px) 0 clamp(30px,5svh,55px);scroll-margin-top:0}
   .journal-chapters .explore-heading{flex:none;padding:0 8px 23px;border-top:0;align-items:center}
-  .journal-chapters .explore-heading h2{font:400 clamp(34px,4vw,54px)/1.3 'Songti SC',serif;letter-spacing:.12em;margin:8px 0 10px}
-  .journal-chapters .explore-heading h2::after{content:'Two little notebooks';display:inline-block;margin-left:22px;font:italic 18px/1.2 Georgia,serif;letter-spacing:0;color:#a98b98;transform:rotate(-5deg)}
+  .journal-chapters .explore-heading h2{font:400 clamp(34px,4vw,54px)/1.3 var(--font-serif);letter-spacing:.12em;margin:8px 0 10px}
+  .journal-chapters .explore-heading h2::after{content:'Two little notebooks';display:inline-block;margin-left:22px;font:italic 18px/1.2 var(--font-serif);letter-spacing:0;color:#a98b98;transform:rotate(-5deg)}
   .journal-chapters .explore-heading .journal-kicker{font-size:9px;letter-spacing:.21em;color:#a18092}
   .journal-chapters .random-note{background:#fcf7ef;border:1px solid #d5c2cd;box-shadow:3px 4px 0 #e2d4dd;border-radius:48% 44% 47% 43%;padding:15px 22px;transform:rotate(3deg)}
   .journal-chapters .random-note:hover{transform:rotate(0) translateY(-2px)}
@@ -527,7 +527,7 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .page-about .profile-card{min-width:0;position:relative;padding:46px 34px 34px;text-align:left}
 .page-about .profile-identity{display:flex;align-items:center;gap:24px;margin:9px 0 24px}
 .page-about .avatar{flex-shrink:0;width:90px;height:90px;margin:0;font-size:43px}
-.page-about .profile-identity h2{font:500 34px/1.4 'Songti SC','STSong',serif;margin:0}
+.page-about .profile-identity h2{font:500 34px/1.4 var(--font-serif);margin:0}
 .page-about .profile-identity .handle{margin:4px 0 8px;font-size:12px}
 .page-about .profile-identity p{margin:0;line-height:1.8}
 .page-about .profile-bio{padding:20px 0 2px;border-top:1px solid #dfcfd7}
@@ -548,7 +548,7 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .page-about .about-content::before{display:none}
 .page-about .about-content>.eyebrow{display:flex;align-items:center;gap:9px;font-size:8px;letter-spacing:.1em;color:#a18a97;margin:0 -12px;padding:10px 12px;background:#f0e7ec;border-bottom:1px solid #e4d6de}
 .page-about .about-content>.eyebrow::before{content:'';width:5px;height:5px;border-radius:50%;background:#bf91a6;box-shadow:8px 0 #d7bdc9,16px 0 #e0ced7;margin-right:16px;flex-shrink:0}
-.page-about .about-content>h2{font:400 13px/1.6 'Songti SC','STSong',serif;color:#9c7e8e;margin:12px 0 0;text-align:center}
+.page-about .about-content>h2{font:400 13px/1.6 var(--font-serif);color:#9c7e8e;margin:12px 0 0;text-align:center}
 .page-about .saber-scene{margin-top:10px;padding-top:0}
 .page-about .saber-frame{padding:12px 10px;font-size:11px;line-height:1.85;box-shadow:2px 3px 0 #e7d6dd}
 .page-about .saber-frame-label{display:none}
@@ -566,8 +566,8 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .page-about .quote-note::before{content:'';display:block;position:absolute;inset:0;z-index:0;height:auto;background:linear-gradient(120deg,#ede0e7,#f5e9e7 58%,#eee6f1);border:1px solid #ddc9d6;border-radius:9% 4% 12% 5% / 18% 26% 16% 25%;transform:rotate(-.6deg);box-shadow:2px 6px 0 #e1d1da40;pointer-events:none}
 .quote-note-label,.quote-note-body{position:relative;z-index:1}
 .quote-note-label{display:flex;align-items:center;justify-content:space-between;gap:15px;color:#9a7189;font-size:12px}
-.quote-note-label small{font:8px/1.5 sans-serif;letter-spacing:.16em;color:#b194a6}
-.quote-note-body>h2{font:400 15px/1.7 'Songti SC','STSong',serif;color:#947284;margin:8px 0 0}
+.quote-note-label small{font:8px/1.5 var(--font-sans);letter-spacing:.16em;color:#b194a6}
+.quote-note-body>h2{font:400 15px/1.7 var(--font-serif);color:#947284;margin:8px 0 0}
 .page-about .quote-note .saber-scene{margin:8px 0 0;padding:0}
 .page-about .quote-note .saber-lift{display:grid;grid-template-columns:minmax(0,1fr) 105px;gap:20px;align-items:center}
 .page-about .quote-note .saber-frame{width:auto;padding:15px 20px;text-align:left;font-size:16px;background:#fffaf480;border:0;box-shadow:none;border-radius:38px 10px 42px 12px}
@@ -598,7 +598,7 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .reading-reflection .quiet-button{font-size:10px}
 .reading-library{margin:32px 0 58px;padding-top:28px;border-top:1px solid #d9c9d6;scroll-margin-top:28px}
 .reading-library-heading{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:20px}
-.reading-library-heading h2{font:500 30px/1.5 'Songti SC','STSong',serif;color:#77566c;margin:5px 0}
+.reading-library-heading h2{font:500 30px/1.5 var(--font-serif);color:#77566c;margin:5px 0}
 .reading-library-heading h2 i{font-style:normal;color:#baa0b5;font-size:26px;margin-left:8px}
 .reading-library-heading p,.library-guide{font-size:12px;color:#9a8293;margin:0}
 .library-controls{display:flex;flex-direction:column;align-items:flex-end;gap:10px;flex-shrink:0}
@@ -611,19 +611,19 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .library-cover.cover-tone-2{background:linear-gradient(90deg,#c89f9f 0 6px,#eddbd6 6px 10px,#f4e4dc 10px 100%);border-color:#dbc1b7;color:#946d68}
 .library-cover.cover-tone-3{background:linear-gradient(90deg,#a1b5c1 0 6px,#d5e1e5 6px 10px,#e4edf0 10px 100%);border-color:#b9cbd2;color:#657f8b}
 .is-open .library-cover{transform:translateX(calc(-50% + var(--position) * var(--spread))) translateY(var(--rise)) rotate(var(--angle))}
-.book-cover-top{display:flex;justify-content:space-between;gap:8px;font:7px/1.5 sans-serif;letter-spacing:.12em;opacity:.7}
-.book-cover-title{display:block;font:500 23px/1.45 'Songti SC','STSong',serif;margin:18px 0 6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow-wrap:anywhere}
+.book-cover-top{display:flex;justify-content:space-between;gap:8px;font:7px/1.5 var(--font-sans);letter-spacing:.12em;opacity:.7}
+.book-cover-title{display:block;font:500 23px/1.45 var(--font-serif);margin:18px 0 6px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow-wrap:anywhere}
 .book-cover-author{font-size:10px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.book-cover-flower{position:absolute;bottom:43px;right:17px;font:44px/1 Georgia,serif;opacity:.16}
+.book-cover-flower{position:absolute;bottom:43px;right:17px;font:44px/1 var(--font-serif);opacity:.16}
 .book-cover-foot{margin-top:auto;padding-top:14px;border-top:1px solid #99849933;display:flex;justify-content:space-between;font-size:9px}
 .is-open .library-cover:focus-visible,.is-open .library-cover:hover{z-index:30;transform:translateX(calc(-50% + var(--position) * var(--spread))) translateY(-25px) rotate(0deg);box-shadow:3px 5px 0 #fff8f0,4px 7px 0 #cbb7c6,0 20px 30px #72536928}
 .library-cover:focus-visible{outline:2px solid #a47799;outline-offset:5px}
 .library-empty-scene{display:flex;align-items:center;justify-content:center;gap:38px;min-height:230px;padding:30px;background:radial-gradient(ellipse at center,#ece1eb60,transparent 70%)}
-.library-empty-pages{position:relative;flex-shrink:0;width:95px;height:125px;border:1px solid #d5c0cf;border-radius:3px 10px 10px 3px;background:#eee3eb;transform:rotate(-10deg);box-shadow:5px 4px #fff8ef,7px 6px #d9c6d2;display:grid;place-items:center;color:#b69bb0;font:18px 'Songti SC',serif}
+.library-empty-pages{position:relative;flex-shrink:0;width:95px;height:125px;border:1px solid #d5c0cf;border-radius:3px 10px 10px 3px;background:#eee3eb;transform:rotate(-10deg);box-shadow:5px 4px #fff8ef,7px 6px #d9c6d2;display:grid;place-items:center;color:#b69bb0;font:18px var(--font-serif)}
 .library-empty-pages::before{content:'';position:absolute;inset:0;border:1px solid #d6c7d0;border-radius:inherit;background:#f3e9dc;transform:rotate(20deg);transform-origin:bottom;z-index:-1}
-.library-empty-scene h3{font:400 20px/1.6 'Songti SC',serif;color:#95788e}.library-empty-scene p{max-width:340px;font-size:12px;line-height:1.9;color:#a38a9b}
+.library-empty-scene h3{font:400 20px/1.6 var(--font-serif);color:#95788e}.library-empty-scene p{max-width:340px;font-size:12px;line-height:1.9;color:#a38a9b}
 .modal:has(.reading-detail){width:min(660px,calc(100vw - 28px));border-radius:22px 22px 22px 6px;background:#fffaf6}
-.reading-detail>h2{font-family:'Songti SC',serif;overflow-wrap:anywhere;margin-top:12px}
+.reading-detail>h2{font-family:var(--font-serif);overflow-wrap:anywhere;margin-top:12px}
 .reading-detail-byline{font-size:12px;color:#a0869a}
 .reading-detail-reflection{margin:20px 0;padding:17px 20px;background:#f0e6ee;border-radius:4px 24px 20px 18px}
 .reading-detail h3{font-size:14px;font-weight:500;color:#856480;margin:0 0 10px}
@@ -647,7 +647,7 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .mini-fan-paper{fill:#e5c7ce;stroke:#a98879;stroke-width:1}
 .mini-fan-folds{fill:none;stroke:#b69389;stroke-width:.85}
 .mini-fan-edge{fill:none;stroke:#fff4db;stroke-width:2}
-.fan-toggle small{font:9px/1.5 'Songti SC',serif;letter-spacing:.18em;padding-left:.18em}
+.fan-toggle small{font:9px/1.5 var(--font-serif);letter-spacing:.18em;padding-left:.18em}
 .fan-toggle:hover{transform:translateY(-2px);box-shadow:inset 0 0 0 3px #fff9ed,0 7px 20px #765b7030}
 .is-open .fan-toggle{background:linear-gradient(145deg,#fff7e8,#e4cbd4);box-shadow:inset 0 0 0 3px #fff6e8,0 0 0 5px #f6f0eb99,0 5px 15px #785c7525}
 .is-open .fan-toggle-icon{transform:rotate(-12deg)}
@@ -672,10 +672,10 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 @keyframes fan-fold-open{from{transform:rotate(calc(-1 * var(--rib-angle,0deg)));opacity:.35}to{transform:rotate(0deg);opacity:1}}
 @keyframes fan-fold-close{from{transform:rotate(0deg);opacity:1}to{transform:rotate(calc(-1 * var(--rib-angle,0deg)));opacity:.2}}
 .fan-arc{position:absolute;inset:0;width:100%;height:100%;fill:none;stroke:#b491795c;stroke-width:1;stroke-dasharray:1 5;pointer-events:none}
-.fan-caption{position:absolute;right:36px;top:33px;color:#a88778;font:italic 13px 'Songti SC',serif;transform:rotate(-12deg);letter-spacing:.15em}
+.fan-caption{position:absolute;right:36px;top:33px;color:#a88778;font:italic 13px var(--font-serif);transform:rotate(-12deg);letter-spacing:.15em}
 .fan-help{position:absolute;right:27px;top:90px;margin:0;color:#a48389;font-size:9px;line-height:1.9;text-align:right;letter-spacing:.15em;pointer-events:none}
-.fan-page{position:absolute;transform:translate(-50%,-50%);border:1px solid transparent;background:transparent;color:#77596d;font:13px/1.5 'Songti SC','STSong',serif;white-space:nowrap;padding:7px 10px;cursor:pointer;border-radius:45% 45% 35% 35%;transition:color .2s,background .2s,box-shadow .2s,border-color .2s;display:flex;flex-direction:column;align-items:center;gap:2px}
-.fan-page small{font:italic 8px Georgia,serif;color:#b08d83;letter-spacing:.15em}
+.fan-page{position:absolute;transform:translate(-50%,-50%);border:1px solid transparent;background:transparent;color:#77596d;font:13px/1.5 var(--font-serif);white-space:nowrap;padding:7px 10px;cursor:pointer;border-radius:45% 45% 35% 35%;transition:color .2s,background .2s,box-shadow .2s,border-color .2s;display:flex;flex-direction:column;align-items:center;gap:2px}
+.fan-page small{font:italic 8px var(--font-serif);color:#b08d83;letter-spacing:.15em}
 .fan-page[aria-current=page] span::after{content:'·';margin-left:2px}
 .fan-page.is-selected{color:#72445e;background:#fff8e8d9;border-color:#c3a18d80;box-shadow:0 3px 8px #987a8d18}
 .fan-knob{position:absolute;transform:translate(-50%,-23px);width:44px;height:64px;padding:0;border:0;border-radius:24px;background:transparent;cursor:grab;display:grid;place-items:center;transition:left .25s cubic-bezier(.22,1,.36,1),top .25s cubic-bezier(.22,1,.36,1);z-index:2;-webkit-tap-highlight-color:transparent}
@@ -699,17 +699,17 @@ body:not(.is-entry) .page-life .life-entry{padding:0 0 23px;border:0;border-bott
 .fan-preview{position:fixed;inset:0;z-index:60;background:#f5efe8c9;pointer-events:none;overflow:hidden;display:flex;align-items:center;justify-content:center;padding:80px 40px 40px}
 .fan-preview-copy{width:min(700px,100%);padding-right:100px;color:#826376}
 .fan-preview-copy>span{font-size:10px;letter-spacing:.2em;color:#b18ba2}
-.fan-preview-copy>h2{font:400 clamp(36px,6vw,64px)/1.4 'Songti SC','STSong',serif;margin:18px 0 8px}
+.fan-preview-copy>h2{font:400 clamp(36px,6vw,64px)/1.4 var(--font-serif);margin:18px 0 8px}
 .fan-preview-copy>p{font-size:13px;line-height:1.9;color:#a08495}
 .fan-preview-stories{border-top:1px solid #d9c7d3;margin-top:30px}
 .fan-preview-stories article{padding:14px 0;border-bottom:1px solid #ded0d9}
-.fan-preview-stories h3{font:400 22px/1.6 'Songti SC',serif;margin:0 0 5px}
+.fan-preview-stories h3{font:400 22px/1.6 var(--font-serif);margin:0 0 5px}
 .fan-preview-stories p{font-size:12px;color:#a28a9a;line-height:1.9;margin:0;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 .fan-preview-copy>small{display:block;margin-top:25px;color:#b397a8;font-size:10px;letter-spacing:.12em}
 @media(max-width:600px){.fan-navigation{top:106px;right:20px}.fan-panel{width:270px;height:270px}.fan-caption{font-size:11px;right:27px;top:27px}.fan-help{right:23px;top:79px;font-size:8px}.fan-page{font-size:11px;padding:5px 7px}.fan-page small{font-size:7px}.fan-preview{padding:200px 26px 35px;align-items:flex-start}.fan-preview-copy{padding:60px 0 0}.fan-preview-stories{margin-top:16px}.fan-preview-stories article:nth-child(n+2){display:none}}
 @media(prefers-reduced-motion:reduce){.fan-toggle,.fan-toggle-icon,.fan-tassel,.fan-knob,.fan-charm,.charm-fringe,.charm-focus-ring,.fan-paper-leaf,#app{transition:none}.fan-paper-leaf,.fan-rib{animation:none!important}}
 
-.hobby-detail-link{color:#90647e;text-decoration:none;border-bottom:1px solid #c5a3b6;padding-bottom:1px;overflow-wrap:anywhere}.hobby-detail-link i{font:11px/1 sans-serif;margin-left:4px;color:#b78da4}.hobby-detail-link:hover{color:#70465f;border-bottom-color:currentColor}.hobby-detail-link:focus-visible{outline:2px solid #b78da4;outline-offset:3px;border-radius:2px}
+.hobby-detail-link{color:#90647e;text-decoration:none;border-bottom:1px solid #c5a3b6;padding-bottom:1px;overflow-wrap:anywhere}.hobby-detail-link i{font:11px/1 var(--font-sans);margin-left:4px;color:#b78da4}.hobby-detail-link:hover{color:#70465f;border-bottom-color:currentColor}.hobby-detail-link:focus-visible{outline:2px solid #b78da4;outline-offset:3px;border-radius:2px}
 
 /* 页面虚化由父层负责，避免内页的二次淡入遮住虚化过程。 */
 body.page-blur-transition #app>.container{animation:none}
