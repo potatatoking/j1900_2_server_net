@@ -22,7 +22,7 @@ function harness(reduced = false, admin = false) {
   const commits = [];
   const context = vm.createContext({
     document: { body, querySelector: selector => selector === '#paper-transition' ? layer : node, addEventListener() {} },
-    window: { addEventListener() {}, matchMedia: () => ({ matches: reduced }) },
+    window: { addEventListener() {}, scrollTo() {}, matchMedia: () => ({ matches: reduced }) },
     location: { protocol: 'file:', pathname: admin ? '/admin' : '/', hash: '' }, scrollTo() {}, commits
   });
   vm.runInContext(source, context);
@@ -196,4 +196,77 @@ test('fan navigation honors reduced motion and recovers from an animation failur
   h.animations[0].cancel();
   await navigation;
   assert.equal(commits, 2);
+});
+
+function clickChapter(h, page, modifiers = {}) {
+  const link = { getAttribute: () => `#${page}` };
+  const target = { closest: selector => selector === '#home-chapters .chapter-link' ? link : null };
+  for (const callback of h.handlers.click) callback({ target, button: 0, ...modifiers });
+}
+
+test('all four directory links turn a paper sheet before revealing their destination', async () => {
+  for (const page of ['life', 'study', 'about', 'talk']) {
+    const h = harness();
+    h.body.dataset.page = 'home';
+    clickChapter(h, page);
+    h.context.location.hash = `#${page}`;
+    vm.runInContext('render = () => { commits.push(route()); document.body.dataset.page = route(); }', h.context);
+    const navigation = h.change();
+    assert.equal(h.layer.hidden, false, page);
+    assert.deepEqual(h.commits, [], 'keep the directory until the sheet covers it');
+    assert.equal(h.animations[0].keyframes[1].filter, undefined);
+    h.animations[0].finish();
+    await new Promise(resolve => setImmediate(resolve));
+    assert.deepEqual(h.commits, [page]);
+    assert.match(h.animations[1].keyframes[2].transform, /rotateY\(-105deg\)/);
+    h.animations[1].finish();
+    await navigation;
+    assert.equal(h.layer.hidden, true);
+    // The directory click must not change the animation of a later ordinary link.
+    h.context.location.hash = page === 'about' ? '#study' : '#about';
+    const next = h.change();
+    assert.equal(h.layer.hidden, true);
+    assert.equal(h.animations[2].keyframes[1].filter, 'blur(14px)');
+    h.animations[2].finish();
+    await new Promise(resolve => setImmediate(resolve));
+    h.animations[3].finish();
+    await next;
+  }
+});
+
+test('directory links respect reduced motion and modified clicks do not queue a paper turn', async () => {
+  const reduced = harness(true);
+  reduced.body.dataset.page = 'home';
+  clickChapter(reduced, 'talk');
+  reduced.context.location.hash = '#talk';
+  vm.runInContext('render = () => commits.push(route())', reduced.context);
+  await reduced.change();
+  assert.deepEqual(reduced.commits, ['talk']);
+  assert.equal(reduced.animations.length, 0);
+  assert.equal(reduced.layer.hidden, true);
+  for (const modifiers of [{ ctrlKey: true }, { metaKey: true }, { shiftKey: true }, { altKey: true }, { button: 1 }, { defaultPrevented: true }]) {
+    const h = harness();
+    clickChapter(h, 'life', modifiers);
+    assert.equal(vm.runInContext('chapterNavigatePending', h.context), '');
+  }
+});
+
+test('rapid directory selections reveal only the newest chapter and clear the overlay', async () => {
+  const h = harness();
+  h.body.dataset.page = 'home';
+  vm.runInContext('render = () => { commits.push(route()); document.body.dataset.page = route(); }', h.context);
+  clickChapter(h, 'life');
+  h.context.location.hash = '#life';
+  const first = h.change();
+  clickChapter(h, 'study');
+  h.context.location.hash = '#study';
+  const latest = h.change();
+  await first;
+  assert.deepEqual(h.commits, []);
+  h.animations[1].finish();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.deepEqual(h.commits, ['study']);
+  h.animations[2].finish();
+  await latest;
+  assert.equal(h.layer.hidden, true);
 });

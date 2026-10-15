@@ -182,6 +182,7 @@ async function paperTransition(commit, label, reverse = false, enabled = true) {
     }
   }
 }
+let chapterNavigatePending = '';
 function changePage() {
   const page = route();
   const differentPage = document.body.dataset.page !== page;
@@ -190,13 +191,15 @@ function changePage() {
   if (fanOpen) closeFanNavigation(false, false);
   const fromFan = fanNavigatePending;
   fanNavigatePending = false;
+  const fromChapter = chapterNavigatePending === location.hash;
+  chapterNavigatePending = '';
   const commit = () => {
     scrollTo({ top: 0, left: 0, behavior: 'instant' });
     render();
     const heading = app.querySelector('h1');
     if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
   };
-  if (fromFan || (!adminMode && differentPage && page !== 'home')) return blurPageTransition(commit);
+  if (!fromChapter && (fromFan || (!adminMode && differentPage && page !== 'home'))) return blurPageTransition(commit);
   return paperTransition(commit, ({ home: '回到故事的起点', life: '生活日记', study: '学习与工作', about: '关于我', talk: '留言角' })[page], page === 'home', differentPage);
 }
 let revealObserver;
@@ -1035,6 +1038,10 @@ function slideLifeFilter(nav, previous) {
   animation.onfinish = () => { marker.remove(); nav.classList.remove('filter-sliding'); };
 }
 app.addEventListener('click', event => {
+  const chapter = event.target.closest('#home-chapters .chapter-link');
+  if (chapter && event.button === 0 && !event.defaultPrevented && !event.metaKey && !event.ctrlKey && !event.shiftKey && !event.altKey) {
+    chapterNavigatePending = chapter.getAttribute('href');
+  }
   const lifeFilter = event.target.closest('[data-life-year], [data-life-month]');
   if (lifeFilter) {
     const yearFilter = lifeFilter.hasAttribute('data-life-year');
