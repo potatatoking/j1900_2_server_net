@@ -45,6 +45,8 @@ test('public entry points and assets load and split UTF-8 requests preserve Chin
   }
   const fontCss = await fetch(`${base}/fonts.css`).then(response => response.text());
   assert.doesNotMatch(fontCss, /url\(https?:/);
+  const fontFiles = [...fontCss.matchAll(/url\(([^)]+)\)/g)].map(match => match[1]);
+  assert.equal(new Set(fontFiles).size, fontFiles.length, 'each Unicode subset needs its own font file');
   for (const family of ['sans', 'serif']) {
     const fontPath = fontCss.match(new RegExp(`url\\((\\.\\/vendor/fonts/noto-${family}-sc-[^)]+)\\)`))?.[1];
     assert.ok(fontPath, `${family} font is bundled`);
