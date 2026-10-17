@@ -11,23 +11,23 @@
   },
   {
     "path": "00_overview/总项目介绍_简要版.docx",
-    "bytes": 37655,
-    "sha256": "4fbe82788c36aab9cf8956bf0fdbe029651072df7acf2ae113caab6d05a40836"
+    "bytes": 38042,
+    "sha256": "aa247ee113499ed216fb8b2db0e747310d99bf3eddf6ce4823517eaf8dfc6132"
   },
   {
     "path": "00_overview/总项目介绍_简要版.md",
-    "bytes": 896,
-    "sha256": "b7150f854c40cd9c658cebba1c8d8a9230e94cd561557fb303f73fc86de0b91d"
+    "bytes": 1606,
+    "sha256": "9c8c6640b5fbbd34e0aaceffc10de502934830b12499b94295cd0961c6b965c0"
   },
   {
     "path": "00_overview/总项目介绍_详细版.docx",
-    "bytes": 46340,
-    "sha256": "f6dcac0028733f6a1aa1ea4003219fa68dbc0a8c3931d28dfe57f6e52e11efbe"
+    "bytes": 47016,
+    "sha256": "b928f6af9f6edac1191f610e095bf4ffebb605883dbdc91ddc166905370dc1b0"
   },
   {
     "path": "00_overview/总项目介绍_详细版.md",
-    "bytes": 14353,
-    "sha256": "1796a791294584077c070b571d6dd3adcbaa364803a9a85efc90067a405f87ef"
+    "bytes": 15736,
+    "sha256": "6c0784f77aa176a42989704e297c77421739c6e58ae742ee82e16ea9596ce273"
   },
   {
     "path": "01_server_net/source/SSD迁移记录.md",
@@ -2900,9 +2900,29 @@
     "sha256": "b3a6f168c460a3dfbab81d7806d81df1e9c7bfbbfb4f04edd0c64e19ad483b1f"
   },
   {
+    "path": "04_hardware/土豆的服务器和软路由_简要版.docx",
+    "bytes": 38428,
+    "sha256": "705ce9e3c32da5e85eb87cbd24cc34a94bf35bab7b300bb2b58e5b5343cc261d"
+  },
+  {
+    "path": "04_hardware/土豆的服务器和软路由_简要版.md",
+    "bytes": 1533,
+    "sha256": "fe08b884b156aeee2956dd9c3df70674ce3bc7c3926ed32b0a376050919d42f9"
+  },
+  {
+    "path": "04_hardware/土豆的服务器和软路由_详细版.docx",
+    "bytes": 40771,
+    "sha256": "301fe2bf918e4fa7db1b9e32d3f2ead02214f8b60d51f87171ea9cc45f8e0ca1"
+  },
+  {
+    "path": "04_hardware/土豆的服务器和软路由_详细版.md",
+    "bytes": 4473,
+    "sha256": "c509dbbb4dba640d399bd4c4cd079e71afa9921dd8a863dcbac283e667b0ef83"
+  },
+  {
     "path": "README.md",
-    "bytes": 5174,
-    "sha256": "8be2198f5870196c1dc5fdabb8ddfec2d14660217a07b84ddf11bdefcfe49ea1"
+    "bytes": 5793,
+    "sha256": "cab98364fb75dffa9b93f6ab27292028057eab8bc5556dc9d303ca3e44687103"
   },
   {
     "path": "automation/parameters.example.json",
@@ -2941,8 +2961,8 @@
   },
   {
     "path": "evidence/validation.json",
-    "bytes": 3126,
-    "sha256": "1ea093f17c76c1d14441321ea0cab5b2aea9ad4ed9f0db233eb654481ea14c2b"
+    "bytes": 3986,
+    "sha256": "1cc0019c8a0c5b3bd7c41b74edc1761c1b3dfe82e60344cbdd8f42d0446b328c"
   },
   {
     "path": "evidence/修复说明.md",

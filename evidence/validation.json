@@ -28,18 +28,18 @@
     }
   ],
   "documents": {
-    "count": 8,
-    "pages_total": 46,
+    "count": 10,
+    "pages_total": 51,
     "per_document": [
       {
-        "document": "00_overview\\总项目介绍_简要版.docx",
+        "document": "00_overview/总项目介绍_简要版.docx",
         "pages": 1,
-        "method": "Word PDF + canonical render_docx Poppler rasterize"
+        "method": "Word PDF + packaged render_docx.py Poppler rasterize"
       },
       {
-        "document": "00_overview\\总项目介绍_详细版.docx",
-        "pages": 6,
-        "method": "Word PDF + canonical render_docx Poppler rasterize"
+        "document": "00_overview/总项目介绍_详细版.docx",
+        "pages": 7,
+        "method": "Word PDF + packaged render_docx.py Poppler rasterize"
       },
       {
         "document": "01_server_net\\服务器与网络_简要版.docx",
@@ -60,6 +60,16 @@
         "document": "03_blog\\个人博客Blog_详细版.docx",
         "pages": 14,
         "method": "Word PDF + canonical render_docx Poppler rasterize"
+      },
+      {
+        "document": "04_hardware/土豆的服务器和软路由_简要版.docx",
+        "pages": 1,
+        "method": "Word PDF + packaged render_docx.py Poppler rasterize"
+      },
+      {
+        "document": "04_hardware/土豆的服务器和软路由_详细版.docx",
+        "pages": 3,
+        "method": "Word PDF + packaged render_docx.py Poppler rasterize"
       }
     ],
     "visual_review_all_pages": true,
@@ -75,5 +85,16 @@
   "production_changes_this_documentation_task": false,
   "paid_model_calls_this_documentation_task": false,
   "new_dependencies_installed": false,
-  "historical_results_note": "Original records include Linux checks. They were not rerun by this documentation task."
+  "historical_results_note": "Original records include Linux checks. They were not rerun by this documentation task.",
+  "hardware_document_update": {
+    "date": "2026-10-17 Asia/Shanghai",
+    "new_documents": 2,
+    "updated_overview_documents": 2,
+    "pages_reviewed": 12,
+    "known_cost_cny": 301.2,
+    "power_accessory_costs_included": false,
+    "javascript_modified": false,
+    "new_dependencies_installed": false,
+    "checks": "Four DOCX files exported by Word and rendered by packaged render_docx.py; all 12 pages visually inspected; arithmetic and ZIP integrity verified."
+  }
 }
