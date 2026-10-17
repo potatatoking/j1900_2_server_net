@@ -6,14 +6,14 @@
 
 ## 交付内容
 
-共 **10 份 Word、3 个分项 Prompt、1 个总 Prompt**。每份 Word 同时附 Markdown，便于编辑和把简要版发布到个人博客。
+Word 已迁入私密仓库 [word&prompt](https://github.com/potatatoking/word-prompt)，共 12 份当前 Word，包含全项目总日志和设备访问地址清单，并保存对应 Markdown。三个分项 Prompt 和一个总 Prompt 已复制到新仓库，本源码仓库继续保留原 Prompt。
 
 |部分|简要版|详细版|
 |---|---|---|
-|总项目介绍|[Word](00_overview/总项目介绍_简要版.docx)|[Word](00_overview/总项目介绍_详细版.docx)|
-|土豆的服务器和软路由|[Word](04_hardware/土豆的服务器和软路由_简要版.docx)|[Word](04_hardware/土豆的服务器和软路由_详细版.docx)|
-|服务器与网络|[Word](01_server_net/服务器与网络_简要版.docx)|[Word](01_server_net/服务器与网络_详细版.docx)|
-|个人博客 Blog|[Word](03_blog/个人博客Blog_简要版.docx)|[Word](03_blog/个人博客Blog_详细版.docx)|
+|总项目介绍|[Word](https://github.com/potatatoking/word-prompt/blob/main/word/00_overview/%E6%80%BB%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D_%E7%AE%80%E8%A6%81%E7%89%88.docx)|[Word](https://github.com/potatatoking/word-prompt/blob/main/word/00_overview/%E6%80%BB%E9%A1%B9%E7%9B%AE%E4%BB%8B%E7%BB%8D_%E8%AF%A6%E7%BB%86%E7%89%88.docx)|
+|土豆的服务器和软路由|[Word](https://github.com/potatatoking/word-prompt/blob/main/word/04_hardware/%E5%9C%9F%E8%B1%86%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%92%8C%E8%BD%AF%E8%B7%AF%E7%94%B1_%E7%AE%80%E8%A6%81%E7%89%88.docx)|[Word](https://github.com/potatatoking/word-prompt/blob/main/word/04_hardware/%E5%9C%9F%E8%B1%86%E7%9A%84%E6%9C%8D%E5%8A%A1%E5%99%A8%E5%92%8C%E8%BD%AF%E8%B7%AF%E7%94%B1_%E8%AF%A6%E7%BB%86%E7%89%88.docx)|
+|服务器与网络|[Word](https://github.com/potatatoking/word-prompt/blob/main/word/01_server_net/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E7%BD%91%E7%BB%9C_%E7%AE%80%E8%A6%81%E7%89%88.docx)|[Word](https://github.com/potatatoking/word-prompt/blob/main/word/01_server_net/%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%8E%E7%BD%91%E7%BB%9C_%E8%AF%A6%E7%BB%86%E7%89%88.docx)|
+|个人博客 Blog|[Word](https://github.com/potatatoking/word-prompt/blob/main/word/03_blog/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2Blog_%E7%AE%80%E8%A6%81%E7%89%88.docx)|[Word](https://github.com/potatatoking/word-prompt/blob/main/word/03_blog/%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2Blog_%E8%AF%A6%E7%BB%86%E7%89%88.docx)|
 
 详细版按操作顺序讲执行位置、用途、预期结果、问题与解决办法；主要代码和指令放在附录。博客附录含教学框架完整五文件，真实完整源码另存。
 
@@ -69,3 +69,7 @@ python -m unittest discover -s automation -p 'test_*.py'
 ## 硬件与预算补充
 
 新增 `04_hardware`，含土豆的服务器和软路由简要版与详细版，同步补入总介绍两版。主机相关费用 245 元、网络费用 56.2 元，已知合计 301.2 元；供电配件价格另计。100、95、50 元未逐项分配。此次仅更新文档，没有修改 JavaScript 或安装依赖。
+
+## Word 文档迁移
+
+2026-10-18，当前 Word 文档迁入 [word&prompt](https://github.com/potatatoking/word-prompt)。新仓库按用户要求保存原版文档，不做脱敏，保持私密。当前源码分支不再重复保存 Word；历史提交和历史发布附件未在本次迁移中重写。源码及原 Prompt 保留。
