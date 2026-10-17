@@ -17,3 +17,9 @@ parameters.local.json
 **/*.log
 **/isp-private.yaml
 **/subscription.private.txt
+
+# Local credentials, private access lists and pre-redaction backups
+*.private.json
+*.bundle
+*私密*
+parameters.local.json
