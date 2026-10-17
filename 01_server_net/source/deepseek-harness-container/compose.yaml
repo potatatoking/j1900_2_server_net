@@ -1,0 +1,43 @@
+name: deepseek-harness
+
+services:
+  deepseek-harness:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local/deepseek-harness:0.2.0-rc.2
+    container_name: deepseek-harness
+    init: true
+    restart: unless-stopped
+    user: "1000:1000"
+    working_dir: /workspace
+    env_file:
+      - .env
+    environment:
+      DSH_HOME: /home/vscode/.dsh
+      HOME: /home/vscode
+      TZ: Asia/Shanghai
+      TERM: xterm-256color
+      DEEPSEEK_BASE_URL: http://127.0.0.1:18080/anthropic
+    volumes:
+      - ./data/dsh:/home/vscode/.dsh
+      - ./workspace:/workspace
+      - ./lan.patch.yml:/etc/dsh/lan.patch.yml:ro
+      - ./key-router.mjs:/etc/dsh/key-router.mjs:ro
+    dns:
+      - 10.42.0.3
+    networks:
+      proxy_lan:
+        ipv4_address: 10.42.0.105
+    command: ["node", "/etc/dsh/key-router.mjs", "dsh", "--profile", "web", "--patch", "/etc/dsh/lan.patch.yml", "--port", "3080", "--no-open", "--trusted-host", "10.42.0.105:3080"]
+    healthcheck:
+      test: ["CMD", "node", "-e", "Promise.all([fetch('http://10.42.0.105:3080/'),fetch('http://127.0.0.1:18080/healthz')]).then(([ui,router])=>process.exit(ui.status===401&&router.status===200?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+
+networks:
+  proxy_lan:
+    name: proxy_lan
+    external: true

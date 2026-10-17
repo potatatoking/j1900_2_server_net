@@ -1,0 +1,22 @@
+FROM local/claude-code-blog:2.1.300-node24 AS runtime-source
+USER root
+RUN mkdir -p /web-rootfs/opt/node/bin /web-rootfs/etc/ssl/certs \
+      /web-rootfs/usr/share/zoneinfo /web-rootfs/app /web-rootfs/tmp /web-rootfs/home/node \
+    && cp /opt/node/bin/node /web-rootfs/opt/node/bin/node \
+    && ldd /opt/node/bin/node | awk '{for (i=1;i<=NF;i++) if ($i ~ /^\//) print $i}' \
+      | while read -r library; do cp -L --parents "$library" /web-rootfs; done \
+    && cp /etc/ssl/certs/ca-certificates.crt /web-rootfs/etc/ssl/certs/ \
+    && cp /etc/nsswitch.conf /web-rootfs/etc/ \
+    && cp -a /usr/share/zoneinfo/Asia /web-rootfs/usr/share/zoneinfo/ \
+    && printf 'root:x:0:0:root:/root:/sbin/nologin\nnode:x:1000:1000:Node.js:/home/node:/sbin/nologin\n' > /web-rootfs/etc/passwd \
+    && printf 'root:x:0:\nnode:x:1000:\n' > /web-rootfs/etc/group \
+    && chmod 1777 /web-rootfs/tmp \
+    && chown 1000:1000 /web-rootfs/app /web-rootfs/home/node
+
+FROM scratch
+COPY --from=runtime-source /web-rootfs/ /
+ENV PATH=/opt/node/bin HOME=/home/node NODE_ENV=production PORT=3000 TZ=Asia/Shanghai
+USER 1000:1000
+WORKDIR /app
+EXPOSE 3000
+CMD ["node", "server.js"]

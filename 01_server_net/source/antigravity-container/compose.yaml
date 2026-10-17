@@ -1,0 +1,47 @@
+name: antigravity
+
+services:
+  antigravity:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local/antigravity:1.3.5
+    container_name: antigravity
+    init: true
+    restart: unless-stopped
+    user: "1000:1000"
+    working_dir: /workspace
+    environment:
+      HOME: /home/vscode
+      TZ: America/Denver
+      LANG: en_US.UTF-8
+      LANGUAGE: en_US:en
+      LC_ALL: en_US.UTF-8
+      TERM: xterm-256color
+      NO_PROXY: localhost,127.0.0.1,::1,10.42.0.2,10.42.0.3,10.42.0.4,10.42.0.104
+      no_proxy: localhost,127.0.0.1,::1,10.42.0.2,10.42.0.3,10.42.0.4,10.42.0.104
+    volumes:
+      - /usr/share/zoneinfo/America/Denver:/etc/localtime:ro
+      - ./timezone:/etc/timezone:ro
+      - ./data/gemini:/home/vscode/.gemini
+      - ./data/config:/home/vscode/.config
+      - ./data/cache:/home/vscode/.cache
+      - ./data/local:/home/vscode/.local
+      - ./workspace:/workspace
+    dns:
+      - 10.42.0.3
+    networks:
+      proxy_lan:
+        ipv4_address: 10.42.0.104
+    command: ["sleep", "infinity"]
+    healthcheck:
+      test: ["CMD", "agy", "--version"]
+      interval: 60s
+      timeout: 15s
+      retries: 3
+      start_period: 15s
+
+networks:
+  proxy_lan:
+    name: proxy_lan
+    external: true

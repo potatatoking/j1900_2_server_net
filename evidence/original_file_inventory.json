@@ -1,0 +1,2537 @@
+[
+  {
+    "path": "antigravity-container\\.dockerignore",
+    "bytes": 56,
+    "sha256": "5fb389f232e1959af503271314b5879d6b8e84dd108d372ca8408263191d1776"
+  },
+  {
+    "path": "antigravity-container\\cache\\agy-1.3.5-linux-x64.tar.gz",
+    "bytes": 62830042,
+    "sha256": "007a5a44dbaf1caea464c3d9848c63b2f69945b01a8bf8852c56c477a64374cf"
+  },
+  {
+    "path": "antigravity-container\\cache\\manifest.json",
+    "bytes": 301,
+    "sha256": "0c8b3726dcc14e3fbeaa005e0ec94feb27d9d6656b1059a90cac0c0dc1e862cc"
+  },
+  {
+    "path": "antigravity-container\\cache\\official-install.sh",
+    "bytes": 7643,
+    "sha256": "62966c07365423bd4dc209355060744058fb30d60f5323e2d360e39de64e5042"
+  },
+  {
+    "path": "antigravity-container\\check-ip.py",
+    "bytes": 1242,
+    "sha256": "735b07d56b74fd09acd126ddaa18fdba420c002a6c5603d1e2975d621bbabc69"
+  },
+  {
+    "path": "antigravity-container\\compose.yaml",
+    "bytes": 1250,
+    "sha256": "579bb25e875c3e9850522a30ae4b06cc0262bd0d1cf1c2c390f3b96785fae5f5"
+  },
+  {
+    "path": "antigravity-container\\deploy.sh",
+    "bytes": 1274,
+    "sha256": "755377279a0d3f58866cc9abe22ad3ed73364b57d7f67198196dc5e71910e3ce"
+  },
+  {
+    "path": "antigravity-container\\deployment.log",
+    "bytes": 3117,
+    "sha256": "9ee35e8e3d390fbad9bde4037c8a384e482573e4ecea35e5ed4faf2d728cb20a"
+  },
+  {
+    "path": "antigravity-container\\DEPLOYMENT.md",
+    "bytes": 4942,
+    "sha256": "87522255bd32b25cab7e1926d1e20d416b8197534e0df0b6764394a2ded63516"
+  },
+  {
+    "path": "antigravity-container\\Dockerfile",
+    "bytes": 832,
+    "sha256": "a3d5dc74880a43d98d0504c30814a09368a83fb4ea2c027059c3ac50e9bbfb42"
+  },
+  {
+    "path": "antigravity-container\\README.md",
+    "bytes": 3241,
+    "sha256": "20a0cdc57a989de338dfb75213ac7827855bc3204b06b544b8dad119ccd033d8"
+  },
+  {
+    "path": "antigravity-container\\restart-verification.log",
+    "bytes": 162,
+    "sha256": "00043b2dfe1322c4fa012650e490cae4a2e9cd26fcce981c9e36163f125e8172"
+  },
+  {
+    "path": "antigravity-container\\timezone",
+    "bytes": 15,
+    "sha256": "1c6b73ee5328194d3260f6a2876734c662b43c82a00a40e2c50adca40d4d060e"
+  },
+  {
+    "path": "antigravity-container\\verification.log",
+    "bytes": 4001,
+    "sha256": "6bb541aa7d84a795fab7484a09b16825a63352fffecad98a08f4ab05779dbacb"
+  },
+  {
+    "path": "antigravity-container\\windows-ip-before.json",
+    "bytes": 378,
+    "sha256": "10a5a75f8a38553fcda7bfae12c5c7c0ec410732a825c174c26e5adfa11b077a"
+  },
+  {
+    "path": "antigravity-container\\windows-ip-change.log",
+    "bytes": 96,
+    "sha256": "bef9667fd2bfaa434e5a5fd98ba114aa6f609f938f802782f7c40dc9ebc76c79"
+  },
+  {
+    "path": "antigravity-container\\windows-move-ip.ps1",
+    "bytes": 3496,
+    "sha256": "e8b7d59450f86f3d3539a49c9ca79e39fde68aae8b32c39e06389ec440494b9c"
+  },
+  {
+    "path": "blog-deploy\\compose.blog.yaml",
+    "bytes": 552,
+    "sha256": "05b3b804d055f852624e0d86270549592e98cb0ca342fbb9f8224e4bc7a2c33b"
+  },
+  {
+    "path": "blog-deploy\\DEPLOYMENT.md",
+    "bytes": 3396,
+    "sha256": "e807443d0e7927f0738536153f34c3ca89a77e22cd341191f811903b1d12ba6e"
+  },
+  {
+    "path": "blog-deploy\\Dockerfile.blog",
+    "bytes": 500,
+    "sha256": "cbe827ac25c2f97d2136ec7891cb7fce80623adf0295c8f9cb21dfa60e9bfe8a"
+  },
+  {
+    "path": "blog-deploy\\downloads\\blog-officaluse1.0.zip",
+    "bytes": 11263931,
+    "sha256": "80cf696816b5137f652b4cf48a57c31017b26c8ce4b50ce08fc36a1e53c359c8"
+  },
+  {
+    "path": "blog-deploy\\SHASUMS256.txt",
+    "bytes": 3171,
+    "sha256": "8912ada1431af8390bb3e30328d30bca701b59c7a6d5396b491293515c092c46"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\.env.example",
+    "bytes": 183,
+    "sha256": "5ab4256144f646a19f4c9afb2bc3106f99c7091b0da1a17a906095341ff4ed35"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\.gitignore",
+    "bytes": 44,
+    "sha256": "6f1e9cad6b5b4870e3caa1b2c3a451a99cf5139fa94b6fb2ec5e13b7aa1363b2"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\package.json",
+    "bytes": 240,
+    "sha256": "72313767d5ebf1d131f1715bde83f06328fa45732aabd670f4db513d46d3b346"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\admin.html",
+    "bytes": 2431,
+    "sha256": "8d2d4231556a92305f0690fc1ae005853cf1dac87e63fc2ad6f170daab6be212"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\app.js",
+    "bytes": 114059,
+    "sha256": "5b3b26118058c93d36db3bed71146d366e04f89dc5a36913c7abe2184de045da"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\monet-about.webp",
+    "bytes": 497262,
+    "sha256": "3f8a7f7eb1a53543c832cda1420bbe20d6ab812def192d225b023cdab33788fa"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\monet-entry.webp",
+    "bytes": 385536,
+    "sha256": "8cb12187968ffce72ae406cebd1a626ea286780bc484b791573d58e2a046147b"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\monet-life.webp",
+    "bytes": 308604,
+    "sha256": "79c4e825787c76051afae51d34aee47ba7293c83be909fa9aa0d4319dd8e0d2f"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\monet-study.webp",
+    "bytes": 292680,
+    "sha256": "0e2983cf0e91a32cc8ea38868415bdab45676867096360b6a1561e4401ca1132"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\monet-talk.webp",
+    "bytes": 207476,
+    "sha256": "ffab67e2446e357a254510d8973bffcfe3be8ec7d9f7ae00b5e394973a121fe0"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\rin-button.png",
+    "bytes": 1757849,
+    "sha256": "8346f850c860ac028d10f77b1af9d4b1c53396b55ec7f090188bbb850ae355e9"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\rin-saber-chibi.png",
+    "bytes": 2223883,
+    "sha256": "6315b422e97e773e26f58ee65cf850861577f709ac2be653cc23bfdf1365e101"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\saber-frame.png",
+    "bytes": 1824405,
+    "sha256": "c0e1b5b66749b88d0627f8b373d4afa4548060c039da8e6650ccbcc2676e0560"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\study-runner.png",
+    "bytes": 1361909,
+    "sha256": "78850b2501ce3b3f1e90eff81bb77c763b2e6a7adfcc1f05b8149dc4b3460626"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\assets\\white-haired-greeting.png",
+    "bytes": 2335545,
+    "sha256": "7608b8ec79ffcf49fd3713327019764b9b04bcc498dc9123f2994042a7feb2bc"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\editorial.css",
+    "bytes": 96414,
+    "sha256": "45e50dda34670d7f14f65c13083e3bc370f006334531c280b129bbef41370247"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\image-crop.js",
+    "bytes": 3936,
+    "sha256": "48282cb79efda2dc77d0455d6209c21716b13c5786cf8ae4a62bcec07b0680ac"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\index.html",
+    "bytes": 2769,
+    "sha256": "b2d6e4d23790d45090c33f209f2f7974d77bc3caf7b4c36bac40c625b25241f6"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\quotes.js",
+    "bytes": 7509,
+    "sha256": "3cca1d2acbb86543f97ce0fb763e5cf57d66bbe1f050fa58dbb0bd9cdd49687e"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\style.css",
+    "bytes": 38210,
+    "sha256": "d934bbc5a2960380ef77073d6ab315335de8e0e1c2c7ef64d99ade89dbacddd1"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\vendor\\cropperjs\\cropper.min.css",
+    "bytes": 3795,
+    "sha256": "23679f552ce73499f817de22b5dcdd9e1e5a1e50cd9d77e34bbd31bf65a85186"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\vendor\\cropperjs\\cropper.min.js",
+    "bytes": 37369,
+    "sha256": "6290a3fa581b17ccf4692cf3ec617a74ae65de88d9140c72d492ae9b47707efb"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\public\\vendor\\cropperjs\\LICENSE",
+    "bytes": 1084,
+    "sha256": "eb917650781dcf06a60b97cba9b05bf583931ec2d311d8a5548a8dca90a57e0f"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\README.md",
+    "bytes": 6923,
+    "sha256": "5fe72c3886b31f5a42f04a17486b11ca2846ac17c13ca22d0ce090411d2c2e52"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\server.js",
+    "bytes": 28036,
+    "sha256": "cca7ca586f99652b4b4ddc67d547871eb55b93abc389671272a7bec78cb7f63b"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\test\\http.test.js",
+    "bytes": 3967,
+    "sha256": "17eba0a86544f91da419c2280e560932c9b6ce76322165faf3b845f94be1530e"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\test\\images.test.js",
+    "bytes": 3903,
+    "sha256": "408de1c662c50df757a311cf9f3e1c9f51aeabeb37ea7604cf3866f904281ea3"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\test\\quotes.test.js",
+    "bytes": 677,
+    "sha256": "3fe44c393c54fe9213be3c9edd00bba078b3c2719add7666b3b40ad388bfdedf"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\test\\reading-history.test.js",
+    "bytes": 4672,
+    "sha256": "24e7f5a79d86d1a570cf7607eba2d41226395598d1d640ef508a1921d9d17fed"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\test\\search.test.js",
+    "bytes": 1714,
+    "sha256": "e75ad6c2492b1236718458aad12f034b8830f167833f89c98f1c4f8f6e63975f"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\test\\server.test.js",
+    "bytes": 15559,
+    "sha256": "5c477679c859faa39ba45decc58eb40941938423de345745516dda0c61adb755"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\test\\talk.test.js",
+    "bytes": 7231,
+    "sha256": "db5eaaf44e7854d1ab118a11a3db82a2628f4e6707810ea6ad9253dd5f39c6f2"
+  },
+  {
+    "path": "blog-deploy\\source\\blog-officaluse1.0\\test\\transitions.test.js",
+    "bytes": 8943,
+    "sha256": "ff3a718fecab6f174c92bb8919e1c018046f9f0b9fc96d83c70fb96e7dd618fa"
+  },
+  {
+    "path": "blog-deploy\\stage-blog.py",
+    "bytes": 1609,
+    "sha256": "74a9040d0e16dc1929ec02961e9a0a10a93a3966fb3cbf4913aafdf0971b9ff3"
+  },
+  {
+    "path": "blog-deploy\\verify-live.py",
+    "bytes": 1411,
+    "sha256": "27e76dd63bdb5a52f063bac76de15fb7e846a1a5bf8905820aa4ef11c2ea2a56"
+  },
+  {
+    "path": "campus-access\\campus-route",
+    "bytes": 307,
+    "sha256": "64071ac0d55d5a1c071003a23de4edcf2ca51bec8575337de3de67d39eaf7f77"
+  },
+  {
+    "path": "campus-access\\README.md",
+    "bytes": 7161,
+    "sha256": "5c3a13df192e07da36ffdd3d947685d570d3f1d00f7aba012131e1e42811c649"
+  },
+  {
+    "path": "claude-code-container\\.dockerignore",
+    "bytes": 23,
+    "sha256": "5d6096b959316a4dae5db84d9bf7a23b4a76ecc258edd0abf3af821711c2ce0f"
+  },
+  {
+    "path": "claude-code-container\\compose.fixed-ip.yaml",
+    "bytes": 318,
+    "sha256": "d8b25293d332e2de16ba1408a6237aa2742741f36c549b49a1546e04f9561d86"
+  },
+  {
+    "path": "claude-code-container\\compose.yaml",
+    "bytes": 703,
+    "sha256": "131bbf2f5deddc9d43279b9b0ff534d50a2a468f1fce71ff58847e601209b951"
+  },
+  {
+    "path": "claude-code-container\\deploy.sh",
+    "bytes": 847,
+    "sha256": "c8e943dc6bf569556681760702c4f2bb5f70c89d7c6e244259a493dd1ea46ea5"
+  },
+  {
+    "path": "claude-code-container\\Dockerfile",
+    "bytes": 1328,
+    "sha256": "ac6c50df9a0718030b1e133d6c73f37cc421c7738550a7d155e9ad13d3606a67"
+  },
+  {
+    "path": "claude-code-container\\FIXED-IP.md",
+    "bytes": 3443,
+    "sha256": "04fc8a159c28f82a487639f39ea2504c34e71220253fdc03cd7b6d48edd6cbdf"
+  },
+  {
+    "path": "claude-code-container\\README.md",
+    "bytes": 2915,
+    "sha256": "0328a1cb3f4497f424bd4bc226bb64903f9e8bbefc6662632dc37463c8569d04"
+  },
+  {
+    "path": "claude-code-container\\timezone",
+    "bytes": 15,
+    "sha256": "1c6b73ee5328194d3260f6a2876734c662b43c82a00a40e2c50adca40d4d060e"
+  },
+  {
+    "path": "codex-container\\.dockerignore",
+    "bytes": 57,
+    "sha256": "5329e364a78d764e187d231f02f7a8e573eedeaabd447f42a0df6747239e83d4"
+  },
+  {
+    "path": "codex-container\\check-ip.py",
+    "bytes": 1242,
+    "sha256": "735b07d56b74fd09acd126ddaa18fdba420c002a6c5603d1e2975d621bbabc69"
+  },
+  {
+    "path": "codex-container\\compose.yaml",
+    "bytes": 936,
+    "sha256": "39c8a9a7c1a38d64ba88dc75f941107d1fdcf7db70761de6ca2d185aaadf13a8"
+  },
+  {
+    "path": "codex-container\\deploy.sh",
+    "bytes": 1678,
+    "sha256": "f6b0340bbcb0f707cfe33a47eeb326d95489072a1252dd427eca43a87dd036bb"
+  },
+  {
+    "path": "codex-container\\deployment.log",
+    "bytes": 4657,
+    "sha256": "b474ad3c7d60e1f5b163de92034480c6051304c60e5e8dd1f98c0ba477865820"
+  },
+  {
+    "path": "codex-container\\DEPLOYMENT.md",
+    "bytes": 1999,
+    "sha256": "cb1b85e0c808a22dd8c6433d2f92751725f19cd91b98d4a6cb86f766e18836ef"
+  },
+  {
+    "path": "codex-container\\Dockerfile",
+    "bytes": 929,
+    "sha256": "e5d3f2dbf900779f760253a61b6a5a6920f95a10c71c3a8390f7f5d156da3054"
+  },
+  {
+    "path": "codex-container\\README.md",
+    "bytes": 4106,
+    "sha256": "5e90face93ca268a6e66b5819bb5a6f7b16922d728a9981840913195dac1cd0d"
+  },
+  {
+    "path": "codex-container\\timezone",
+    "bytes": 15,
+    "sha256": "1c6b73ee5328194d3260f6a2876734c662b43c82a00a40e2c50adca40d4d060e"
+  },
+  {
+    "path": "codex-container\\verification.log",
+    "bytes": 937,
+    "sha256": "c4a9ab4afe2a397764c916b9f88792bd7b7935c590456e42c20179290166d003"
+  },
+  {
+    "path": "codex-container\\windows-ip-before.json",
+    "bytes": 379,
+    "sha256": "4bf7804a84ab8ac224e293eb67d198d57cbf6d2e0bce4ebdc31f8349ae4ffedb"
+  },
+  {
+    "path": "codex-container\\windows-ip-change.log",
+    "bytes": 64,
+    "sha256": "4dd6b8291ebc480fe46377dc2e12f84c13df2aaad2c5337a48ca1318743b5c65"
+  },
+  {
+    "path": "codex-container\\windows-move-ip.ps1",
+    "bytes": 2282,
+    "sha256": "0b21dbe1788300d93edb2ea80922c579fa35ac5d6a7f9ebad9e4282b69b12911"
+  },
+  {
+    "path": "deepseek-harness-container\\.dockerignore",
+    "bytes": 122,
+    "sha256": "01f0329b5f16121aa11ea7fa24f277adccb4227c26e53aefbc4023dfacc363d2"
+  },
+  {
+    "path": "deepseek-harness-container\\.env.example",
+    "bytes": 248,
+    "sha256": "3b4eee0ae69f98fa852e59ed823f1edf841dd74a0d0517bf01c3d4b206afe48b"
+  },
+  {
+    "path": "deepseek-harness-container\\.gitignore",
+    "bytes": 5,
+    "sha256": "69aa73cf5bc3377a7d97f2e8d2bb773195815efe225af7f1be6f5b9306bbe14f"
+  },
+  {
+    "path": "deepseek-harness-container\\check-ip.py",
+    "bytes": 1242,
+    "sha256": "735b07d56b74fd09acd126ddaa18fdba420c002a6c5603d1e2975d621bbabc69"
+  },
+  {
+    "path": "deepseek-harness-container\\compose.yaml",
+    "bytes": 1352,
+    "sha256": "3ba442c55079573a1356f994797cf114c7c1be8c9dfc17d0223241482dd4680e"
+  },
+  {
+    "path": "deepseek-harness-container\\deploy.sh",
+    "bytes": 1440,
+    "sha256": "f0975af8a7865a2674ac0b334771a0e645dc239237c79e65173fe465571bc0c7"
+  },
+  {
+    "path": "deepseek-harness-container\\deployment-records.tgz",
+    "bytes": 81015,
+    "sha256": "c1a37741f23fab66df5b0e6076f62774d62991595e57bee7343e8b8c86a560ab"
+  },
+  {
+    "path": "deepseek-harness-container\\deployment.log",
+    "bytes": 3956,
+    "sha256": "8988aa6132673c3b3273055d8e80ddcd6bb1b1d20dfe5ebeeae461223e81d9fe"
+  },
+  {
+    "path": "deepseek-harness-container\\DEPLOYMENT.md",
+    "bytes": 5757,
+    "sha256": "02867b438fdff05845c99f5bdb4fa8c0f61ccef4bf9d737e10affd9decaf1843"
+  },
+  {
+    "path": "deepseek-harness-container\\Dockerfile",
+    "bytes": 1394,
+    "sha256": "f20ceadb78d4e9eba533eb273f46a9e2c85e7db08758df95aceea56237b9a03b"
+  },
+  {
+    "path": "deepseek-harness-container\\installed-pnpm-lock.yaml",
+    "bytes": 601766,
+    "sha256": "560b5a45325abadf746adbe68cc415685a0aa44b5595290bd3a15f9dd13b5710"
+  },
+  {
+    "path": "deepseek-harness-container\\key-router.mjs",
+    "bytes": 6737,
+    "sha256": "33ac584027e3d6f091f12af3ff2bbe6a28fc42a6c8c8683a73ff986f60c946d1"
+  },
+  {
+    "path": "deepseek-harness-container\\key-router.test.mjs",
+    "bytes": 5922,
+    "sha256": "f4cdaff9d14faa67cb00bf953fc16858067d4c688d41d61a3fa748d30a35e52d"
+  },
+  {
+    "path": "deepseek-harness-container\\lan.patch.yml",
+    "bytes": 296,
+    "sha256": "7ff5f3763455cd91907911858fd559900d8bd7bb75cae99f9ca6e12d95f04c41"
+  },
+  {
+    "path": "deepseek-harness-container\\package.json",
+    "bytes": 233,
+    "sha256": "c1b95f814243ceaf6e036982a6d1fbfdfecbc03393a39cd07fc8a03816f847d9"
+  },
+  {
+    "path": "deepseek-harness-container\\pnpm-workspace.yaml",
+    "bytes": 121,
+    "sha256": "87e783721cd92702c31a43656dde24ab4b8f63eaa5aa9654263034485e4e4193"
+  },
+  {
+    "path": "deepseek-harness-container\\README.md",
+    "bytes": 4943,
+    "sha256": "ee3511d297d476efce94c914be31b653eed2c470841f144fae162fe9846cd9f9"
+  },
+  {
+    "path": "deepseek-harness-container\\restart-verification.log",
+    "bytes": 111,
+    "sha256": "d760fd9eec5968638a8e9347e491bb5772740e8fa7ba65cae2326c760a824af2"
+  },
+  {
+    "path": "deepseek-harness-container\\verify-client.py",
+    "bytes": 2925,
+    "sha256": "2d4b994fb2cd57bf7b4c560efda3c0d1fa82466e10091c4ff3e3bc4b0b0e1273"
+  },
+  {
+    "path": "luci-app-openclash-0.48.002.apk",
+    "bytes": 10702048,
+    "sha256": "f7ebbd43f9be15c5e6df26e5d0c03d50d0bb8f7fa4cc0d2c2bf048b08c0b155b"
+  },
+  {
+    "path": "mihomo-linux-amd64-v1-v1.19.32.gz",
+    "bytes": 22877868,
+    "sha256": "306f81e723e60ce6b828899a6fe83e1d00e9ecefb2dc8d4d849312a5bc00efdc"
+  },
+  {
+    "path": "openclash-config\\openclash_custom_overwrite.sh",
+    "bytes": 8900,
+    "sha256": "2e51f4e3e948955cdbabbd8904ea70a5b06ce57a6b6961b353683363c7745a00"
+  },
+  {
+    "path": "openclash-config\\README.md",
+    "bytes": 3874,
+    "sha256": "cf0ae625fa144624b5c793da18781e2bbaa8bcfb7602341b7b7b28b5db2fea0b"
+  },
+  {
+    "path": "sakura-frp\\.gitignore",
+    "bytes": 38,
+    "sha256": "091ec7896a11307a1a3573774f20c62c4ae3578627b863422d0bb3bd7db42c5f"
+  },
+  {
+    "path": "sakura-frp\\frpc_linux_amd64",
+    "bytes": 7781304,
+    "sha256": "52c1a53e763f17d33f1b34661e4283bc674979774b458f5568e9973ad1e68a99"
+  },
+  {
+    "path": "sakura-frp\\install-openwrt.sh",
+    "bytes": 2040,
+    "sha256": "123a2ffae94046199a31153c482344d8e0c41e5e4e12a8b312ce9110c754056a"
+  },
+  {
+    "path": "sakura-frp\\README.md",
+    "bytes": 10700,
+    "sha256": "e8cdee64e6fd3f7063a593e6b8030476c6392d1bf6430f82166eeb0b9d2f8502"
+  },
+  {
+    "path": "sakura-frp\\sakura-frp-run.sh",
+    "bytes": 247,
+    "sha256": "1e92476562d61a90afb4753f38f3d0ca7d4d4d60e2e7305b592b8ceec500e7b4"
+  },
+  {
+    "path": "sakura-frp\\sakura-frp.init",
+    "bytes": 435,
+    "sha256": "35d33b25c0a6f62040c1929b274d89323db3152c1191816d4a57ef0d5ecaf124"
+  },
+  {
+    "path": "sakura-frp\\tunnel-routing-before.json",
+    "bytes": 386,
+    "sha256": "6950772c0a87b36b2c8b3a508d395ce6dc24f8a87dd1753332829aa1db874b4a"
+  },
+  {
+    "path": "sakura-frp\\verify-openwrt.sh",
+    "bytes": 600,
+    "sha256": "ed287ecd6aa1727797aa4b2cb08a987cc5b862807218427436ca98e240ff1d9e"
+  },
+  {
+    "path": "SSD迁移记录.md",
+    "bytes": 5412,
+    "sha256": "b3729d9f3737cbd07a79a09f90b43bb072fc0c84a9680e561b2f0aba692b777a"
+  },
+  {
+    "path": "web-deploy\\check-ip.py",
+    "bytes": 1148,
+    "sha256": "5c252858265f631fb233d49d0907e665ecb314df6a9fd3653f9addd0aca219a3"
+  },
+  {
+    "path": "web-deploy\\cleanup-old.py",
+    "bytes": 2971,
+    "sha256": "a98309e246d0ed9743d3fd31a2b2b4532455ed45694241b6d769d8447d239189"
+  },
+  {
+    "path": "web-deploy\\compose.yaml",
+    "bytes": 868,
+    "sha256": "bdc32c88e5a0fb0e743bb4d5be788ebcdde70d9336ff00f34ea14c149a2c69fe"
+  },
+  {
+    "path": "web-deploy\\copy-website.py",
+    "bytes": 1701,
+    "sha256": "3c0317d93c4c0872716978773fdd5c3f05e3568a17230654f4c5949fbb6050fb"
+  },
+  {
+    "path": "web-deploy\\DEPLOYMENT.md",
+    "bytes": 3097,
+    "sha256": "bc7b4e27885c82548a825bbed861e702006393db1014fc151fb8eeb6f2abf9f0"
+  },
+  {
+    "path": "web-deploy\\Dockerfile",
+    "bytes": 329,
+    "sha256": "5abe56f317fcefb50c5976083744646ea52083f3f05c84f46ec4e66fe0130b0a"
+  },
+  {
+    "path": "web-deploy\\Dockerfile.bootstrap",
+    "bytes": 1158,
+    "sha256": "1139c1d6945a46e3d8199e6df92b6987c9bdccae4867d17c2c62327b1c16b3d9"
+  },
+  {
+    "path": "web-deploy\\prepare.py",
+    "bytes": 421,
+    "sha256": "c9652557f582c40f214b557238219bd4af550fa97edcce4812be40b2a851bca1"
+  },
+  {
+    "path": "web-deploy\\routed-app\\.env.example",
+    "bytes": 183,
+    "sha256": "5ab4256144f646a19f4c9afb2bc3106f99c7091b0da1a17a906095341ff4ed35"
+  },
+  {
+    "path": "web-deploy\\routed-app\\.gitignore",
+    "bytes": 44,
+    "sha256": "6f1e9cad6b5b4870e3caa1b2c3a451a99cf5139fa94b6fb2ec5e13b7aa1363b2"
+  },
+  {
+    "path": "web-deploy\\routed-app\\china-cidrs.txt",
+    "bytes": 123444,
+    "sha256": "5124cf26528902f7dd9f0e5c3ad8701d26e5af228c422e253c332ea1a7c5976f"
+  },
+  {
+    "path": "web-deploy\\routed-app\\package.json",
+    "bytes": 240,
+    "sha256": "72313767d5ebf1d131f1715bde83f06328fa45732aabd670f4db513d46d3b346"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\admin.html",
+    "bytes": 2480,
+    "sha256": "6d3bfbe42a445605a5effffe6f383aead02cf4a272f14beea372c61b26c642bb"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\app.js",
+    "bytes": 114478,
+    "sha256": "ccfb44ef9f3a271c4c8013433b48990dc897ec41c701572595b5b0923ec3c863"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\monet-about.webp",
+    "bytes": 497262,
+    "sha256": "3f8a7f7eb1a53543c832cda1420bbe20d6ab812def192d225b023cdab33788fa"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\monet-entry.webp",
+    "bytes": 385536,
+    "sha256": "8cb12187968ffce72ae406cebd1a626ea286780bc484b791573d58e2a046147b"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\monet-life.webp",
+    "bytes": 308604,
+    "sha256": "79c4e825787c76051afae51d34aee47ba7293c83be909fa9aa0d4319dd8e0d2f"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\monet-study.webp",
+    "bytes": 292680,
+    "sha256": "0e2983cf0e91a32cc8ea38868415bdab45676867096360b6a1561e4401ca1132"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\monet-talk.webp",
+    "bytes": 207476,
+    "sha256": "ffab67e2446e357a254510d8973bffcfe3be8ec7d9f7ae00b5e394973a121fe0"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\rin-button.png",
+    "bytes": 1757849,
+    "sha256": "8346f850c860ac028d10f77b1af9d4b1c53396b55ec7f090188bbb850ae355e9"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\rin-saber-chibi.png",
+    "bytes": 2223883,
+    "sha256": "6315b422e97e773e26f58ee65cf850861577f709ac2be653cc23bfdf1365e101"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\saber-frame.png",
+    "bytes": 1824405,
+    "sha256": "c0e1b5b66749b88d0627f8b373d4afa4548060c039da8e6650ccbcc2676e0560"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\study-runner.png",
+    "bytes": 1361909,
+    "sha256": "78850b2501ce3b3f1e90eff81bb77c763b2e6a7adfcc1f05b8149dc4b3460626"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\assets\\white-haired-greeting.png",
+    "bytes": 2335545,
+    "sha256": "7608b8ec79ffcf49fd3713327019764b9b04bcc498dc9123f2994042a7feb2bc"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\editorial.css",
+    "bytes": 96409,
+    "sha256": "a2fdc45572afdf51f15fb204481b0dcee5ccdd8e98c26e1114bf379bd06d3f37"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\fonts.css",
+    "bytes": 209524,
+    "sha256": "b3432d41d61eecd715cc27849205683de8e37856934ce4a70a1a980f2bb6fb5c"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\image-crop.js",
+    "bytes": 3936,
+    "sha256": "48282cb79efda2dc77d0455d6209c21716b13c5786cf8ae4a62bcec07b0680ac"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\index.html",
+    "bytes": 2818,
+    "sha256": "121bf77919baa74270181a20c67203ff999a7e518b4729f09c6aef17eb79b67e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\quotes.js",
+    "bytes": 7509,
+    "sha256": "3cca1d2acbb86543f97ce0fb763e5cf57d66bbe1f050fa58dbb0bd9cdd49687e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\style.css",
+    "bytes": 38204,
+    "sha256": "cd81db2a62199a80ab9cfab9cd3fef62c9bbf88ef9ef1e9e2264c0a00923d86d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\cropperjs\\cropper.min.css",
+    "bytes": 3795,
+    "sha256": "23679f552ce73499f817de22b5dcdd9e1e5a1e50cd9d77e34bbd31bf65a85186"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\cropperjs\\cropper.min.js",
+    "bytes": 37369,
+    "sha256": "6290a3fa581b17ccf4692cf3ec617a74ae65de88d9140c72d492ae9b47707efb"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\cropperjs\\LICENSE",
+    "bytes": 1084,
+    "sha256": "eb917650781dcf06a60b97cba9b05bf583931ec2d311d8a5548a8dca90a57e0f"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-100.woff2",
+    "bytes": 64332,
+    "sha256": "43196b8058bd55a6ac484704118b5e6196d0ed6ec3265b2bdbda7bf888f120fc"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-101.woff2",
+    "bytes": 57940,
+    "sha256": "81643939573a897901647110fcd7dbc0315beb87979a2c0ba56fb50da012755c"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-102.woff2",
+    "bytes": 60508,
+    "sha256": "f81693a776e30ff9a45567eaa15d9a0bed038649007a61e75ecd0e780ab257c7"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-103.woff2",
+    "bytes": 63684,
+    "sha256": "b21735210b7eee7a48d74426275c0c6ba8f81cc9049b147a8222e25529feef00"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-104.woff2",
+    "bytes": 61324,
+    "sha256": "fbed7260234ad0056ecd2c729e3896d00678322d9db9d177f41ccc120264d3e6"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-105.woff2",
+    "bytes": 61592,
+    "sha256": "dbe0b5a015af24b6708bf24fdb477f68b7085ece81f2e333c00b24815a90b68c"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-106.woff2",
+    "bytes": 62472,
+    "sha256": "369278225da93c7bda480f501d7ca9f004acaff1bdd3d60df874eddaae27f69b"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-107.woff2",
+    "bytes": 60852,
+    "sha256": "220acde2a122a7608737ce22da353b6788aa79af2bed9ded842cbbe446694540"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-108.woff2",
+    "bytes": 64264,
+    "sha256": "8fd5870c4b22c2015c5a54a02ea9fec7c0102abff26599cf4b03cd2aaf3f58c5"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-109.woff2",
+    "bytes": 60196,
+    "sha256": "35dddbc7b5c78f1dfaee0c9eb8852432a46fee2e9b05ede476b9c47890fa1ed4"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-110.woff2",
+    "bytes": 61192,
+    "sha256": "d32e7ca8037160ed0dabff758b75da2a39722fbc49567bb1dc11436da39d61f7"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-111.woff2",
+    "bytes": 62464,
+    "sha256": "fbd62ca155ea7a785493b418c7076493d3ed73acc581f0e4dfbb7cf675f98043"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-112.woff2",
+    "bytes": 57436,
+    "sha256": "9efef22fce6ed4d723ce957f7616e6c280689406b54f3c89bfd8833e3a0312e7"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-113.woff2",
+    "bytes": 58440,
+    "sha256": "2a169d8dc2ebf18d4ba3a646b7926e2ea8f03371daa8a33aa5aa4e222a30fcb4"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-114.woff2",
+    "bytes": 57696,
+    "sha256": "58f780a2d2b3f293d50b1a3b7026a812273d1923af861a5046ff0f94d5335032"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-115.woff2",
+    "bytes": 56212,
+    "sha256": "2938d56727e9fe32bd83c6410aef59ed9af9528f23fa224a3413538d8231a842"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-116.woff2",
+    "bytes": 52800,
+    "sha256": "98f590f9f68914d4e439e6151a85a4f1cba30a66e904305a74f81a3f470dd044"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-117.woff2",
+    "bytes": 52252,
+    "sha256": "3a2247284b74fa6a2ccd10107365f259a00744041551363476b92318f434339e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-118.woff2",
+    "bytes": 45884,
+    "sha256": "4b594f04215780f690da15990ef2a1e5ac82f2f3a4d9cb91713d83d379c983f6"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-119.woff2",
+    "bytes": 76236,
+    "sha256": "6d088e37bdc27339bb4c82d4bfe0966849df0cef5872fc99b81025f2488f42d8"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-21.woff2",
+    "bytes": 11324,
+    "sha256": "6689c10783e90ce2e3ad11bce8b33a05deecde83ad6561a63f50dcc120c92dc4"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-22.woff2",
+    "bytes": 65184,
+    "sha256": "de53fb4fed079a6270971a5a4f20e8501191ffd8846a3cbfbc19c3f1d3fd6925"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-23.woff2",
+    "bytes": 56636,
+    "sha256": "ce48c8f42ed1659df11fa8c9d3d57596afb5383d3537e1a70c836b2cc699db1a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-24.woff2",
+    "bytes": 62552,
+    "sha256": "5b91a58010929377e94cd5c64c26c57b10a417687371138ef77627b907370bb8"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-25.woff2",
+    "bytes": 58096,
+    "sha256": "ce6a9f5fc5666236b9481e5d93aba8fac485a933a2f024c9345d031cbca40c4a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-26.woff2",
+    "bytes": 50752,
+    "sha256": "4b74cab2d8e2b3c07b050fcbde8adc41a6193bbdb78c32001491d2950b5e6956"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-27.woff2",
+    "bytes": 47404,
+    "sha256": "f62b9ab15b8bef2bcb3529008cefd25c12ef804e0cf88d01d33be1441bb43d0c"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-28.woff2",
+    "bytes": 50028,
+    "sha256": "d81380d9dd8d05680d3d2ba7fa9a831473f7d340b6ce32af11063b4d73118ca3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-29.woff2",
+    "bytes": 53836,
+    "sha256": "96d17ca1177682c2073ac7f905d1cc529ba43495275f93391e45f663039cb43d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-30.woff2",
+    "bytes": 54432,
+    "sha256": "72d3f5812086c592a09fca4584779f59ad6349c43208922efe84347c915c0957"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-31.woff2",
+    "bytes": 47068,
+    "sha256": "dfa871e4db4e5582d077c6be55222da33ac6e8f39cd33e6ed8f7fdd058b796e4"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-32.woff2",
+    "bytes": 52368,
+    "sha256": "5fc65f704d01095033e6c459682bdc993714bd4ee0734d3d1e49286648173987"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-33.woff2",
+    "bytes": 47320,
+    "sha256": "4136c39ad0909016b4eb11c6705ba6ff75e0af6eeddf9cc0908120b2897f95ab"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-34.woff2",
+    "bytes": 46736,
+    "sha256": "e459c174c5fd1d360072fab540c2d833f8d3350a927b01cca3f88148aaec3cf7"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-35.woff2",
+    "bytes": 50508,
+    "sha256": "b6baabe9aaac2371672ce830f078a90e0fb57dae37ef0926c61a11bc41fbafd3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-36.woff2",
+    "bytes": 41704,
+    "sha256": "0af4fd643eb6e631776dd62b433c259ba73c36f93c7e3f358b8106a8761f1e7f"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-37.woff2",
+    "bytes": 53352,
+    "sha256": "c044d116dc8f655dd794a7d87eaa7dfe9a9371ddf1eef99af0e37b72f47475ee"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-38.woff2",
+    "bytes": 54408,
+    "sha256": "9bab402ba033334906b2478832ca6622fb382e97bbbe51a12df9065625e9497e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-39.woff2",
+    "bytes": 51668,
+    "sha256": "c19eb125aee260696faefab99bea783f62279d9d763d45a316a62770644bfe31"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-4.woff2",
+    "bytes": 3752,
+    "sha256": "3045d947c7d78678a5ae0c4b356ec0bda8c8d8513599b9702ecdc1190e90136f"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-40.woff2",
+    "bytes": 46420,
+    "sha256": "cb019c3783d8da86144e2cc42b718dbe592ececafe2640ca77ebb6c9082c60e2"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-41.woff2",
+    "bytes": 36216,
+    "sha256": "b7d51765c99c0ecb44ba17ac44d35f231e6662afcb5f773064cac2ae67bbe8bb"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-42.woff2",
+    "bytes": 45460,
+    "sha256": "f2099ad4a19de114d46b3c4d32353240f885ec76c09b95e65d15e36090d56add"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-43.woff2",
+    "bytes": 46456,
+    "sha256": "356fe3740509fe66b6265db7b0f60e7a4485e1b7719c004f8abf3d642d52d747"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-44.woff2",
+    "bytes": 54028,
+    "sha256": "2d43f90aef16dde8420af269b952483ec67474f7b729a8d689f6b2bf77bca558"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-45.woff2",
+    "bytes": 67416,
+    "sha256": "6434ae9a8b511ac4661ae9edc7b1848c15cb13c65d4e1ec48e8b69a4c80174e3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-46.woff2",
+    "bytes": 57560,
+    "sha256": "ffc12c1cfc6d27bf9c76e32d31f04cbc6db87a0eb502e4ccecbbee6f3b011ff6"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-47.woff2",
+    "bytes": 55964,
+    "sha256": "c1fc78539235f6468a2be89b59fba2a2316afad88dc2e1f602aeab5afebda98f"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-48.woff2",
+    "bytes": 50644,
+    "sha256": "d5683769e4748479ff987ec25234b997e75d67795279c8740625801ec3f84dc3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-49.woff2",
+    "bytes": 52744,
+    "sha256": "9b749147b8cb1aafb56c2515cfd804ff5022b13e29d1803640a12361899b0174"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-5.woff2",
+    "bytes": 19996,
+    "sha256": "62e9d990f68bf1921eec30b7a19a9bd64af5dc5af0964246a1673920589cbb92"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-50.woff2",
+    "bytes": 45672,
+    "sha256": "03aa9df5058c995bb5805907cc35bd159b00f77e4aea30e7df68f7b39acbd69d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-51.woff2",
+    "bytes": 41448,
+    "sha256": "640eba7a58c43bc7642f1bb1a402e831daad1b9e57d1a86f3169f36c212be619"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-52.woff2",
+    "bytes": 51692,
+    "sha256": "add8a0bfe4ac000894bc5bc115f7bc6aa26d4a8b52c1835c15c880c503ae2ec2"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-53.woff2",
+    "bytes": 43256,
+    "sha256": "7c23510d150928c1d41605a433f47923a6763a2c98675b02c71c16f3fa876a22"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-54.woff2",
+    "bytes": 51788,
+    "sha256": "1e0821cd2e0bbd587e4e7417109ec3656f2480d0e961a7ddfa60e0dcdb3b4520"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-55.woff2",
+    "bytes": 47964,
+    "sha256": "531d6a5dc22f7b69084100c07a9caa07724910703f7234e8e36603b47adb25b8"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-56.woff2",
+    "bytes": 53400,
+    "sha256": "3562cf3416a92cb9f2831407857ff1b70f0f14e66671f55fc818fa2a8411d192"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-57.woff2",
+    "bytes": 55612,
+    "sha256": "dbbdc3ebf4296eacf3e96da6872d4eb1985a7e2040211a8112e76e98968bce04"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-58.woff2",
+    "bytes": 57432,
+    "sha256": "32555d5143d763f175af8fc718faf83d39db9fe0c108c41c1bb5abc8331c0e58"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-59.woff2",
+    "bytes": 47480,
+    "sha256": "b287c69afa5039a593ac30765c362fb3cf4b8e397de66d5e11b931df8a4ca4e8"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-6.woff2",
+    "bytes": 11388,
+    "sha256": "1b09d45bc4fa14fd7164723c52b997fb0db464630adad7baeef05fabd02a1155"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-60.woff2",
+    "bytes": 41304,
+    "sha256": "f5bc6961ea42aee6c8c7669c52485c7e4682c3e189eb478dc9295f9c2965ea94"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-61.woff2",
+    "bytes": 45076,
+    "sha256": "a0cf1ee49edfa5e58bac8b599e0005f2a98945eee65205166c8849fa3a41e699"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-62.woff2",
+    "bytes": 58920,
+    "sha256": "9f92796490e4baf1c7a3e431351def75097a4ef211d0903ef081932a95235046"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-63.woff2",
+    "bytes": 49008,
+    "sha256": "ee44006cb7c5a9dd0786f97a246a07717511483090c7cbd4354795dddb157a15"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-64.woff2",
+    "bytes": 41408,
+    "sha256": "8c2c0472d514eabb192f3c2c47fcb8c7e33895a3a96a0e1b021239cca115e453"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-65.woff2",
+    "bytes": 41360,
+    "sha256": "5e7eeacc84fb0e14511ba8b5ac81cf4d3203127e554d90999edd8087f56698b2"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-66.woff2",
+    "bytes": 52588,
+    "sha256": "f566efbed79d24085d19f7b6eac7adff4ab01a5dd66db0c53d4a847c8816c531"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-67.woff2",
+    "bytes": 52432,
+    "sha256": "52d01e2db91fdaabb65c1c1f931b53a141fab818ec1e7ecca29742fef6c61d3c"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-68.woff2",
+    "bytes": 41320,
+    "sha256": "e7fccadb948a87765794c78194d86704802d91b61d4da04614a948eb2e0ecb41"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-69.woff2",
+    "bytes": 55500,
+    "sha256": "cea85861c06f2116541c421f5ddef5e2fff1b91f004e48fac8af204b8bac8486"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-70.woff2",
+    "bytes": 42028,
+    "sha256": "75978a089957153f0714dcff4594f6469893395a343a360c0bf86a96e17d7c8a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-71.woff2",
+    "bytes": 47748,
+    "sha256": "7bb430b6f7a4cb6a6f3d946c2bc0571150b4601dd12a8792a140f2845d88bd70"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-72.woff2",
+    "bytes": 46820,
+    "sha256": "ee2c85ff2b5207630bf4cb863ec5ef3992d28f2bbbea0a905a861cbd63dde4b5"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-73.woff2",
+    "bytes": 39096,
+    "sha256": "4f9a99a8d9e893c18580b6a48fe1ba08d33eaa610e62b0075cebcde4d8b6d7eb"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-74.woff2",
+    "bytes": 56224,
+    "sha256": "a4b3be19a7a70889fd7a334d1b1573bdef8b20189f99b1c05a5f1aa044cd7cf3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-75.woff2",
+    "bytes": 43776,
+    "sha256": "9692ba2d33aa4c795956987e14366575ecbc352981ae6a7114bd457727cddd93"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-76.woff2",
+    "bytes": 48256,
+    "sha256": "a7f1e42cbf1209626de1ebea6241482aae14f50bf60020a3b969104c226bbadb"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-77.woff2",
+    "bytes": 36656,
+    "sha256": "59b1d13bedcf5c12a08ab972040bbc1d8eab7e40cf582b088997f5d08eca068d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-78.woff2",
+    "bytes": 48968,
+    "sha256": "5dd5e84947322ad943769aa36d9134b8233fa4221e542babe98b64f824d79c6f"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-79.woff2",
+    "bytes": 41140,
+    "sha256": "1195229dca099d5129fac3f4a4a8abbd6e60a454980bf1ae1897543a2284475a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-80.woff2",
+    "bytes": 32440,
+    "sha256": "475a845fd23f4cbedac5c89189133462ac3e4f76adae2ba5f464c49b9f27c929"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-81.woff2",
+    "bytes": 47364,
+    "sha256": "5a35370c68dbb4ce5b263b4a8326513f4ab94337f66197dca1b2810f3de9a7a9"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-82.woff2",
+    "bytes": 45988,
+    "sha256": "2db38a16cd11d3d80c8186afd70f57aa833f341721aa487fc23c0accda01ef7d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-83.woff2",
+    "bytes": 43324,
+    "sha256": "e90d33efb8e09c9a4d4c061f59c035fa8ebd6d8fe3824c29eb1abfc0d7e9d9c1"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-84.woff2",
+    "bytes": 32440,
+    "sha256": "adcf9fc8f639e955c89082a77f818c98f7b909f05a6fdf875dd0174613801123"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-85.woff2",
+    "bytes": 26732,
+    "sha256": "d7b2b43c6cf022f319e90b568557f60f0b7058ab9a1b60cce599df090922cec3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-86.woff2",
+    "bytes": 33400,
+    "sha256": "2760361e7fd0e0ca8a5c671f684a1e908afbf8be519da247fc5e0926711e960b"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-87.woff2",
+    "bytes": 7908,
+    "sha256": "113ed2e5fe033476c8da28cf8608dd374d29e144871749489d9a6b4731f85a62"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-88.woff2",
+    "bytes": 7196,
+    "sha256": "c973e4713ca031d7f2d154bfdeb111add88df7ae88dcdab98e8ba70228636362"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-89.woff2",
+    "bytes": 10800,
+    "sha256": "9e1f1f766eb3b9e4f5b6f0bfa525789a43bb83f636a93a034ed66c93dac2f0ea"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-90.woff2",
+    "bytes": 9272,
+    "sha256": "3d0d06b73960ab03119d5502142dae3a408ad815d8efbc7d9a016735fd654d80"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-91.woff2",
+    "bytes": 8592,
+    "sha256": "f8f2f31e0d4c161b826c4f3622a44913934b0dd050151b51bc4580879e23216e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-97.woff2",
+    "bytes": 2056,
+    "sha256": "adbe40605d1781449c8eb55df80bb53f52f331e97ea0d35fe1c2d53a6034d881"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-98.woff2",
+    "bytes": 3408,
+    "sha256": "57a0369c4b77675ba1a1fb082ddbe1e7295734774420d5327b83a79af7edae75"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-99.woff2",
+    "bytes": 9664,
+    "sha256": "3d483f5a29464e66102be7eccbecc5789cc413aefcdbd2b411fff907c54012f6"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-extra-83cf62a26a.woff2",
+    "bytes": 8108,
+    "sha256": "c3d4250403511b3fae48d031c22ecfe15696209abc9576f86a810e844d32bdc3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-extra-d91574944b.woff2",
+    "bytes": 8948,
+    "sha256": "0911100b53608b380eab7bf0f879a5418e6a0839968e75424055e3c0cb3189b9"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-extra-e6a9661669.woff2",
+    "bytes": 24936,
+    "sha256": "71b55199d1490a0c4ba7795ee1adb6460c2235454809d24b17a93d61c2d131ff"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-sans-sc-extra-ee66dbf9b4.woff2",
+    "bytes": 9916,
+    "sha256": "6a1a698b9a7fe536169d8f69c6d1c2d23c975816db7cec2345ae41a81cc544ca"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-100.woff2",
+    "bytes": 84692,
+    "sha256": "5fbbd72374f666103cd0020d9d868c52dd38622daacb5c8916fedef235bd9d15"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-101.woff2",
+    "bytes": 77796,
+    "sha256": "040f8a440574fd2012be3ab39f477fdfb1dbab2d56246dd93ab1d480176ec234"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-102.woff2",
+    "bytes": 79668,
+    "sha256": "da2512d9bb0b175f29e879e6c446d39ba5d424362106975d85141cd33fba8855"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-103.woff2",
+    "bytes": 84232,
+    "sha256": "4d168ac3cfce8c65fe31bebccff038475dde26e5e14bb5416bc628b15cac1774"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-104.woff2",
+    "bytes": 81060,
+    "sha256": "0185fd69b55fad783c63fd2ebc2da771c3fc348d7b9e8bced7f62523a8fd0d57"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-105.woff2",
+    "bytes": 81528,
+    "sha256": "bca890604cda0fca672386ec2a65d585832704c09dd628d141213fecfbb35074"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-106.woff2",
+    "bytes": 81596,
+    "sha256": "bc21568e4e0d01d44d1b5f9c214a1083cad2101e238091965274d2f0e7ddc532"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-107.woff2",
+    "bytes": 79788,
+    "sha256": "edf73233c5a0bf21fe76bb2e2941fe9a8192039630eb0bfea14c8b395cc349ea"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-108.woff2",
+    "bytes": 83428,
+    "sha256": "dbffed4fb73d0173f3bc41a8751c5c78f850f010a089ceecf85454769641e78b"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-109.woff2",
+    "bytes": 79084,
+    "sha256": "ca867a544a1fc96a8419de8ddc17e997f8c0192a3a6c474e82dc1f4c5afed57d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-110.woff2",
+    "bytes": 79512,
+    "sha256": "c6a08b943152a46955430e673c5651423372f9d1ef50753c33e0a02ae0ed844e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-111.woff2",
+    "bytes": 81160,
+    "sha256": "2da04fe98e7eb332524d395cd4f13d9a4626c037d77599c50e1ad731af907e6e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-112.woff2",
+    "bytes": 76032,
+    "sha256": "803d6e7987b319aeb7c1f1c5671cb0005c50044483140832356fae0f046ca5dc"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-113.woff2",
+    "bytes": 75852,
+    "sha256": "837c860c57686f1918dbeb348ad6811e9b26992e3ac8c574ea20642790dc4bae"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-114.woff2",
+    "bytes": 74752,
+    "sha256": "d1a88f1ead7d8a19b91e6811a1e4e2114dd15516d8751d57f8f90360c289d885"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-115.woff2",
+    "bytes": 72512,
+    "sha256": "b04790c17c0380389f7cd85f9fc52d22cf1f7421df1a2ef5c759b697338ee495"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-116.woff2",
+    "bytes": 67252,
+    "sha256": "e062dfddc1d0364c84047fc25c1b4474693060ed7fb27fb7f52f55c675764715"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-117.woff2",
+    "bytes": 66596,
+    "sha256": "b5ead31a585c24abe4641086a7e5678ef7b9a8cc96f2a77bf689ba43547d23e4"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-118.woff2",
+    "bytes": 58164,
+    "sha256": "804547a4184d501f8c61adf767c4aa2a68af9be5cb89b489c19292cd4ebb4556"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-119.woff2",
+    "bytes": 105052,
+    "sha256": "a6e2b87e9556a1bfcdae2255d49d517276e92caf32f93a31cde450786bf80620"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-21.woff2",
+    "bytes": 26052,
+    "sha256": "67d2655f88a0451e16d24831795ecc3f497feef462b2dae5a91dd0bc0c517172"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-22.woff2",
+    "bytes": 85376,
+    "sha256": "36b0ad95f7484b64dabb96fcf83423c8e5fdd343290467a38f9fad93d3fe2bbc"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-23.woff2",
+    "bytes": 73816,
+    "sha256": "34de79ce62e48683ab06d69a248d275911403326cb26f91e081b0ed7105059a6"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-24.woff2",
+    "bytes": 82688,
+    "sha256": "740e31fb7861be945ef6a565aeca97b49b4d5573f1c148aa4d6ada67619c2e37"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-25.woff2",
+    "bytes": 77948,
+    "sha256": "cbd375808a8f32d3bf51e277d238f9de60a56ec1c3c791a61993bf5cb2864b03"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-26.woff2",
+    "bytes": 71308,
+    "sha256": "c93234bd053cc53f0f71f1cc13565b2d1f6bec16d4ebc90420430c06541c4f4d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-27.woff2",
+    "bytes": 64624,
+    "sha256": "3fa16c7d779824151a721cf2101aa3acda5b843f5e094e7602aa9ab258eb08fe"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-28.woff2",
+    "bytes": 67912,
+    "sha256": "c5f3e637af016af27ab86cfbd694243dce1d6b3c3562377803ff7f70188ff80c"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-29.woff2",
+    "bytes": 72804,
+    "sha256": "ae5cdcb1c4faf5acef0b9045f060a8e83d7c3266a4fe8ab930dd023ebf22870e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-30.woff2",
+    "bytes": 76888,
+    "sha256": "7240ed44b7738d40ffd8c01dd46ddc674fb329b7e46b307880d4fe69e4ce846f"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-31.woff2",
+    "bytes": 64200,
+    "sha256": "14be1e31de35528e95e5732b588f3c6d25a14117e152fd94f7f1677f709b01e7"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-32.woff2",
+    "bytes": 67972,
+    "sha256": "973a1037dceead92639ef647fdb7526c40846e3428976198c4ab04596ecee072"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-33.woff2",
+    "bytes": 65908,
+    "sha256": "0a47a21c2e7dca05341574000500a55eaa7e21e6bfa9a9f1a6323303b4101c60"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-34.woff2",
+    "bytes": 64696,
+    "sha256": "2e7fd9066d4e2e3da7be15336a87da9d1725cbe4f796cd9c3a969d80f048100a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-35.woff2",
+    "bytes": 63740,
+    "sha256": "b6ce0831978c5889d28317fc03ba5d2ab08384976b1841e578f2edc66876abd9"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-36.woff2",
+    "bytes": 57872,
+    "sha256": "f3666a14f5ab7707c2e9ec73cb2a4075e1c66bcfddcef479c0144aaf03e09ca4"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-37.woff2",
+    "bytes": 67880,
+    "sha256": "834c8d0622f63a1ebab08a4e5da9f661c75141eb0b779c8a423b2eba418967e7"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-38.woff2",
+    "bytes": 75196,
+    "sha256": "8b3ae6c6a94924aedf8be6328745608a012f8d6042ef3ca6c3d6bb4f61bde86d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-39.woff2",
+    "bytes": 72296,
+    "sha256": "ad1ec109702ef31152c19acc3a59e8fedbd237f15556be071d404e7ef3055e39"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-4.woff2",
+    "bytes": 4604,
+    "sha256": "ebe07064881bbfab65b1afc054cf484d77440374d98a138bf66d44cf5c671e59"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-40.woff2",
+    "bytes": 66144,
+    "sha256": "c9ce19df1e39eaa09e3a60aa7b67c54c949e64f68972327c1105d1c76e61b955"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-41.woff2",
+    "bytes": 51544,
+    "sha256": "5315cd7852f4556ef0d06d95d22d6f7cde9e2fcff135134e1cec61f3d325ce2a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-42.woff2",
+    "bytes": 62784,
+    "sha256": "19d4b346d120e63dd134d241c07b954ba26785b045f7b48e3f3a8821b5bf8403"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-43.woff2",
+    "bytes": 58376,
+    "sha256": "3538f75012bbf8d8934125d5f2701ad16075d5c0257bda002a75b3d5ac2abede"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-44.woff2",
+    "bytes": 72580,
+    "sha256": "ae2d278a2ec633ead9e47ba12d777e073cb7c5f923d0eea282268f207c88ee7a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-45.woff2",
+    "bytes": 91388,
+    "sha256": "9576332f2a473094fb110562da8e21b547dcb69073dfe8e24167f0cf3dc3a231"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-46.woff2",
+    "bytes": 77472,
+    "sha256": "17eb7afd55036b86748f51a779b9424a2a64563e949a70fea03a71d662ce486d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-47.woff2",
+    "bytes": 73920,
+    "sha256": "f52842471f7a4d931b81fcaa37ddcc7da2281ccc043b593c10f4dd351ad30fd2"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-48.woff2",
+    "bytes": 64620,
+    "sha256": "782452cbe372494b23f634e8b5d6c7893352def1a005c63f48b252dff79487b3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-49.woff2",
+    "bytes": 70356,
+    "sha256": "83bf094bd8a87732a5d2e79069c22b30ca46890e18c7fc9e539612873070c204"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-5.woff2",
+    "bytes": 27576,
+    "sha256": "82ba14bc2a7b76279c2b07af677bafdc7af85eca8c145c9aba2446f80315c286"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-50.woff2",
+    "bytes": 64180,
+    "sha256": "6ef9dbc0196f0e56763181b5ee0ac59f65c3b93b9a73e40bf0784fd41bf9fb9e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-51.woff2",
+    "bytes": 57280,
+    "sha256": "ce58eeb39a4a8a05a5f88929082030939424aae8b7e4bf174fb31e2185f77476"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-52.woff2",
+    "bytes": 67664,
+    "sha256": "4708a6c176466c7823f3ce335ec94d5e9b008c0b0cf510f5802565887006e2b4"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-53.woff2",
+    "bytes": 53848,
+    "sha256": "bd365c058c05a9c6ef219b39a80be18443c2137767c2f3fef2249bf68c7f9b1d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-54.woff2",
+    "bytes": 69192,
+    "sha256": "1f868051a8bf937bb03c809f1ad52dc1d2fb78037a1c4f942f0f1c4142d0e466"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-55.woff2",
+    "bytes": 61492,
+    "sha256": "5b70b8ca00cc3467f3fe5df9005fcb00e9f5d1df3a9bd945aafeecde2e9d243a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-56.woff2",
+    "bytes": 69600,
+    "sha256": "49e34eb82b76e0ebab35f4cf977b2a4828feaca62fabbc7b0fe52954cf266771"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-57.woff2",
+    "bytes": 73948,
+    "sha256": "cfbda09fec2567865a8a761ef93062ae5f711889b7523026b0ec0ca4f7a68e92"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-58.woff2",
+    "bytes": 82372,
+    "sha256": "a866e74045fa35af957ea063623a4759955c57e1d2dece7b4f14a10a71a2d1c1"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-59.woff2",
+    "bytes": 69556,
+    "sha256": "c8476db3fbba41856cbb3c1683a97df0964b804f6818bb96d34c4325514f9fd7"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-6.woff2",
+    "bytes": 15632,
+    "sha256": "2c7385493055759bb67da7ddf9e88375a5c335c8693aabaaa83810d02c09ffb7"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-60.woff2",
+    "bytes": 61344,
+    "sha256": "381f1fa4ceaacc9e5431b13c4aac8b936945692efb290b332642696bde00c32d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-61.woff2",
+    "bytes": 61428,
+    "sha256": "751bd5775c805c8e26c96e062d00d7632e3b93ccc4703f366649509ab211ebaf"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-62.woff2",
+    "bytes": 79380,
+    "sha256": "0af5a04314200627801ed9dff0c8cb2526c30dc76981fcede443a06cd35aace6"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-63.woff2",
+    "bytes": 63876,
+    "sha256": "ad7f9aece198ec03ecc186052adcab633e889bbb06cd20b8c059f3e94374803e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-64.woff2",
+    "bytes": 51052,
+    "sha256": "e46ff0466edbaacfcf88f826d2acf6658b705983d8563f62baf9a12728474504"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-65.woff2",
+    "bytes": 58524,
+    "sha256": "e5313bcb399e45e9cca8c2337314e99d3c95972e38dbe0dce5585be0dc284d7e"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-66.woff2",
+    "bytes": 69016,
+    "sha256": "6cf3eb9cad4cc2f78c164e83306cc9451bd3c4bfbacffc66fdaa9ae32da21e38"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-67.woff2",
+    "bytes": 71720,
+    "sha256": "1868620dcde3a615ff47531bb0032e0bdfcbbb7696c7b7168492940a39d519cd"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-68.woff2",
+    "bytes": 54204,
+    "sha256": "ea40e335d816d52492ef32686cb4439ff65dc65b53c8baedfcbdeab6d44514b5"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-69.woff2",
+    "bytes": 73520,
+    "sha256": "042630ccc1f10a3c076c6358ec1100579053752045e3e3b6ac9229a4b90d8c11"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-70.woff2",
+    "bytes": 53100,
+    "sha256": "67bf8f9ba0a97c38d49bb52e11ba09bbe6cb966df6d194883bdda5c017b080fa"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-71.woff2",
+    "bytes": 62984,
+    "sha256": "fb4e744db699c2b01be2831d9a090524456b800099aa42ec81a95c3225bb86ac"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-72.woff2",
+    "bytes": 65644,
+    "sha256": "d12f6642ce00cabbc23a5f7abf7b5cefb6a93554d6bfa9808398922b5e645af1"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-73.woff2",
+    "bytes": 56024,
+    "sha256": "c49561885d2802a1eb759aa7b152a0d8f68842b789f3e16089d14e697f73bb92"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-74.woff2",
+    "bytes": 74616,
+    "sha256": "4587b84a41332990e380cba554e06e5dcdda3e3e17f29b25e81447488dd89217"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-75.woff2",
+    "bytes": 57820,
+    "sha256": "4670539162ec83c4603b5cc552e8492491b54622a408bcd98101aa239c7d2930"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-76.woff2",
+    "bytes": 65720,
+    "sha256": "a7edea1ab0808d6aabe3ebade5131abdd4fcc8841c66e7b74aa0f9f6e38053aa"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-77.woff2",
+    "bytes": 51728,
+    "sha256": "6ceb5902615653f16ba0549272530f180107a9e5e8ef4503f1503637859648cc"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-78.woff2",
+    "bytes": 71052,
+    "sha256": "1b8db7f344c8b80f918a87aab300f386f3f6094a8b638d2e6a2479d582af894a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-79.woff2",
+    "bytes": 58748,
+    "sha256": "3789541ab21901c4ada9ebc8056a24b6efcd423eef7c6b897251380f697c3193"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-80.woff2",
+    "bytes": 45128,
+    "sha256": "4769ea1f9d54b8f3ba8ad8cdced84deaf2806103d5423326c437039ecb418580"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-81.woff2",
+    "bytes": 60692,
+    "sha256": "84997861676c9bae5324a52de385c0467858d168805998d3509be31090d5ebf1"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-82.woff2",
+    "bytes": 62148,
+    "sha256": "1ff783685059ccf2299afbcf41f485a330ea888f62b95c5f2c9c83bac5f78125"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-83.woff2",
+    "bytes": 58764,
+    "sha256": "40ffb358e64eedca24fae79dd9400f47f4f8da5250bc8a5289493da9c67941ac"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-84.woff2",
+    "bytes": 42620,
+    "sha256": "8a255b870c7bd24499b1b64e7e36d691cd5ad4e02e890967158ce72d0bba241b"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-85.woff2",
+    "bytes": 40392,
+    "sha256": "c704af2f7f454c232781096f5dd48f7438174db64b40abf28963dc847045ec2a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-86.woff2",
+    "bytes": 47760,
+    "sha256": "9d8db7dcf757cd1f0a44e585338310c3920b24297224e7213a2babdd96f5d19d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-87.woff2",
+    "bytes": 7380,
+    "sha256": "4af6147be9f2e61c3aad5c855e12a5089c25a0d7bfe94b53d0a28eeb24729d5a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-88.woff2",
+    "bytes": 6912,
+    "sha256": "7e395932ef1c5961d6b92263bfe71309648dcda03151d3873a3b1fa99dac0f1b"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-89.woff2",
+    "bytes": 12268,
+    "sha256": "2fea10a32b2490f49afda7a78f2d5c8ceae389933297bbb3684ea7b8181f46dd"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-90.woff2",
+    "bytes": 9768,
+    "sha256": "584785876a5f0cc425fce0736406554ad747fdc18aab43c4ad9a7e679c75e759"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-91.woff2",
+    "bytes": 10580,
+    "sha256": "fa682b1b5a08e0312c69872650ccf1075f1289c4b22b31f506e87e17c4999635"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-97.woff2",
+    "bytes": 2380,
+    "sha256": "474b4dbfe6db34fdc1b2edf4c5c8b7ebdad9ecb72c5d19dc00c1b10f5de8f010"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-98.woff2",
+    "bytes": 4312,
+    "sha256": "c5f2c63f333640d2f7c24498c0ace4447e54f3bc0751c019ed98b55a8c319c5a"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-99.woff2",
+    "bytes": 12316,
+    "sha256": "89a5c6ab5b4faa068df9c289cf79d1bab3e068f3e07b7fad019f0bc17333d1bc"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-extra-0317c85107.woff2",
+    "bytes": 14480,
+    "sha256": "0b3cc9c8407854735da738293268f8aee553ff22caf5accf7e544f39b6392660"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-extra-45bbc450e2.woff2",
+    "bytes": 10352,
+    "sha256": "49cceeaa9f25f307a2dd4d3ce02bb9c33b035cbb461031c9dd2ffc1e90385557"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-extra-8c33abde2a.woff2",
+    "bytes": 10892,
+    "sha256": "496f8f9bab7cba81520d3d11f1570cf4579e83b59c4dd018e8cc8f1512ed3732"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\noto-serif-sc-extra-ab2ec6e80f.woff2",
+    "bytes": 32992,
+    "sha256": "f844663b11201b4a6611dbd587f46cb0ce7b0416c6e9097adcc645b4c0bef9e3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\OFL-noto-sans-sc.txt",
+    "bytes": 4388,
+    "sha256": "1c05c68c34f9708415aada51f17e1b0092d2cea709bf4a94cd38114f9e73d7d9"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\OFL-noto-serif-sc.txt",
+    "bytes": 4350,
+    "sha256": "5e0da210fb04058a8c0087985d2d456b931c2579811a49655721d3cf0c36b6d6"
+  },
+  {
+    "path": "web-deploy\\routed-app\\public\\vendor\\fonts\\README.md",
+    "bytes": 809,
+    "sha256": "a22fde61350d694b7728770b8eefe50d3be8fa064744184d51f99f21d4058a89"
+  },
+  {
+    "path": "web-deploy\\routed-app\\README.md",
+    "bytes": 6923,
+    "sha256": "5fe72c3886b31f5a42f04a17486b11ca2846ac17c13ca22d0ce090411d2c2e52"
+  },
+  {
+    "path": "web-deploy\\routed-app\\routing.json",
+    "bytes": 373,
+    "sha256": "c8db487d7b02241da1a439c22244d0575cb8e9b5084eef09eb445e667705a15d"
+  },
+  {
+    "path": "web-deploy\\routed-app\\server.js",
+    "bytes": 28742,
+    "sha256": "b3b645a44009deae13dcda8d781aeff2727aa4358942d61f034a2101a90d5429"
+  },
+  {
+    "path": "web-deploy\\routed-app\\test\\http.test.js",
+    "bytes": 4768,
+    "sha256": "ed1398a8e0cbd5bbdee0c58c170ad8da06675a7be363a96afce24ca1d1202eb9"
+  },
+  {
+    "path": "web-deploy\\routed-app\\test\\images.test.js",
+    "bytes": 3903,
+    "sha256": "408de1c662c50df757a311cf9f3e1c9f51aeabeb37ea7604cf3866f904281ea3"
+  },
+  {
+    "path": "web-deploy\\routed-app\\test\\quotes.test.js",
+    "bytes": 677,
+    "sha256": "3fe44c393c54fe9213be3c9edd00bba078b3c2719add7666b3b40ad388bfdedf"
+  },
+  {
+    "path": "web-deploy\\routed-app\\test\\reading-history.test.js",
+    "bytes": 4672,
+    "sha256": "24e7f5a79d86d1a570cf7607eba2d41226395598d1d640ef508a1921d9d17fed"
+  },
+  {
+    "path": "web-deploy\\routed-app\\test\\search.test.js",
+    "bytes": 1714,
+    "sha256": "e75ad6c2492b1236718458aad12f034b8830f167833f89c98f1c4f8f6e63975f"
+  },
+  {
+    "path": "web-deploy\\routed-app\\test\\server.test.js",
+    "bytes": 15559,
+    "sha256": "5c477679c859faa39ba45decc58eb40941938423de345745516dda0c61adb755"
+  },
+  {
+    "path": "web-deploy\\routed-app\\test\\talk.test.js",
+    "bytes": 7231,
+    "sha256": "db5eaaf44e7854d1ab118a11a3db82a2628f4e6707810ea6ad9253dd5f39c6f2"
+  },
+  {
+    "path": "web-deploy\\routed-app\\test\\transitions.test.js",
+    "bytes": 12132,
+    "sha256": "46a5c723a10a2c5b462e60602ebc973a65b00d5fcb8385f12632b22d0d78dcb4"
+  },
+  {
+    "path": "web-deploy\\routed-app\\test\\visitor-routing.test.js",
+    "bytes": 7400,
+    "sha256": "5731b1412870d66c4954e578ac109ef68204386e839856051f031126d205d983"
+  },
+  {
+    "path": "web-deploy\\routed-app\\visitor-routing.js",
+    "bytes": 3533,
+    "sha256": "b1e5157187af77c1a0ebf3954798db5e4622649de7afe23ee225d3c8278bc02f"
+  },
+  {
+    "path": "web-deploy\\server-live-before-routing.txt",
+    "bytes": 28060,
+    "sha256": "443aab3d24ce5c85a22e8fd4d09f1d0cf9ca77cfd456a78c4d1d7ef5352b015a"
+  },
+  {
+    "path": "web-deploy\\update-china-cidrs.py",
+    "bytes": 2326,
+    "sha256": "9b39ea87f98594be7f5afbb250dc2d18b614090e2904cb5311c6a65710fb4ee7"
+  },
+  {
+    "path": "web-deploy\\访问自动分流.md",
+    "bytes": 8154,
+    "sha256": "fc3bdc41c2d2cf67ad7d2054ed078ec6421b38d7dc1919d558ff0c124d8c851f"
+  },
+  {
+    "path": "webai\\.dockerignore",
+    "bytes": 108,
+    "sha256": "100cc609d307b9fa3fbf04887f23dbbd071bd059663b2e681e85010799161ad4"
+  },
+  {
+    "path": "webai\\.env.example",
+    "bytes": 559,
+    "sha256": "199890058b68b07e5b6ce0e7b68ab809d196959edd02452b13a000423b2aea92"
+  },
+  {
+    "path": "webai\\.gitattributes",
+    "bytes": 73,
+    "sha256": "be53271f536f849171fc1ddb1dab13a43c79f5083f8bb892bde86d2124b1ae95"
+  },
+  {
+    "path": "webai\\.gitignore",
+    "bytes": 133,
+    "sha256": "b6c66514fea1c988109c2ce0e0cd76caa129eee4be8b1aa005520ba05b82f454"
+  },
+  {
+    "path": "webai\\AGENTS.md",
+    "bytes": 140,
+    "sha256": "08f868428b41002af382adc69764af46b2a7ddc3704a5a05e72e738e6d27e8be"
+  },
+  {
+    "path": "webai\\CHANGELOG.md",
+    "bytes": 6651,
+    "sha256": "33f6dfbbddc3f614be8a9b3c861413d78bdfc016a45a2ed6fd3fbe41a44d6342"
+  },
+  {
+    "path": "webai\\compose.real.yaml",
+    "bytes": 406,
+    "sha256": "601c5b879493c8cb5640713c251e4a88ccd0eeb48a2de1f2daf0a604a6c2101d"
+  },
+  {
+    "path": "webai\\compose.yaml",
+    "bytes": 580,
+    "sha256": "398ba27cffe38b2f9499ad931f49b52d1414b14bcbe4a56c7f9b1343fd62ccd5"
+  },
+  {
+    "path": "webai\\conversations.js",
+    "bytes": 5212,
+    "sha256": "a578413ae6ae57d6c2ccdc2ef2f20bd5bfc0323410d0caa1a78d05ed3e77ad48"
+  },
+  {
+    "path": "webai\\credentials.js",
+    "bytes": 2234,
+    "sha256": "091892d115c4ce8398eb2ddf615dbcaddc10ee95e29e7c06ec8a23c432bacbb2"
+  },
+  {
+    "path": "webai\\data\\access.txt",
+    "bytes": 130,
+    "sha256": "85fff354a222c66f4f370e6d564faa088c356bb54f6edf2bb7bca362606e9e1c"
+  },
+  {
+    "path": "webai\\data\\admin-change.tar.gz",
+    "bytes": 97667,
+    "sha256": "bc7bec9c7e7d628871d02b5b4fafb6d8ce5f801ace73458d26e08e0d28f1977c"
+  },
+  {
+    "path": "webai\\data\\admin-staged.tar.gz",
+    "bytes": 95652,
+    "sha256": "a1bb0b139bcc4f80bbbf68015e8f5f25d8116cf02613739f37e1c3fbd05e5636"
+  },
+  {
+    "path": "webai\\data\\audit-staged.py",
+    "bytes": 919,
+    "sha256": "5cddd989d5d807ef2b2d006829cd51c43169f45854b502f44f1daeec4f3b9adb"
+  },
+  {
+    "path": "webai\\data\\build-askpass.ps1",
+    "bytes": 289,
+    "sha256": "1ad623b0b54ade4836ca0f9882509dd71512c0bf0d0b7b604a1da657dd437f8c"
+  },
+  {
+    "path": "webai\\data\\check-140.py",
+    "bytes": 4933,
+    "sha256": "744655598bb9f986038808caef35c5c9e57270fc94d28e39c00c091aad4229af"
+  },
+  {
+    "path": "webai\\data\\check-chat.py",
+    "bytes": 1584,
+    "sha256": "1d20f1a1fcbcd1917fd1f96276229491ed2fefaa8bca5d7e69bab666a22e945d"
+  },
+  {
+    "path": "webai\\data\\check-codex-132.py",
+    "bytes": 1522,
+    "sha256": "bb7475487c18b9676485f743c84dc09c8d232ccb10d72f6b19db8dc60ebfd2e4"
+  },
+  {
+    "path": "webai\\data\\check-codex-133.py",
+    "bytes": 1537,
+    "sha256": "dc2fd19a60ee4b5963051af4c4da4c6535199324f55733204a1950ba6623af1d"
+  },
+  {
+    "path": "webai\\data\\check-compact.py",
+    "bytes": 755,
+    "sha256": "b95e30f0b2faa421309b9dbc5e0880c9cf67e7e442065baf5f03112bf3d18e53"
+  },
+  {
+    "path": "webai\\data\\check-deployment.py",
+    "bytes": 1306,
+    "sha256": "576f158f50819ee2c8c7f87ad565cdc36881b783061fa28aecf1826726332c52"
+  },
+  {
+    "path": "webai\\data\\check-final-state.py",
+    "bytes": 1209,
+    "sha256": "a17f5eb9c65e9ddd24135ecd7a1c941132191bec219f583f882f8db9013b8653"
+  },
+  {
+    "path": "webai\\data\\check-usage.py",
+    "bytes": 1056,
+    "sha256": "0d184f5425461394342d3b234ba44b94d42d382553e00e352afa6e9c3986a04e"
+  },
+  {
+    "path": "webai\\data\\check-v1.3-state.py",
+    "bytes": 1063,
+    "sha256": "1b32e0ea79693ddce199205859adb03d1d92226720c98c07cf2e953ac2ebbb0d"
+  },
+  {
+    "path": "webai\\data\\cleanup-codex-132.py",
+    "bytes": 812,
+    "sha256": "26500d40c766c6aab50c99e413a7793a032899b0a3b9cab94045ba6ab452068e"
+  },
+  {
+    "path": "webai\\data\\cleanup-codex-133.py",
+    "bytes": 825,
+    "sha256": "8ae56b27097c5b26d8fdb99d690fd531c9fe4ea1af2a4350dcb4166833b61c8d"
+  },
+  {
+    "path": "webai\\data\\cleanup-qa140.py",
+    "bytes": 815,
+    "sha256": "abd277d407e65a6844918babe4aad57310c6f03d811c2570100777591e9de9e6"
+  },
+  {
+    "path": "webai\\data\\cleanup-test-projects.py",
+    "bytes": 1203,
+    "sha256": "b55d215c13f2c0606c9059e2d247137317d7e219e4fd44095784ff49c0a0faca"
+  },
+  {
+    "path": "webai\\data\\codex-132-results.json",
+    "bytes": 869,
+    "sha256": "d0381d644d145224b0045bf1a996ce90637e874ba674644d4b3ef89ee688a42c"
+  },
+  {
+    "path": "webai\\data\\codex-132-test-project.json",
+    "bytes": 164,
+    "sha256": "a1d36e6609e9302fc5824687fa615a6c3351e79b4ceac3720ef4bd54e3c53571"
+  },
+  {
+    "path": "webai\\data\\codex-133-results.json",
+    "bytes": 934,
+    "sha256": "518b09ca83175ee743a1684324b208dc4daf765d592222b4a4d735f340ce54e5"
+  },
+  {
+    "path": "webai\\data\\codex-133-test-project.json",
+    "bytes": 164,
+    "sha256": "f7328fafab419d06e728657a5826713622e135799a482a98973892875bfec128"
+  },
+  {
+    "path": "webai\\data\\codex-inspect.py",
+    "bytes": 1612,
+    "sha256": "d8fc14b2971f630aa058e00e545426f2759d225cc02adf4173b36feda3eda4b3"
+  },
+  {
+    "path": "webai\\data\\codex-minimal-133.patch",
+    "bytes": 26033,
+    "sha256": "3ab53030da72862847e5297e27ec38bf5563f49e86d758626f0a8fa43ec5d65b"
+  },
+  {
+    "path": "webai\\data\\codex-minimal.patch",
+    "bytes": 24521,
+    "sha256": "9e69778b4fa0cc5a71720e05827927c1d18b0911b0c650c95dfdc6c08bca7f6f"
+  },
+  {
+    "path": "webai\\data\\deploy-admin-change.py",
+    "bytes": 1181,
+    "sha256": "68f2353c0c18aae69f49568a37b0a4a2791f10f098e941f53f851bacac63ba9f"
+  },
+  {
+    "path": "webai\\data\\deploy-staged-admin.py",
+    "bytes": 1917,
+    "sha256": "c01b1cc1c812a2e6873a5b2ece3e3a6eebeae38320e4ff9410e666c230ce66db"
+  },
+  {
+    "path": "webai\\data\\deployment-receipt-1.3.1.json",
+    "bytes": 1755,
+    "sha256": "ed8b28d74fec812475d9a3c562687bf77b3ef343a655a86e52201dd711b820ef"
+  },
+  {
+    "path": "webai\\data\\deployment-receipt-1.3.2.json",
+    "bytes": 1755,
+    "sha256": "c4296bb319899ce1170d89345a9935472e7a13f326bf247758035eaca7395941"
+  },
+  {
+    "path": "webai\\data\\deployment-receipt-1.3.3.json",
+    "bytes": 1755,
+    "sha256": "8fc28a5f24ff2cdf5a5c03209c90d8777533dbad2a2ce9ff45bc1f4e9a72c654"
+  },
+  {
+    "path": "webai\\data\\deployment-receipt-1.3.json",
+    "bytes": 1389,
+    "sha256": "721e64128fc072554a0d4a18b5f617bbc1e90f2b48314f99ecb20bf4080063a8"
+  },
+  {
+    "path": "webai\\data\\deployment-receipt-1.4.0.json",
+    "bytes": 2131,
+    "sha256": "99ccfebf48c73297434d9a8162b96967897d6421db123bd4f3c0c24002c0dc33"
+  },
+  {
+    "path": "webai\\data\\deployment-receipt.json",
+    "bytes": 2131,
+    "sha256": "99ccfebf48c73297434d9a8162b96967897d6421db123bd4f3c0c24002c0dc33"
+  },
+  {
+    "path": "webai\\data\\edit-latency-ui.py",
+    "bytes": 1037,
+    "sha256": "f3de12d0a767ff2366225a79b42070a2eba7bf967304dd984c85d63d93b64ffb"
+  },
+  {
+    "path": "webai\\data\\edit-project-ui.py",
+    "bytes": 3782,
+    "sha256": "80b7fba2a5e86ba9068b456449306160cae7717f59585a25346e55d4466060e0"
+  },
+  {
+    "path": "webai\\data\\edit-ui.py",
+    "bytes": 598,
+    "sha256": "c262f49569e6a1b13a484632d096627089d4ee5eca922bc16e0ce2dc5ecbc63d"
+  },
+  {
+    "path": "webai\\data\\final-receipt.py",
+    "bytes": 2338,
+    "sha256": "755246644646c8b5bdd66c3de24da1324e1e0588712fe50e8fe94f4ff4d2cd8d"
+  },
+  {
+    "path": "webai\\data\\history-client-block.txt",
+    "bytes": 9980,
+    "sha256": "03e8d720973508b7ced75211a8d1b046b43eab3955ef3095916fb43caa734a53"
+  },
+  {
+    "path": "webai\\data\\history-deployment-section.txt",
+    "bytes": 774,
+    "sha256": "af4140a146eaaf5a53d89f8804e6f8ae95a4a078e86706db1c7734a7e00cced5"
+  },
+  {
+    "path": "webai\\data\\history-readme-section.txt",
+    "bytes": 2054,
+    "sha256": "f66fe59fe762347305fbc23e281ded2ca41e4c8c3acaebf4b1f03eeea4928f7e"
+  },
+  {
+    "path": "webai\\data\\package-release.py",
+    "bytes": 700,
+    "sha256": "1e8e49ae7cd73c5431729295130aaf937d255906f462edb58fe49b6da36b9450"
+  },
+  {
+    "path": "webai\\data\\prepare-apparmor.py",
+    "bytes": 1601,
+    "sha256": "09d8de22b17a1bda415dfeadde3f132052ca1ebecae3ef81650187aa2114c68c"
+  },
+  {
+    "path": "webai\\data\\prepare-patch.py",
+    "bytes": 564,
+    "sha256": "8dc016df0c1d30881b6591777df981e276a9ec1dfeb64b58c5421beb07886cd6"
+  },
+  {
+    "path": "webai\\data\\prepare-seccomp.py",
+    "bytes": 1359,
+    "sha256": "081536119f73ad608f29572208cc6a5e8338017ab76bb1d167f14eb0db275f55"
+  },
+  {
+    "path": "webai\\data\\preview.pid",
+    "bytes": 7,
+    "sha256": "4c3d39826cf7b30d794699df5bc4dbe959a4c6f50fc953563998742a79c49a54"
+  },
+  {
+    "path": "webai\\data\\preview.stderr.log",
+    "bytes": 0,
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "path": "webai\\data\\preview.stdout.log",
+    "bytes": 67,
+    "sha256": "3a39dbe62c8badcd69e7f95cab50a5c4aec6fc06aed3dc6a2e572df3531c9f8d"
+  },
+  {
+    "path": "webai\\data\\qa-1.4\\credentials.key",
+    "bytes": 32,
+    "sha256": "4059ba615b6aacac080cdae7a07ac9078b680c9da83362ed8c47e4a004209b93"
+  },
+  {
+    "path": "webai\\data\\qa-1.4\\demo-conversations\\18e44934-81c4-4944-bd18-449b0f8a1f0d.json",
+    "bytes": 1215,
+    "sha256": "987cd67ce0da6f2bf8137c1529f2d07cc95dc677c6d463f2ded38aaa2ae88e50"
+  },
+  {
+    "path": "webai\\data\\qa-1.4\\demo-conversations\\6dd173f6-69f6-4908-8d6e-7e9e83fde6bc.json",
+    "bytes": 1206,
+    "sha256": "965161e5e29e457a51327705da1b96af2d4ba54c6780ed151de88f28e598040b"
+  },
+  {
+    "path": "webai\\data\\qa-1.4\\demo-state.json",
+    "bytes": 6145,
+    "sha256": "b86874003f23a56d2abcdf57faca721035c4fbba44758012c7f63bdf6d3a6b4f"
+  },
+  {
+    "path": "webai\\data\\qa-command-approval.png",
+    "bytes": 131992,
+    "sha256": "43cb8d77ba53934ed70de1e27dba29710acc7e9bd710f10fed259ebcc1a32638"
+  },
+  {
+    "path": "webai\\data\\qa-git-review.png",
+    "bytes": 199043,
+    "sha256": "519ad333e5e9514428772ded7e94666aa64e358310ade87e2796877af256ee11"
+  },
+  {
+    "path": "webai\\data\\qa-history.png",
+    "bytes": 127947,
+    "sha256": "3b78edd4f91625f7df6fe9cea01d8f97ac13b6225ce73a074032bdfad45d23fa"
+  },
+  {
+    "path": "webai\\data\\qa140-history.json",
+    "bytes": 48,
+    "sha256": "cb331e0d15b8ed51e6e1ee987b07fec5ed6427eab3ed7b124def8af70e608165"
+  },
+  {
+    "path": "webai\\data\\qa140-project.json",
+    "bytes": 164,
+    "sha256": "ea747ea2b9e8a73dc88d63fb77b2839597596bfba4255df5b8ae9d4212b03c73"
+  },
+  {
+    "path": "webai\\data\\qa140-results.json",
+    "bytes": 465,
+    "sha256": "403d7ff7920a0a337161fa5aa0518fc48ab59ab56cebe7f0b83bd80abd0985b2"
+  },
+  {
+    "path": "webai\\data\\remote-admin.py",
+    "bytes": 515,
+    "sha256": "95b02a002f621f357cb1bd4b9884e110560c76dd84e684e03a4d1b001a135ac1"
+  },
+  {
+    "path": "webai\\data\\rotate-admin-host.py",
+    "bytes": 3418,
+    "sha256": "454d0ff77a88babaed7a18e4e71092211f3e00d17ea411bd3776ed22f7381069"
+  },
+  {
+    "path": "webai\\data\\runtime-hashes-1.3.1.json",
+    "bytes": 1093,
+    "sha256": "7d03766e5d1f400d73c4cb4b3a62f30ad11026b96d5085a31b58f5007132450e"
+  },
+  {
+    "path": "webai\\data\\runtime-hashes-1.3.2.json",
+    "bytes": 1093,
+    "sha256": "b836fee52a405d80773649e3112167da3e596b7a9522f75e4af4f2b08eebded8"
+  },
+  {
+    "path": "webai\\data\\runtime-hashes-1.3.3.json",
+    "bytes": 1093,
+    "sha256": "57f281d5d38be505ed03728b015f5680f980d5a2e24849b6bf07cfc791683730"
+  },
+  {
+    "path": "webai\\data\\runtime-hashes-1.3.json",
+    "bytes": 835,
+    "sha256": "3792e21d031f79865867e9a55e1baedab1d68b6fcb8fce9ad4fd6d11f0d409be"
+  },
+  {
+    "path": "webai\\data\\runtime-hashes-1.4.0.json",
+    "bytes": 1441,
+    "sha256": "8e5d3749719b9cc4db0d9fae9876bc0154e219fca65912a27efb1a7523ed329e"
+  },
+  {
+    "path": "webai\\data\\runtime-hashes.json",
+    "bytes": 923,
+    "sha256": "e169dd9473ff6b2e094a06d95580e6e02e53e086d8868d21da0998c7afaa324e"
+  },
+  {
+    "path": "webai\\data\\smoke-file.txt",
+    "bytes": 49,
+    "sha256": "069c033e6afc40f2dec8636b074aa5908a5eae6b01448303a65d1e652e4a0af1"
+  },
+  {
+    "path": "webai\\data\\smoke-projects.py",
+    "bytes": 2956,
+    "sha256": "305bc33b880fb751d4c7719009f31f1ca18892992352e46bb9dcbfc15e376128"
+  },
+  {
+    "path": "webai\\data\\smoke-v1.3-results.json",
+    "bytes": 3653,
+    "sha256": "7c26d1b509dccd8c75f3d3167b69111ff0e3892e7fdcfe5dc1b9f80bfb747761"
+  },
+  {
+    "path": "webai\\data\\smoke-v1.3.py",
+    "bytes": 2578,
+    "sha256": "b7090ce2beaf0a4fefbc53ddaca6fedf867ba6bb7faa5eca74a782d1f73832e1"
+  },
+  {
+    "path": "webai\\data\\ssh-askpass.exe",
+    "bytes": 3584,
+    "sha256": "ec29bff5219e94dbb582907cece1a28e2d77b50f6c02191918a7b49e2095893f"
+  },
+  {
+    "path": "webai\\data\\stage-admin-change.py",
+    "bytes": 583,
+    "sha256": "59a419ad8df6563aaf12c240175771a135c0a7e6427d181c3142ca34d0fe152f"
+  },
+  {
+    "path": "webai\\data\\test-projects.json",
+    "bytes": 404,
+    "sha256": "a8b912f54eefd6befe01c829f060c334f25c8ee2c7032fea7c0498f44c5f7f17"
+  },
+  {
+    "path": "webai\\data\\verify-private-repo.py",
+    "bytes": 726,
+    "sha256": "5fe8533d9bcb2072e08507e32a6540da8ef3ba1a07121c7117982a3c2f0d3c5b"
+  },
+  {
+    "path": "webai\\data\\verify-release.py",
+    "bytes": 2113,
+    "sha256": "1c675144bcbacb0b81bc3e9e69dbc973cdd032a18fa129071a2866274e8e1bba"
+  },
+  {
+    "path": "webai\\data\\work-client-block.txt",
+    "bytes": 6523,
+    "sha256": "d8d444cf47a53e80025e846e5aa5c46ab81b0855b423f1f3b246c1b31206d887"
+  },
+  {
+    "path": "webai\\data\\work-smoke.py",
+    "bytes": 1419,
+    "sha256": "2f5dddd68dcc5e56b2b92345db3abe9b49487c25e7fedd6a440a4c724bec7924"
+  },
+  {
+    "path": "webai\\demo.js",
+    "bytes": 5138,
+    "sha256": "a96c68fce0d485100498f081843cd05834842beab2bc3d237087f3aa1f56a46a"
+  },
+  {
+    "path": "webai\\deploy\\__pycache__\\account-bridge.cpython-314.pyc",
+    "bytes": 52181,
+    "sha256": "2277141fa3148535fab86b49b2685b2f03d263ebc932ad5f0fcbe141645126c9"
+  },
+  {
+    "path": "webai\\deploy\\__pycache__\\test_bridge.cpython-314.pyc",
+    "bytes": 30139,
+    "sha256": "26b4d246532d6612d8162eb734d943eb496e2cf4a10787c8adb0d6f32b0754b1"
+  },
+  {
+    "path": "webai\\deploy\\__pycache__\\test_project_files.cpython-314.pyc",
+    "bytes": 6014,
+    "sha256": "04d26da3c3a0836d4c0a828525f5ff9204761bedb44658b782f20a915a01b047"
+  },
+  {
+    "path": "webai\\deploy\\__pycache__\\test_project_work.cpython-314.pyc",
+    "bytes": 6964,
+    "sha256": "3e4bd0e8d18111abc0e1b5c048c4dc1c74628bcc801b00db7e4d756f118eff76"
+  },
+  {
+    "path": "webai\\deploy\\account-bridge.py",
+    "bytes": 32862,
+    "sha256": "c0ab986ce9ac48a20c762f79e531119636f22d4d3c756e8bc1036a9a7b01949f"
+  },
+  {
+    "path": "webai\\deploy\\codex-seccomp.json",
+    "bytes": 22482,
+    "sha256": "15623349f08c20259b91d8bc06a556c4efc85218c46cdf76fca3f36efc0301da"
+  },
+  {
+    "path": "webai\\deploy\\compact-work.mjs",
+    "bytes": 1685,
+    "sha256": "75639b074764bdf11e198b992ec29f66f5d74bddc40af2a4906277c6f7655ee5"
+  },
+  {
+    "path": "webai\\deploy\\compose.codex-sandbox.yaml",
+    "bytes": 259,
+    "sha256": "5e178b6277448cdbe019d78f0677b65ea5c1d891eafc5e7cef7a829b23c3a184"
+  },
+  {
+    "path": "webai\\deploy\\compose.lan.yaml",
+    "bytes": 1239,
+    "sha256": "be7e20f517e9e09fa407d00ee69b04aa2a4c7da752384c54cb3f7596f94e039c"
+  },
+  {
+    "path": "webai\\deploy\\empty-data\\.keep",
+    "bytes": 1,
+    "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+  },
+  {
+    "path": "webai\\deploy\\migrate-v1.3.py",
+    "bytes": 1335,
+    "sha256": "e953eb6d954446d5a3f8cfec2b77804e812ac80de403fc250aecff705614281f"
+  },
+  {
+    "path": "webai\\deploy\\project-files.py",
+    "bytes": 4620,
+    "sha256": "d3e88d15488ef9847e7510933dc688107062b2242287aabac081b2ebea46e51c"
+  },
+  {
+    "path": "webai\\deploy\\project-work.py",
+    "bytes": 6866,
+    "sha256": "5450534227d3265eea6f41292aa4bfda7243521e5b7046ae45ff2520f739524c"
+  },
+  {
+    "path": "webai\\deploy\\SECCOMP-LICENSE",
+    "bytes": 11358,
+    "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+  },
+  {
+    "path": "webai\\deploy\\seccomp-source.json",
+    "bytes": 595,
+    "sha256": "2aa8aaf9410b19e15375f119a2327bbe0840fc2fae6dfd7ba66e8833881c6af1"
+  },
+  {
+    "path": "webai\\deploy\\setup-codex-sandbox.py",
+    "bytes": 1646,
+    "sha256": "8c828cd39b31c87b1d55593841e9f339b26c33bb9a889cefb98358dc3a5264a6"
+  },
+  {
+    "path": "webai\\deploy\\setup-host.py",
+    "bytes": 6058,
+    "sha256": "8e7640ad642a1441bb5de4549aeb5fc55093de5de508965c65226cb7080af514"
+  },
+  {
+    "path": "webai\\deploy\\test_bridge.py",
+    "bytes": 13690,
+    "sha256": "4cea8c2ced9a18899858871ef9e1a0903c6530317a92b75c592fe4a671e8141d"
+  },
+  {
+    "path": "webai\\deploy\\test_project_files.py",
+    "bytes": 2358,
+    "sha256": "ca60d6beb6faf97ec6f72055c76d797f19d302e7a3987589baea80504962c59a"
+  },
+  {
+    "path": "webai\\deploy\\test_project_work.py",
+    "bytes": 3145,
+    "sha256": "c9133ed1396d8d834a4674660dbfd097a17bcd49997dfaea4be2c636ce7e61b9"
+  },
+  {
+    "path": "webai\\DEPLOYMENT.md",
+    "bytes": 9177,
+    "sha256": "6e9d4f116e8b8ec60c077d884cc30d088b6265e55aca443b275163bd069acd12"
+  },
+  {
+    "path": "webai\\Dockerfile",
+    "bytes": 644,
+    "sha256": "2547fc136c7e6a23ffd2540c8f72950b84c6a74d5c783b084a60538f5c20b0a2"
+  },
+  {
+    "path": "webai\\lib.js",
+    "bytes": 8418,
+    "sha256": "b6897b77e4a7585aac5eb582b32e874002d9339e36b43ad6dd8deaf4e90d08dd"
+  },
+  {
+    "path": "webai\\package.json",
+    "bytes": 307,
+    "sha256": "112056ca96cd7d844f906071f3ce3e546d464c149326d4e6be953f1d5d4dd26c"
+  },
+  {
+    "path": "webai\\public\\app.js",
+    "bytes": 91726,
+    "sha256": "fe7b40e0a49e8a1c7d832b73ff7c0bbde9bb08149114fc21f89ada7914fb3ad1"
+  },
+  {
+    "path": "webai\\public\\context.js",
+    "bytes": 1276,
+    "sha256": "74764d8ff347a197226e32f8ea9bb80b8e272f72866bf61c894f1dadd2102015"
+  },
+  {
+    "path": "webai\\public\\favicon.svg",
+    "bytes": 251,
+    "sha256": "e7a812b3b0f52173dc055da15e5378ebc0bf9cf981f72a05efc5c4061301fda8"
+  },
+  {
+    "path": "webai\\public\\history.css",
+    "bytes": 3159,
+    "sha256": "103dc8eb57082861cc919b5f4e7d549d4853ad2ddbb9bb1e4d999e234f05edff"
+  },
+  {
+    "path": "webai\\public\\history.js",
+    "bytes": 1087,
+    "sha256": "207f574fe682ba11b34a3930aa853f5d3d5f466e89a04129166b599f23622d44"
+  },
+  {
+    "path": "webai\\public\\index.html",
+    "bytes": 3105,
+    "sha256": "1247aa9f9f2c4d6cbf7a66e9df5bdd0aa2c837742e7e691c914fb18cbf8ed848"
+  },
+  {
+    "path": "webai\\public\\style.css",
+    "bytes": 27665,
+    "sha256": "7b35cfe2c2e0a7e7f1be4d164991117e3c1de1700fb1643c3998b9bbc854b702"
+  },
+  {
+    "path": "webai\\public\\workspace.css",
+    "bytes": 11088,
+    "sha256": "a9079fff88a25b13965af9da9bbfc8d2b72a61067ac4fb58228b358091350369"
+  },
+  {
+    "path": "webai\\public\\workspace.js",
+    "bytes": 3474,
+    "sha256": "f0bd1ed2cfdad5a77ebc5d19e906a79f27e84af494649514a9b9e0ef12609d0c"
+  },
+  {
+    "path": "webai\\QA.md",
+    "bytes": 8262,
+    "sha256": "911e5f844835b1a4df4967cb72792798f5a52ff8cc7c1de9a3beefa1e95f020a"
+  },
+  {
+    "path": "webai\\README.md",
+    "bytes": 15150,
+    "sha256": "e357abf213d0c35ba5007ceb101a36a8818894f4301cf5ea7c77b248a0112561"
+  },
+  {
+    "path": "webai\\server.js",
+    "bytes": 25437,
+    "sha256": "0de4d6f6debb3742913132ff8ab04127df319e351f94671103ab7b65e0169ffe"
+  },
+  {
+    "path": "webai\\services.example.json",
+    "bytes": 1031,
+    "sha256": "ddb7e8495cb4add40cc6e1c3d8737adfdb268c433e865984f5cfefc945b1c6ad"
+  },
+  {
+    "path": "webai\\test\\credentials.test.js",
+    "bytes": 2035,
+    "sha256": "0946d49df6b96c8764beab0d18d1504e3ad4f924d2d4961e6777019f707e3857"
+  },
+  {
+    "path": "webai\\test\\gateway.test.js",
+    "bytes": 25905,
+    "sha256": "b4eacd88ec80df177a63fc99a3100f224842bb365996c9ae9a872dc3d7d58805"
+  },
+  {
+    "path": "webai\\test\\history-ui.test.js",
+    "bytes": 4045,
+    "sha256": "1b3a09d6fd605416fe50e947a6a1821fcf83f0748fc70f24e06da997dc6c86ad"
+  },
+  {
+    "path": "webai\\test\\history.test.js",
+    "bytes": 2620,
+    "sha256": "63f5e2bc9cc250b14380e322cacb55a02c3a158cee3fcb39d0e67ddfe05bd6c7"
+  },
+  {
+    "path": "webai\\test\\workspace.test.js",
+    "bytes": 6615,
+    "sha256": "70f7b8caf93816440d1e4dacbf96b732c6d7af92791ded9938e7a220c4ddf242"
+  },
+  {
+    "path": "zcode-container\\.dockerignore",
+    "bytes": 66,
+    "sha256": "ef091834d8e0988d7c4f48e031908ab47f8223d68424611342fea07acf37b86e"
+  },
+  {
+    "path": "zcode-container\\cache\\source.tar.gz",
+    "bytes": 89405689,
+    "sha256": "a77cb72315deb872fb7de183111f3b8887e30c4cff5f99e5c23794238899bee3"
+  },
+  {
+    "path": "zcode-container\\check-ip.py",
+    "bytes": 1242,
+    "sha256": "735b07d56b74fd09acd126ddaa18fdba420c002a6c5603d1e2975d621bbabc69"
+  },
+  {
+    "path": "zcode-container\\compose.yaml",
+    "bytes": 979,
+    "sha256": "92a855a42d66a4eac1b2c71e132ea670638852afa87c39ba9f5bde1d7f6da824"
+  },
+  {
+    "path": "zcode-container\\deploy.sh",
+    "bytes": 1712,
+    "sha256": "04ba82cbba8751c523194fe6bc1a0a140bad405921a2ed05eb2668f106889a51"
+  },
+  {
+    "path": "zcode-container\\DEPLOYMENT.md",
+    "bytes": 2789,
+    "sha256": "32a293e12213cf6a6ecbd3928139f4ff1104c9b07a4ede7e70b6d1986cd557ef"
+  },
+  {
+    "path": "zcode-container\\Dockerfile",
+    "bytes": 1469,
+    "sha256": "aa8884bfa86abd6d7d72f94d9e6c322f6e232e95ef2ad32fafa92600c7852b14"
+  },
+  {
+    "path": "zcode-container\\entrypoint.sh",
+    "bytes": 213,
+    "sha256": "86f4038f715c78b11440a6592eab5a57fc110b850d2e5197f387bf4335c37ed8"
+  },
+  {
+    "path": "zcode-container\\README.md",
+    "bytes": 2200,
+    "sha256": "7dbabbcc6b488746be6b5a9cd30f0b04b2e331e7a6a9d8b431bcd239eff63742"
+  },
+  {
+    "path": "zcode-container\\restart-verification.log",
+    "bytes": 222,
+    "sha256": "fb19b9eed44a9524f8b4ac183cda31915a9230f93b6924667853a63e0ea730bc"
+  },
+  {
+    "path": "zcode-container\\verification.log",
+    "bytes": 222,
+    "sha256": "fb19b9eed44a9524f8b4ac183cda31915a9230f93b6924667853a63e0ea730bc"
+  },
+  {
+    "path": "zcode-container\\verify-client.py",
+    "bytes": 2077,
+    "sha256": "4333bc53934eaa7273ff7c9ed4c71089853bbfda9b764091b248a8c1c4dfae64"
+  }
+]

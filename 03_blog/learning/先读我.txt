@@ -1,0 +1,20 @@
+请先把整个压缩包解压到电脑，不要在压缩包预览里运行。
+01-js基础：用来练习 node hello.js。
+02-浏览器练习：practice.html 可直接双击打开。
+03-博客框架：用 VS Code 的“文件→打开文件夹”打开这个文件夹本身，终端的 ls 结果应有 package.json、server.js 和 public。
+
+安装 Node.js 的 LTS 版本后，新建 VS Code 终端。
+Mac 启动（下面一整行写在终端里）：
+BLOG_ADMIN_PASSWORD='change-this-demo-password' npm start
+
+Windows PowerShell 启动（两行）：
+$env:BLOG_ADMIN_PASSWORD='change-this-demo-password'
+npm start
+如果 npm.ps1 被限制，第二行用 npm.cmd start。
+
+浏览器打开 http://localhost:3000
+管理员打开 http://localhost:3000/admin
+练习密码：change-this-demo-password（不包括引号）
+保持终端运行。停止时按 Control+C。
+数据自动写入 data/blog.json，源码包没有个人内容、真实密码或现有博客数据。
+这是本机教学框架。完整说明请看《博客总结_详细版_从C语言入门新版》从第7页起的入门课。

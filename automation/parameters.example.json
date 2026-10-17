@@ -1,0 +1,87 @@
+{
+  "project_name": "j1900_2_server_net",
+  "ssh": {
+    "debian": "deploy@10.42.0.2",
+    "openwrt": "root@10.42.0.3",
+    "private_key_path": "",
+    "port_debian": 22,
+    "port_openwrt": 22
+  },
+  "network": {
+    "lan_cidr": "10.42.0.0/24",
+    "main_router": "10.42.0.1",
+    "debian_ip": "10.42.0.2",
+    "openwrt_ip": "10.42.0.3",
+    "parent_interface": "enp3s0",
+    "docker_network": "proxy_lan",
+    "dhcp_start": "10.42.0.2",
+    "dhcp_end": "10.42.0.100",
+    "campus_cidr": "172.20.128.0/17",
+    "campus_wan_ip": "172.20.132.189"
+  },
+  "containers": {
+    "web": "10.42.0.101",
+    "claude-code": "10.42.0.102",
+    "codex": "10.42.0.103",
+    "antigravity": "10.42.0.104",
+    "deepseek-harness": "10.42.0.105",
+    "zcode": "10.42.0.106"
+  },
+  "software": {
+    "node_image": "node:24-alpine",
+    "install": [
+      "docker-engine",
+      "docker-compose-plugin",
+      "openclash",
+      "mihomo",
+      "sakura-frpc",
+      "codex",
+      "antigravity",
+      "deepseek-harness",
+      "zcode"
+    ],
+    "source_policy": "official_sources_and_verified_hashes",
+    "new_dependencies_need_confirmation": true
+  },
+  "proxy": {
+    "enabled_containers": [
+      "claude-code",
+      "codex",
+      "antigravity"
+    ],
+    "subscription_private_path": "/etc/openclash/custom/subscription.private.txt",
+    "isp_private_path": "/etc/openclash/custom/isp-private.yaml",
+    "isp_protocol": "http",
+    "isp_host": "REPLACE_WITH_ISP_HOST",
+    "isp_port": 443,
+    "us_node_names": [
+      "REPLACE_US01",
+      "REPLACE_US02",
+      "REPLACE_US03",
+      "REPLACE_US04",
+      "REPLACE_US05"
+    ]
+  },
+  "apps": {
+    "blog_home": "/srv/web",
+    "connect_claude": false,
+    "google_work": false,
+    "enable_visitor_routing": false
+  },
+  "public_access": {
+    "domain": "REPLACE_WITH_DOMAIN",
+    "mainland_domain": "REPLACE_WITH_CN_DOMAIN",
+    "frp_private_args_path": "/etc/sakura-frp/start-args",
+    "frp_tunnel_ids": [
+      "REPLACE_TUNNEL_ID"
+    ],
+    "dns_provider": "aliyun",
+    "certificate_mode": "manual_dns",
+    "dns_credentials_private_path": ""
+  },
+  "github": {
+    "owner": "example-owner",
+    "repository": "j1900_2_server_net",
+    "private": true
+  }
+}

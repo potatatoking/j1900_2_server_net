@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <title>我的第一个网页</title>
+  <style>
+    body { background: #f4e9ee; padding: 30px; }
+    h1 { color: #895276; }
+  </style>
+</head>
+<body>
+  <h1>你好，我是土豆</h1>
+  <p id="message">这里会显示点击结果。</p>
+  <button id="hello">点我一下</button>
+  <script>
+    const button = document.querySelector('#hello');
+    button.addEventListener('click', () => {
+      document.querySelector('#message').textContent = '你好，博客！';
+    });
+  </script>
+</body>
+</html>

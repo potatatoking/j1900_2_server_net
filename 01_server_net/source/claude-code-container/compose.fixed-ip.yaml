@@ -1,0 +1,15 @@
+# Apply after compose.yaml and, for the blog, compose.blog.yaml.
+# Requires Docker Compose >= 2.24.0 for !reset.
+services:
+  claude-code:
+    dns:
+      - 10.42.0.3
+    ports: !reset []
+    networks:
+      proxy_lan:
+        ipv4_address: 10.42.0.102
+
+networks:
+  proxy_lan:
+    name: proxy_lan
+    external: true

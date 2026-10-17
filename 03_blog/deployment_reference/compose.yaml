@@ -1,0 +1,42 @@
+name: web
+services:
+  web:
+    build: .
+    image: local/web:node24.22.0
+    container_name: web
+    init: true
+    restart: unless-stopped
+    user: "1000:1000"
+    working_dir: /app
+    env_file: .env
+    dns:
+      - 10.42.0.3
+    networks:
+      proxy_lan:
+        ipv4_address: 10.42.0.101
+    volumes:
+      - ./app:/app:ro
+      - ./data:/app/data
+      - ./uploads:/app/public/assets/uploads
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://127.0.0.1:3000/api/session').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"
+      interval: 15s
+      timeout: 5s
+      start_period: 10s
+      retries: 3
+
+networks:
+  proxy_lan:
+    name: proxy_lan
+    external: true

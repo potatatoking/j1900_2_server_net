@@ -1,0 +1,4 @@
+*
+!Dockerfile
+!cache/
+!cache/codex-0.162.1-linux-x64.tgz

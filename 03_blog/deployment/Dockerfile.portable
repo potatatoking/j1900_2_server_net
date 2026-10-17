@@ -1,0 +1,8 @@
+ARG NODE_BASE=node:24-alpine
+FROM ${NODE_BASE}
+WORKDIR /app
+COPY --chown=1000:1000 app/ ./
+ENV NODE_ENV=production PORT=3000
+USER 1000:1000
+EXPOSE 3000
+CMD ["node", "server.js"]

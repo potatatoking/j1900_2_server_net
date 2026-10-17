@@ -1,0 +1,42 @@
+name: codex
+
+services:
+  codex:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local/codex:0.162.1
+    container_name: codex
+    init: true
+    restart: unless-stopped
+    user: "1000:1000"
+    working_dir: /workspace
+    environment:
+      CODEX_HOME: /home/vscode/.codex
+      TZ: America/Denver
+      LANG: en_US.UTF-8
+      LANGUAGE: en_US:en
+      LC_ALL: en_US.UTF-8
+      TERM: xterm-256color
+    volumes:
+      - /usr/share/zoneinfo/America/Denver:/etc/localtime:ro
+      - ./timezone:/etc/timezone:ro
+      - ./data/codex:/home/vscode/.codex
+      - ./workspace:/workspace
+    dns:
+      - 10.42.0.3
+    networks:
+      proxy_lan:
+        ipv4_address: 10.42.0.103
+    command: ["sleep", "infinity"]
+    healthcheck:
+      test: ["CMD", "codex", "--version"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+networks:
+  proxy_lan:
+    name: proxy_lan
+    external: true

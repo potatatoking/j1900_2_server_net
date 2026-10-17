@@ -1,0 +1,6 @@
+*
+!Dockerfile
+!entrypoint.sh
+!cache/
+cache/*
+!cache/source.tar.gz

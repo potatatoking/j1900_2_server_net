@@ -1,0 +1,8 @@
+.env
+data
+uploads
+app/data
+app/.env
+app/public/assets/uploads
+**/.git
+**/node_modules

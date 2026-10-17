@@ -1,0 +1,6 @@
+onlyBuiltDependencies:
+  - esbuild
+  - node-pty
+  - '@lydell/node-pty'
+  - '@deepseek-ai/dsh-subprocess-local'
+  - koffi

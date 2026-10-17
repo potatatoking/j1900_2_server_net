@@ -1,0 +1,4 @@
+*
+!Dockerfile
+!cache/
+!cache/agy-1.3.5-linux-x64.tar.gz

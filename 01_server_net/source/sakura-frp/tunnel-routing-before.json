@@ -1,0 +1,20 @@
+[
+  {
+    "id": 10000001,
+    "type": "tcp",
+    "node": 49,
+    "remote": "40475",
+    "local_ip": "10.42.0.101",
+    "local_port": 3000,
+    "extra": "auto_https = auto"
+  },
+  {
+    "id": 10000002,
+    "type": "https",
+    "node": 74,
+    "remote": "example.net",
+    "local_ip": "10.42.0.101",
+    "local_port": 3000,
+    "extra": "auto_https = auto"
+  }
+]

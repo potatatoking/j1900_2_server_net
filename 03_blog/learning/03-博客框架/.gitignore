@@ -1,0 +1,4 @@
+.env
+data/
+public/assets/uploads/
+node_modules/

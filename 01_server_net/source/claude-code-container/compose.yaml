@@ -1,0 +1,27 @@
+name: claude-code
+
+services:
+  claude-code:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: local/claude-code:2.1.300
+    container_name: claude-code
+    init: true
+    restart: unless-stopped
+    user: "1000:1000"
+    working_dir: /workspace
+    environment:
+      CLAUDE_CONFIG_DIR: /home/vscode/.claude
+      DISABLE_AUTOUPDATER: "1"
+      TZ: America/Denver
+      LANG: en_US.UTF-8
+      LANGUAGE: en_US:en
+      LC_ALL: en_US.UTF-8
+      TERM: xterm-256color
+    volumes:
+      - /usr/share/zoneinfo/America/Denver:/etc/localtime:ro
+      - ./timezone:/etc/timezone:ro
+      - ./data/claude:/home/vscode/.claude
+      - ./workspace:/workspace
+    command: ["sleep", "infinity"]
