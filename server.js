@@ -72,6 +72,7 @@ catch (error) {
   await fs.writeFile(dataFile, JSON.stringify(db, null, 2));
 }
 db.moods ??= [];
+db.friends ??= [];
 db.readingHistory ??= [];
 db.readingPlan ??= { book: '', author: '', goal: '', progress: 0, note: '' };
 db.profile.hobbyDetails ??= String(db.profile.interests || '').split(/[/／、，,|]+/).map(name => name.trim()).filter(Boolean).slice(0, 12).map(name => ({ name, detail: '' }));
@@ -163,9 +164,63 @@ function requireAdmin(req, res) {
   json(res, 401, { error: '请先以站长身份登录' }); return false;
 }
 
+function friendUrl(value, optional = false) {
+  const text = String(value ?? '').trim();
+  if (!text && optional) return '';
+  if (text.length > 1000) throw new Error('网址过长');
+  let url;
+  try { url = new URL(text); } catch { throw new Error('请填写完整的 http 或 https 网址'); }
+  if (!['http:', 'https:'].includes(url.protocol) || !url.hostname || url.username || url.password) throw new Error('只支持不含账号密码的 http 或 https 网址');
+  url.hash = '';
+  return url.href;
+}
+function friendFields(input) {
+  const name = clean(input.name, 60), description = clean(input.description, 240);
+  if (!name || !description) throw new Error('请填写站点名称和简介');
+  return { name, description, url: friendUrl(input.url), avatar: friendUrl(input.avatar, true) };
+}
+function duplicateFriend(url, except = '') {
+  return db.friends.some(item => item.id !== except && item.url.replace(/\/$/, '') === url.replace(/\/$/, ''));
+}
+
 async function api(req, res, url) {
   if (req.method !== 'GET' && limited(req)) return json(res, 429, { error: '操作太频繁，请稍后再试' });
   const route = url.pathname;
+  if (route === '/api/friends') {
+    if (req.method === 'GET') {
+      if (url.searchParams.get('review') === '1') {
+        if (!requireAdmin(req, res)) return;
+        return json(res, 200, db.friends);
+      }
+      return json(res, 200, db.friends.filter(item => item.status === 'published'));
+    }
+    if (req.method === 'POST') {
+      const input = await body(req), fields = friendFields(input);
+      if (duplicateFriend(fields.url)) return json(res, 409, { error: '这个站点已收录或正在审核中，请勿重复提交' });
+      const friend = { ...fields, id: crypto.randomUUID(), status: isAdmin(req) ? 'published' : 'pending', createdAt: new Date().toISOString() };
+      db.friends.unshift(friend);
+      await save(); return json(res, 201, friend);
+    }
+    return json(res, 405, { error: '请求方式不支持' });
+  }
+  const friendId = route.match(/^\/api\/friends\/([\w-]+)$/)?.[1];
+  if (friendId) {
+    if (!requireAdmin(req, res)) return;
+    const friend = db.friends.find(item => item.id === friendId);
+    if (!friend) return json(res, 404, { error: '友链不存在' });
+    if (req.method === 'PUT') {
+      const input = await body(req), fields = friendFields(input);
+      if (!['pending', 'published'].includes(input.status)) return json(res, 400, { error: '请选择待审核或已发布' });
+      if (duplicateFriend(fields.url, friendId)) return json(res, 409, { error: '这个站点已收录或正在审核中' });
+      Object.assign(friend, fields, { status: input.status, updatedAt: new Date().toISOString() });
+      await save(); return json(res, 200, friend);
+    }
+    if (req.method === 'DELETE') {
+      db.friends = db.friends.filter(item => item.id !== friendId);
+      await save(); return json(res, 200, { ok: true });
+    }
+    return json(res, 405, { error: '请求方式不支持' });
+  }
   if (route === '/api/session' && req.method === 'GET') return json(res, 200, { admin: isAdmin(req), loginEnabled: Boolean(passwordRecord || adminPassword) });
   if (route === '/api/login' && req.method === 'POST') {
     if (!passwordRecord && !adminPassword) return json(res, 503, { error: '请先设置 BLOG_ADMIN_PASSWORD 环境变量' });
@@ -430,6 +485,7 @@ http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: '请求方式不支持' });
     if (url.pathname === '/admin/') { res.writeHead(302, { Location: '/admin' + url.search }); return res.end(); }
+    if (url.pathname === '/friends') url.pathname = '/index.html';
     if (url.pathname === '/admin') url.pathname = '/admin.html';
     let target = path.resolve(publicDir, '.' + decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname));
     if (!target.startsWith(publicDir + path.sep)) return json(res, 403, { error: '无权访问' });

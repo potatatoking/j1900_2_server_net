@@ -4,7 +4,7 @@ const modalContent = document.querySelector('#modal-content');
 const toastNode = document.querySelector('#toast');
 const adminMode = ['/admin', '/admin.html'].includes(location.pathname);
 const filePreview = location.protocol === 'file:';
-const state = { posts: [], topics: [], moods: [], profile: null, readingPlan: null, readingHistory: [], admin: false, loginEnabled: false, searchQuery: '' };
+const state = { friends: [], posts: [], topics: [], moods: [], profile: null, readingPlan: null, readingHistory: [], admin: false, loginEnabled: false, searchQuery: '' };
 const previewData = {
   moods: [],
   readingPlan: { book: '', author: '', goal: '', progress: 0, note: '' },
@@ -33,6 +33,7 @@ function searchItems() {
     items.push({ page: 'talk', id: `topic-${topic.id}`, category: '留言角', title: topic.title, detail: `${topic.author} · ${topic.content}`, words: [topic.title, topic.author, topic.content, date(topic.createdAt)].join(' ') });
     for (const reply of topic.replies) items.push({ page: 'talk', id: `topic-${topic.id}`, category: '留言回复', title: `${reply.author} 回复了「${topic.title}」`, detail: reply.content, words: [reply.author, reply.content, topic.title, date(reply.createdAt)].join(' ') });
   }
+  for (const friend of state.friends.filter(item => item.status === 'published')) items.push({ page: 'friends', id: `friend-${friend.id}`, category: '友链花园', title: friend.name, detail: friend.description, words: [friend.name, friend.description, friend.url].join(' ') });
   const profile = state.profile;
   items.push({ page: 'about', id: 'profile', category: '关于我', title: profile.name, detail: profile.intro, words: [profile.name, profile.handle, profile.intro, profile.bio, profile.location, profile.interests, ...hobbyItems(profile).map(item => item.detail), profile.email, profile.phone, profile.qq, profile.wechat, profile.github, profile.birthday, profile.workExperience, profile.education, ...educationStages.map(([key]) => profile[key])].join(' ') });
   return items;
@@ -46,7 +47,7 @@ function searchResults(query) {
 }
 function searchPanel() {
   const page = route();
-  const scope = { home: ['检索小站内容', '搜索动态、个人资料和留言…'], life: ['检索生活日记', '搜索生活日记…'], study: ['检索学习与工作', '搜索学习与工作动态…'], about: ['检索关于我', '搜索个人资料…'], talk: ['检索留言角', '搜索留言和回复…'] }[page];
+  const scope = { home: ['检索小站内容', '搜索动态、个人资料和留言…'], life: ['检索生活日记', '搜索生活日记…'], study: ['检索学习与工作', '搜索学习与工作动态…'], about: ['检索关于我', '搜索个人资料…'], talk: ['检索留言角', '搜索留言和回复…'], friends: ['检索友链花园', '搜索站点名称和简介…'] }[page];
   return `<section class="search-panel" aria-label="${scope[0]}"><label for="site-search">${scope[0]}</label><div class="search-field"><span aria-hidden="true">⌕</span><input id="site-search" type="search" placeholder="${scope[1]}" value="${esc(state.searchQuery)}" autocomplete="off"></div><div class="search-results" id="search-results" aria-live="polite">${searchResults(state.searchQuery)}</div></section>`;
 }
 function focusHashTarget() {
@@ -94,12 +95,13 @@ async function request(url, options = {}) {
 async function load() {
   if (filePreview) { Object.assign(state, previewData); render(); return; }
   try {
-    const [posts, topics, moods, profile, readingPlan, readingHistory, session] = await Promise.all([request('/api/posts'), request('/api/topics'), request('/api/moods'), request('/api/profile'), request('/api/reading-plan'), request('/api/reading-history'), adminMode ? request('/api/session') : Promise.resolve({ admin: false, loginEnabled: false })]);
-    Object.assign(state, { posts, topics, moods, profile, readingPlan, readingHistory, admin: session.admin, loginEnabled: session.loginEnabled });
+    const [posts, topics, moods, profile, readingPlan, readingHistory, session, friends] = await Promise.all([request('/api/posts'), request('/api/topics'), request('/api/moods'), request('/api/profile'), request('/api/reading-plan'), request('/api/reading-history'), adminMode ? request('/api/session') : Promise.resolve({ admin: false, loginEnabled: false }), request('/api/friends')]);
+    if (session.admin) friends.splice(0, friends.length, ...await request('/api/friends?review=1'));
+    Object.assign(state, { friends, posts, topics, moods, profile, readingPlan, readingHistory, admin: session.admin, loginEnabled: session.loginEnabled });
     render();
   } catch (error) { app.innerHTML = `<div class="container empty"><span class="emoji">☁️</span>暂时无法加载小站：${esc(error.message)}</div>`; }
 }
-function route() { const name = location.hash.replace('#', '').split('?')[0]; return ['home','life','study','about','talk'].includes(name) ? name : 'home'; }
+function route() { const name = location.hash.replace('#', '').split('?')[0]; return ['home','life','study','about','talk','friends'].includes(name) ? name : location.pathname === '/friends' ? 'friends' : 'home'; }
 function render() {
   syncFanNavigation();
   if (!state.profile) return;
@@ -117,8 +119,8 @@ function render() {
     document.title = '站长登录 | 土豆的记事簿';
     return;
   }
-  app.innerHTML = ({ home, life: () => postsPage('life'), study: () => postsPage('study'), about, talk })[page]();
-  document.title = `${({home:'首页',life:'生活日记',study:'学习与工作',about:'关于我',talk:'留言角'})[page]} | ${siteName}`;
+  app.innerHTML = ({ home, life: () => postsPage('life'), study: () => postsPage('study'), about, talk, friends: friendsPage })[page]();
+  document.title = `${({home:'首页',life:'生活日记',study:'学习与工作',about:'关于我',talk:'留言角',friends:'友链花园'})[page]} | ${siteName}`;
   focusHashTarget();
   revealSections();
 }
@@ -200,7 +202,7 @@ function changePage() {
     if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
   };
   if (!fromChapter && (fromFan || (!adminMode && differentPage && page !== 'home'))) return blurPageTransition(commit);
-  return paperTransition(commit, ({ home: '回到故事的起点', life: '生活日记', study: '学习与工作', about: '关于我', talk: '留言角' })[page], page === 'home', differentPage);
+  return paperTransition(commit, ({ home: '回到故事的起点', life: '生活日记', study: '学习与工作', about: '关于我', talk: '留言角', friends: '友链花园' })[page], page === 'home', differentPage);
 }
 let revealObserver;
 function revealSections() {
@@ -234,6 +236,21 @@ function setHomeSearch(open) {
   reveal.setAttribute('aria-hidden', String(!open));
   (open ? search.querySelector('#site-search') : toggle).focus({ preventScroll: true });
 }
+function friendCard(friend, review = false) {
+  return `<article class="friend-card" id="friend-${esc(friend.id)}"><div class="friend-card-top"><span class="friend-avatar">${friend.avatar ? `<img src="${esc(friend.avatar)}" alt="" loading="lazy" referrerpolicy="no-referrer" data-friend-avatar><span hidden>${esc(Array.from(friend.name)[0])}</span>` : esc(Array.from(friend.name)[0])}</span><span class="friend-label">${review ? '等待相遇 · 待审核' : 'A LITTLE WORLD'}</span><span aria-hidden="true">✧</span></div><h2>${esc(friend.name)}</h2><p>${esc(friend.description)}</p>${!review ? `<a class="friend-visit" href="${esc(friend.url)}" target="_blank" rel="noopener noreferrer nofollow ugc">去串个门 <span aria-hidden="true">↗</span><span class="sr-only">：${esc(friend.name)}（新窗口）</span></a>` : `<span class="friend-pending-url">${esc(friend.url)}</span>`}${state.admin ? `<div class="friend-admin"><button class="quiet-button" data-action="edit-friend" data-id="${esc(friend.id)}">编辑 / ${review ? '审核' : '下架'}</button><button class="quiet-button" data-action="delete-friend" data-id="${esc(friend.id)}">删除</button></div>` : ''}</article>`;
+}
+function friendsPage() {
+  const published = state.friends.filter(item => item.status === 'published');
+  const pending = state.friends.filter(item => item.status === 'pending');
+  return `<div class="container page-friends">${pageHead('FRIENDS & LITTLE WORLDS', '友链花园', '把喜欢的小站种在这里，让有趣的灵魂沿着链接相遇。', '<button class="btn friend-apply" type="button" data-action="new-friend">✧ 留下你的小站</button>')}<div class="friends-intro"><span>一条链接，一次新的相遇。</span><small>${published.length} 个小世界，慢慢逛。</small></div><section class="friends-grid" aria-label="已收录的友链">${published.length ? published.map(item => friendCard(item)).join('') : '<div class="friends-empty"><span aria-hidden="true">✳</span><h2>花园正在等第一位朋友</h2><p>带着你的小站来坐坐，写下我们相遇的第一笔。</p><button class="quiet-button" data-action="new-friend">申请成为友链 ↗</button></div>'}</section>${state.admin ? `<section class="friends-review"><h2>待审核 <small>${pending.length}</small></h2><p>审核通过后，站点才会出现在公开花园中。已发布友链可在编辑中下架。</p><div class="friends-grid">${pending.length ? pending.map(item => friendCard(item, true)).join('') : '<p>目前没有待审核的申请。</p>'}</div></section>` : ''}<aside class="friends-note"><div><span class="journal-kicker">LET’S EXCHANGE A LINK</span><h2>也欢迎把土豆种进你的花园</h2><p>站点名称：土豆的记事簿<br>简介：记录生活、学习，以及一些小小心事。</p><p class="friend-site-url">${esc(location.origin)}</p></div><div><h3>申请前的小约定</h3><p>请填写能正常访问的个人站点、简短介绍，以及可选的头像地址。友善交流，认真记录；访客申请经站长审核后展示。</p><button class="quiet-button" data-action="new-friend">${state.admin ? '管理员也可以直接提交 ↗' : '留下你的小站 ↗'}</button></div></aside>${searchPanel()}</div>`;
+}
+function friendModal(friend = null) {
+  openModal(`<div class="eyebrow">A NEW LITTLE WORLD</div><h2>${friend ? '整理这株小小的友链' : '在花园留下一颗种子'}</h2><p>${state.admin ? '管理员提交直接发布；编辑时可调整审核状态。' : '写下你的小站，审核通过后就能在花园里相遇。'}</p><form id="friend-form" ${friend ? `data-id="${esc(friend.id)}"` : ''}><label for="friend-name">站点名称</label><input class="field" id="friend-name" name="name" required maxlength="60" value="${esc(friend?.name)}"><label for="friend-url">站点网址</label><input class="field" id="friend-url" name="url" type="url" required maxlength="1000" placeholder="https://example.com" value="${esc(friend?.url)}"><label for="friend-description">一句话介绍</label><textarea class="field" id="friend-description" name="description" required maxlength="240">${esc(friend?.description)}</textarea><label for="friend-avatar">头像网址（选填）</label><input class="field" id="friend-avatar" name="avatar" type="url" maxlength="1000" placeholder="https://example.com/avatar.png" value="${esc(friend?.avatar)}">${friend && state.admin ? `<label for="friend-status">展示状态</label><select class="field" id="friend-status" name="status"><option value="published" ${friend.status === 'published' ? 'selected' : ''}>已发布（审核通过）</option><option value="pending" ${friend.status === 'pending' ? 'selected' : ''}>待审核 / 下架</option></select>` : ''}<p class="form-error" role="alert"></p><button class="btn" type="submit">${friend ? '保存友链' : state.admin ? '发布友链' : '提交申请'}</button></form>`);
+}
+document.addEventListener('error', event => {
+  if (event.target.matches?.('[data-friend-avatar]')) { event.target.hidden = true; event.target.nextElementSibling.hidden = false; }
+}, true);
+
 function sectionHead(title, subtitle, link, label) { return `<div class="section-head"><div><div class="eyebrow">✦ ${esc(subtitle)}</div><h2>${esc(title)}</h2></div>${link ? `<a href="#${link}">${esc(label)} →</a>` : ''}</div>`; }
 const homeInteraction = { artwork: 0, lastPost: null };
 const homeMoods = [
@@ -285,6 +302,7 @@ function home() {
         <span class="collage-note" id="artwork-note" aria-live="polite">${artwork[2]}</span>
       </div>
     </section>
+    <a class="friends-invitation" href="#friends"><span class="friends-invitation-art" aria-hidden="true">✳<i>✧</i></span><span><small>FRIENDS & LITTLE WORLDS · 05</small><strong>友链花园</strong><span>沿着一条链接，遇见另一个有趣的小世界。</span></span><span class="friends-invitation-arrow" aria-hidden="true">↗</span></a>
     ${moodHistory()}
     <button class="opening-invitation" type="button" data-home-action="explore"><span class="opening-index">01 — THE BEGINNING</span><span>往下翻，故事才刚刚开始</span><span class="opening-down" aria-hidden="true">↓</span></button>
     <section class="journal-chapters" id="home-chapters" aria-labelledby="chapters-title" tabindex="-1"><div class="explore-heading"><div><span class="journal-kicker">FIND YOUR LITTLE CORNER</span><h2 id="chapters-title">目录</h2><p>想从哪一页开始？选一个角落，慢慢逛。</p></div><button class="random-note" type="button" data-home-action="random" ${state.posts.length ? '' : 'disabled'}><span aria-hidden="true">⚄</span> 随机翻一页 ↗</button></div>
@@ -868,7 +886,7 @@ function profileModal() {
   openModal(`<h2>编辑个人资料 🎀</h2><form id="profile-form"><label for="profile-avatar">上传头像（PNG、JPEG、WebP，最多 2 MB）</label><input class="field" id="profile-avatar" type="file" name="avatarFile" accept="image/png,image/jpeg,image/webp"><div class="avatar-preview">${p.avatar ? `<img src="${esc(p.avatar)}" alt="当前头像">` : '🌸'}</div><button type="button" class="quiet-button" data-crop-avatar ${p.avatar ? '' : 'hidden'}>裁剪头像</button>${fields.map(([key, label, type, max]) => key === 'hobbies' ? hobbyEditor(p) : key === 'educationStages' ? educationEditor(p) : key === 'githubContact' ? githubEditor(p) : `<label for="profile-${key}"${key === 'qq' ? ' aria-label="QQ 号码"' : ''}>${label}</label>${type === 'textarea' ? `<textarea class="field" id="profile-${key}" name="${key}" maxlength="${max}">${esc(p[key])}</textarea>` : `<input class="field" id="profile-${key}" type="${type}" name="${key}" value="${esc(p[key])}" maxlength="${max}">`}`).join('')}<button class="btn" type="submit">保存资料</button></form>`);
 }
 function postImageGallery(images = []) {
-  return images.length ? `<div class="post-images">${images.map((url, index) => `<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="动态配图 ${index + 1}" loading="lazy"></a>`).join('')}</div>` : '';
+  return images.length ? `<div class="post-images ${images.length === 1 ? 'is-single' : 'is-multiple'}">${images.map((url, index) => `<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="动态配图 ${index + 1}（点击查看原图）" loading="lazy" decoding="async"></a>`).join('')}</div>` : '';
 }
 function imageDraft(url) {
   return `<div class="image-draft" data-src="${esc(url)}"><img src="${esc(url)}" alt="待发布的配图"><button type="button" data-crop-image aria-label="裁剪图片" title="裁剪图片">✂</button><button type="button" data-remove-image aria-label="移除图片" title="移除图片">×</button></div>`;
@@ -1156,6 +1174,9 @@ document.addEventListener('click', async event => {
       topicConversation(id);
       if (modal.open && activeTopicId === id) animateConversationEntrance(sourceRect);
     }
+    if (action === 'new-friend') friendModal();
+    if (action === 'edit-friend' && state.admin) { const friend = state.friends.find(item => item.id === id); if (friend) friendModal(friend); }
+    if (action === 'delete-friend' && state.admin && confirm('确定删除这条友链吗？')) { await request(`/api/friends/${id}`, { method: 'DELETE' }); state.friends = state.friends.filter(item => item.id !== id); render(); toast('友链已删除'); }
     if (action === 'new-topic') newTopicModal(button.getBoundingClientRect());
     if (action === 'edit-mood' && state.admin) moodModal(moodDate || localDay());
     if (action === 'new-post') postModal(type, null, section);
@@ -1175,13 +1196,13 @@ document.addEventListener('click', async event => {
     if (action === 'edit-reading-book' && state.admin) readingBookEditor(id);
     if (action === 'edit-reading-log' && state.admin) readingLogEditor(id, button.dataset.log);
     if (action === 'change-password') passwordModal();
-    if (action === 'logout') { await request('/api/logout', { method: 'POST' }); state.admin = false; await requestModalClose(); render(); toast('已退出登录'); }
+    if (action === 'logout') { await request('/api/logout', { method: 'POST' }); state.admin = false; state.friends = await request('/api/friends'); await requestModalClose(); render(); toast('已退出登录'); }
     if (action === 'delete-post' && confirm('确定删除这篇动态吗？')) { await request(`/api/posts/${id}`, { method: 'DELETE' }); state.posts = state.posts.filter(p => p.id !== id); render(); toast('动态已删除'); }
     if (action === 'delete-topic' && confirm('确定删除这条留言和所有回复吗？')) { await request(`/api/topics/${id}`, { method: 'DELETE' }); state.topics = state.topics.filter(t => t.id !== id); render(); toast('留言已删除'); }
   } catch (error) { toast(error.message); }
 });
 document.addEventListener('submit', async event => {
-  const form = event.target; if (!['login-form','password-form','post-form','profile-form','reading-plan-form','reading-book-form','reading-log-form','mood-form','topic-form','topic-edit-form'].includes(form.id) && !form.matches('.reply-form')) return;
+  const form = event.target; if (!['friend-form','login-form','password-form','post-form','profile-form','reading-plan-form','reading-book-form','reading-log-form','mood-form','topic-form','topic-edit-form'].includes(form.id) && !form.matches('.reply-form')) return;
   event.preventDefault(); const button = form.querySelector('button[type="submit"]'); button.disabled = true;
   const originalButtonText = button.textContent;
   if (form.matches('.reply-form')) {
@@ -1203,11 +1224,17 @@ document.addEventListener('submit', async event => {
         values.images.push(item.dataset.src);
       }
     }
-    if (form.id === 'login-form') { const result = await request('/api/login', { method: 'POST', body: JSON.stringify(values) }); state.admin = result.admin; await requestModalClose(); render(); toast('欢迎回来，站长 🥔'); }
+    if (form.id === 'friend-form') {
+      const editing = Boolean(form.dataset.id);
+      const friend = await request(editing ? `/api/friends/${form.dataset.id}` : '/api/friends', { method: editing ? 'PUT' : 'POST', body: JSON.stringify(values) });
+      if (state.admin || friend.status === 'published') state.friends = state.friends.filter(item => item.id !== friend.id).concat(friend);
+      await requestModalClose(); render(); toast(friend.status === 'published' ? '友链已发布' : state.admin ? '友链已保存' : '申请已提交，等待站长审核');
+    }
+    if (form.id === 'login-form') { const result = await request('/api/login', { method: 'POST', body: JSON.stringify(values) }); state.admin = result.admin; state.friends = await request('/api/friends?review=1'); await requestModalClose(); render(); toast('欢迎回来，站长 🥔'); }
     if (form.id === 'password-form') {
       if (values.newPassword !== values.confirmPassword) throw new Error('两次输入的新密码不一致');
       await request('/api/password', { method: 'PUT', body: JSON.stringify(values) });
-      form.reset(); state.admin = false; await requestModalClose(); render(); toast('密码已修改，请使用新密码重新登录');
+      form.reset(); state.admin = false; state.friends = await request('/api/friends'); await requestModalClose(); render(); toast('密码已修改，请使用新密码重新登录');
     }
     if (form.id === 'post-form') { const editing = Boolean(form.dataset.id); const post = await request(editing ? `/api/posts/${form.dataset.id}` : '/api/posts', { method: editing ? 'PUT' : 'POST', body: JSON.stringify(values) }); if (editing) state.posts = state.posts.map(item => item.id === post.id ? post : item); else state.posts.unshift(post); await requestModalClose(); render(); toast(editing ? '动态已更新' : '动态发布成功'); }
     if (form.id === 'profile-form') {
@@ -1257,7 +1284,7 @@ document.addEventListener('submit', async event => {
       loginError.hidden = false;
       if (error.message === '密码不正确') form.elements.password.setAttribute('aria-invalid', 'true');
       button.textContent = '进入管理后台';
-    } else if ((['profile-form', 'password-form', 'topic-form', 'reading-plan-form', 'reading-book-form', 'reading-log-form'].includes(form.id) || form.matches('.reply-form'))) {
+    } else if ((['friend-form', 'profile-form', 'password-form', 'topic-form', 'reading-plan-form', 'reading-book-form', 'reading-log-form'].includes(form.id) || form.matches('.reply-form'))) {
       let message = form.querySelector('.form-error');
       if (!message) { message = document.createElement('p'); message.className = 'form-error'; message.setAttribute('role', 'alert'); button.before(message); }
       message.textContent = error.message;
