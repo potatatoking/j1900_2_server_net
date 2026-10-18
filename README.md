@@ -73,3 +73,8 @@ python -m unittest discover -s automation -p 'test_*.py'
 ## Word 文档迁移
 
 2026-10-18，当前 Word 文档迁入 [word&prompt](https://github.com/potatatoking/word-prompt)。新仓库按用户要求保存原版文档，不做脱敏，保持私密。当前源码分支不再重复保存 Word；历史提交和历史发布附件未在本次迁移中重写。源码及原 Prompt 保留。
+
+
+## 2026-10-18 博客更新
+
+友链花园已上线：首页邀请卡片和页头入口，访客申请与管理员提交、审核管理均可用。配图优先完整显示，兼顾单图、多图及手机排版。详见 [更新日志](CHANGELOG.md)。
