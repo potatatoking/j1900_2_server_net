@@ -236,13 +236,30 @@ function setHomeSearch(open) {
   reveal.setAttribute('aria-hidden', String(!open));
   (open ? search.querySelector('#site-search') : toggle).focus({ preventScroll: true });
 }
+const ownFriendProfile = Object.freeze({
+  name: '土豆的记事簿',
+  link: 'https://20080618.xyz/',
+  avatar: 'https://20080618.xyz/assets/uploads/a0fe7f5d-a4e6-4176-8cd3-97a2a808899c.webp',
+  descr: '一颗与世无争的小土豆'
+});
+function ownFriendYaml() {
+  return `- name: ${ownFriendProfile.name}\n  link: ${ownFriendProfile.link}\n  avatar: ${ownFriendProfile.avatar}\n  descr: ${ownFriendProfile.descr}`;
+}
+function shuffleFriends(items, random = Math.random) {
+  const result = [...items];
+  for (let i = result.length - 1; i > 0; i--) {
+    const j = Math.floor(random() * (i + 1));
+    [result[i], result[j]] = [result[j], result[i]];
+  }
+  return result;
+}
 function friendCard(friend, review = false) {
   return `<article class="friend-card" id="friend-${esc(friend.id)}"><div class="friend-card-top"><span class="friend-avatar">${friend.avatar ? `<img src="${esc(friend.avatar)}" alt="" loading="lazy" referrerpolicy="no-referrer" data-friend-avatar><span hidden>${esc(Array.from(friend.name)[0])}</span>` : esc(Array.from(friend.name)[0])}</span><span class="friend-label">${review ? '等待相遇 · 待审核' : 'A LITTLE WORLD'}</span><span aria-hidden="true">✧</span></div><h2>${esc(friend.name)}</h2><p>${esc(friend.description)}</p>${!review ? `<a class="friend-visit" href="${esc(friend.url)}" target="_blank" rel="noopener noreferrer nofollow ugc">去串个门 <span aria-hidden="true">↗</span><span class="sr-only">：${esc(friend.name)}（新窗口）</span></a>` : `<span class="friend-pending-url">${esc(friend.url)}</span>`}${state.admin ? `<div class="friend-admin"><button class="quiet-button" data-action="edit-friend" data-id="${esc(friend.id)}">编辑 / ${review ? '审核' : '下架'}</button><button class="quiet-button" data-action="delete-friend" data-id="${esc(friend.id)}">删除</button></div>` : ''}</article>`;
 }
 function friendsPage() {
-  const published = state.friends.filter(item => item.status === 'published');
+  const published = shuffleFriends(state.friends.filter(item => item.status === 'published'));
   const pending = state.friends.filter(item => item.status === 'pending');
-  return `<div class="container page-friends">${pageHead('FRIENDS & LITTLE WORLDS', '友链花园', '把喜欢的小站种在这里，让有趣的灵魂沿着链接相遇。', '<button class="btn friend-apply" type="button" data-action="new-friend">✧ 留下你的小站</button>')}<div class="friends-intro"><span>一条链接，一次新的相遇。</span><small>${published.length} 个小世界，慢慢逛。</small></div><section class="friends-grid" aria-label="已收录的友链">${published.length ? published.map(item => friendCard(item)).join('') : '<div class="friends-empty"><span aria-hidden="true">✳</span><h2>花园正在等第一位朋友</h2><p>带着你的小站来坐坐，写下我们相遇的第一笔。</p><button class="quiet-button" data-action="new-friend">申请成为友链 ↗</button></div>'}</section>${state.admin ? `<section class="friends-review"><h2>待审核 <small>${pending.length}</small></h2><p>审核通过后，站点才会出现在公开花园中。已发布友链可在编辑中下架。</p><div class="friends-grid">${pending.length ? pending.map(item => friendCard(item, true)).join('') : '<p>目前没有待审核的申请。</p>'}</div></section>` : ''}<aside class="friends-note"><div><span class="journal-kicker">LET’S EXCHANGE A LINK</span><h2>也欢迎把土豆种进你的花园</h2><p>站点名称：土豆的记事簿<br>简介：记录生活、学习，以及一些小小心事。</p><p class="friend-site-url">${esc(location.origin)}</p></div><div><h3>申请前的小约定</h3><p>请填写能正常访问的个人站点、简短介绍，以及可选的头像地址。友善交流，认真记录；访客申请经站长审核后展示。</p><button class="quiet-button" data-action="new-friend">${state.admin ? '管理员也可以直接提交 ↗' : '留下你的小站 ↗'}</button></div></aside>${searchPanel()}</div>`;
+  return `<div class="container page-friends">${pageHead('FRIENDS & LITTLE WORLDS', '友链花园', '把喜欢的小站种在这里，让有趣的灵魂沿着链接相遇。', '<button class="btn friend-apply" type="button" data-action="new-friend">✧ 留下你的小站</button>')}<div class="friends-intro"><span>一条链接，一次新的相遇。</span><div class="friends-order"><small>${published.length} 个小世界，随机相遇。</small><button class="quiet-button" type="button" data-action="shuffle-friends" ${published.length < 2 ? 'disabled' : ''}>换个顺序 ↻</button></div></div><section class="friends-grid" aria-label="已收录的友链">${published.length ? published.map(item => friendCard(item)).join('') : '<div class="friends-empty"><span aria-hidden="true">✳</span><h2>花园正在等第一位朋友</h2><p>带着你的小站来坐坐，写下我们相遇的第一笔。</p><button class="quiet-button" data-action="new-friend">申请成为友链 ↗</button></div>'}</section>${state.admin ? `<section class="friends-review"><h2>待审核 <small>${pending.length}</small></h2><p>审核通过后，站点才会出现在公开花园中。已发布友链可在编辑中下架。</p><div class="friends-grid">${pending.length ? pending.map(item => friendCard(item, true)).join('') : '<p>目前没有待审核的申请。</p>'}</div></section>` : ''}<aside class="friends-note"><div><span class="journal-kicker">LET’S EXCHANGE A LINK</span><h2>也欢迎把土豆种进你的花园</h2><div class="own-friend-heading"><span class="friend-avatar"><img src="${esc(ownFriendProfile.avatar)}" alt="土豆的记事簿头像" loading="lazy" referrerpolicy="no-referrer" data-friend-avatar><span hidden>土</span></span><p>${esc(ownFriendProfile.name)}<br>${esc(ownFriendProfile.descr)}</p></div><a class="friend-site-url" href="${esc(ownFriendProfile.link)}" target="_blank" rel="noopener noreferrer">${esc(ownFriendProfile.link)}</a><pre class="friend-exchange-code" id="own-friend-yaml" tabindex="0" aria-label="本站友链资料 YAML">${esc(ownFriendYaml())}</pre><button class="quiet-button" type="button" data-action="copy-friend-profile">复制友链资料</button></div><div><h3>申请前的小约定</h3><p>请填写能正常访问的个人站点、简短介绍，以及可选的头像地址。友善交流，认真记录；访客申请经站长审核后展示。</p><button class="quiet-button" data-action="new-friend">${state.admin ? '管理员也可以直接提交 ↗' : '留下你的小站 ↗'}</button></div></aside>${searchPanel()}</div>`;
 }
 function friendModal(friend = null) {
   openModal(`<div class="eyebrow">A NEW LITTLE WORLD</div><h2>${friend ? '整理这株小小的友链' : '在花园留下一颗种子'}</h2><p>${state.admin ? '管理员提交直接发布；编辑时可调整审核状态。' : '写下你的小站，审核通过后就能在花园里相遇。'}</p><form id="friend-form" ${friend ? `data-id="${esc(friend.id)}"` : ''}><label for="friend-name">站点名称</label><input class="field" id="friend-name" name="name" required maxlength="60" value="${esc(friend?.name)}"><label for="friend-url">站点网址</label><input class="field" id="friend-url" name="url" type="url" required maxlength="1000" placeholder="https://example.com" value="${esc(friend?.url)}"><label for="friend-description">一句话介绍</label><textarea class="field" id="friend-description" name="description" required maxlength="240">${esc(friend?.description)}</textarea><label for="friend-avatar">头像网址（选填）</label><input class="field" id="friend-avatar" name="avatar" type="url" maxlength="1000" placeholder="https://example.com/avatar.png" value="${esc(friend?.avatar)}">${friend && state.admin ? `<label for="friend-status">展示状态</label><select class="field" id="friend-status" name="status"><option value="published" ${friend.status === 'published' ? 'selected' : ''}>已发布（审核通过）</option><option value="pending" ${friend.status === 'pending' ? 'selected' : ''}>待审核 / 下架</option></select>` : ''}<p class="form-error" role="alert"></p><button class="btn" type="submit">${friend ? '保存友链' : state.admin ? '发布友链' : '提交申请'}</button></form>`);
@@ -1173,6 +1190,19 @@ document.addEventListener('click', async event => {
       const sourceRect = button.getBoundingClientRect();
       topicConversation(id);
       if (modal.open && activeTopicId === id) animateConversationEntrance(sourceRect);
+    }
+    if (action === 'shuffle-friends') { render(); document.querySelector('[data-action=shuffle-friends]')?.focus({ preventScroll: true }); toast('已随机排列友链'); }
+    if (action === 'copy-friend-profile') {
+      try {
+        if (!navigator.clipboard?.writeText) throw new Error('clipboard unavailable');
+        await navigator.clipboard.writeText(ownFriendYaml());
+        toast('友链资料已复制');
+      } catch {
+        const code = document.querySelector('#own-friend-yaml');
+        const range = document.createRange(); range.selectNodeContents(code);
+        const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(range);
+        code.focus(); toast('已选中友链资料，请复制');
+      }
     }
     if (action === 'new-friend') friendModal();
     if (action === 'edit-friend' && state.admin) { const friend = state.friends.find(item => item.id === id); if (friend) friendModal(friend); }

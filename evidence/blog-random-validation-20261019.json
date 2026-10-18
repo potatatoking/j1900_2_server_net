@@ -1,0 +1,40 @@
+{
+  "date": "2026-10-19",
+  "timezone": "Asia/Shanghai",
+  "source_linux_tests": {
+    "pass": 38,
+    "fail": 0
+  },
+  "routed_linux_tests": {
+    "pass": 42,
+    "fail": 0
+  },
+  "windows_limitation": "Existing Unix 0600 permission assertion reports 0666 on Windows",
+  "new_dependencies": 0,
+  "browser": {
+    "local_four_friend_shuffle": "four distinct observed permutations; no missing or duplicate cards",
+    "focus_preserved": true,
+    "copy_profile": "success",
+    "avatar_natural_width": 703,
+    "width_390_no_horizontal_overflow": true,
+    "production_friend_count": 1,
+    "production_shuffle_disabled_for_single_friend": true,
+    "production_profile_matches_supplied_yaml": true
+  },
+  "backup": "/srv/web/backups/blog-random-20261019-002707.tar.gz",
+  "data_bytes_unchanged": true,
+  "password_unchanged": true,
+  "uploads_unchanged": true,
+  "routing_unchanged": true,
+  "word": {
+    "pages": 30,
+    "previous_pages_pixel_identical": 26,
+    "visually_reviewed_new_or_changed_pages": 4
+  },
+  "public_file_bytes_match": {
+    "app.js": true,
+    "index.html": true,
+    "admin.html": true,
+    "editorial.css": true
+  }
+}
