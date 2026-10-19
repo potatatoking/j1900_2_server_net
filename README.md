@@ -112,3 +112,13 @@ BLOG_ADMIN_PASSWORD='换成你自己的强密码' npm start
 ## 2026-10-19 友链更新
 
 公开友链随机展示，支持手动换序；本站头像、公开地址与简介已按指定信息更新，并提供 YAML 复制。数据和管理顺序保留。详见 [更新日志](CHANGELOG.md)。
+
+
+## 2026年10月19日 活动记录
+
+学习区新增洛谷刷题热力图与带日期题目记录，工作区新增 GitHub 公开和私密 Commit 分组统计。每小时同步，失败保留缓存，私密记录仅公开日期和数量。详见 [更新日志](CHANGELOG.md)。
+
+
+## 活动同步配置
+
+将 activity-settings.example.json 的结构保存到 data/activity-settings.json；GitHub 的 token 与洛谷 cookie 只能在私有服务器文件中填写，不能提交 Git。文件应设置为容器用户 1000 所有、权限 600，配置后重启 web。GitHub 需 Contents 和 Metadata 读取权限，并覆盖要统计的仓库；洛谷需要有效登录凭据。公开 GET /api/activity 只读聚合缓存，管理员 POST /api/activity/sync 触发更新，GET /api/activity/settings 仅返回配置状态。每小时自动同步，失败保留旧数据。数据时间均为 Asia/Shanghai；GitHub Commit 数与个人主页贡献格的统计口径不同。详见 CHANGELOG.md。

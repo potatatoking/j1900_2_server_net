@@ -4,7 +4,7 @@ const modalContent = document.querySelector('#modal-content');
 const toastNode = document.querySelector('#toast');
 const adminMode = ['/admin', '/admin.html'].includes(location.pathname);
 const filePreview = location.protocol === 'file:';
-const state = { friends: [], posts: [], topics: [], moods: [], profile: null, readingPlan: null, readingHistory: [], admin: false, loginEnabled: false, searchQuery: '' };
+const state = { activity: null, friends: [], posts: [], topics: [], moods: [], profile: null, readingPlan: null, readingHistory: [], admin: false, loginEnabled: false, searchQuery: '' };
 const previewData = {
   moods: [],
   readingPlan: { book: '', author: '', goal: '', progress: 0, note: '' },
@@ -95,9 +95,9 @@ async function request(url, options = {}) {
 async function load() {
   if (filePreview) { Object.assign(state, previewData); render(); return; }
   try {
-    const [posts, topics, moods, profile, readingPlan, readingHistory, session, friends] = await Promise.all([request('/api/posts'), request('/api/topics'), request('/api/moods'), request('/api/profile'), request('/api/reading-plan'), request('/api/reading-history'), adminMode ? request('/api/session') : Promise.resolve({ admin: false, loginEnabled: false }), request('/api/friends')]);
+    const [posts, topics, moods, profile, readingPlan, readingHistory, session, friends, activity] = await Promise.all([request('/api/posts'), request('/api/topics'), request('/api/moods'), request('/api/profile'), request('/api/reading-plan'), request('/api/reading-history'), adminMode ? request('/api/session') : Promise.resolve({ admin: false, loginEnabled: false }), request('/api/friends'), request('/api/activity').catch(() => null)]);
     if (session.admin) friends.splice(0, friends.length, ...await request('/api/friends?review=1'));
-    Object.assign(state, { friends, posts, topics, moods, profile, readingPlan, readingHistory, admin: session.admin, loginEnabled: session.loginEnabled });
+    Object.assign(state, { activity, friends, posts, topics, moods, profile, readingPlan, readingHistory, admin: session.admin, loginEnabled: session.loginEnabled });
     render();
   } catch (error) { app.innerHTML = `<div class="container empty"><span class="emoji">☁️</span>暂时无法加载小站：${esc(error.message)}</div>`; }
 }
@@ -120,6 +120,7 @@ function render() {
     return;
   }
   app.innerHTML = ({ home, life: () => postsPage('life'), study: () => postsPage('study'), about, talk, friends: friendsPage })[page]();
+  if (page === 'study' && typeof positionActivityMaps === 'function') positionActivityMaps();
   document.title = `${({home:'首页',life:'生活日记',study:'学习与工作',about:'关于我',talk:'留言角',friends:'友链花园'})[page]} | ${siteName}`;
   focusHashTarget();
   revealSections();
@@ -636,7 +637,7 @@ function studyLane(section, title, English, icon, caption) {
   const posts = state.posts.filter(post => post.type === 'study' && studySection(post) === section);
   const today = posts.filter(post => dateKey(post.createdAt) === localDay());
   const older = posts.filter(post => dateKey(post.createdAt) !== localDay());
-  return `<section class="study-lane study-lane-${section}" id="study-${section}" aria-labelledby="study-${section}-title"><div class="study-lane-head"><div class="study-lane-icon" aria-hidden="true">${icon}</div><div><span class="study-kicker">${English} / ${String(posts.length).padStart(2, '0')}</span><h2 id="study-${section}-title">${title}</h2><p>${caption}</p></div>${state.admin ? `<button class="btn tiny" data-action="new-post" data-type="study" data-section="${section}">＋ 写一篇</button>` : ''}</div><div class="study-today"><div class="study-subhead"><span>今天的记录</span><time datetime="${localDay()}">${date(new Date())}</time></div>${today.length ? today.map((post, index) => studyPostCard(post, index)).join('') : '<div class="study-today-empty">今天还没有新记录，留一页给正在发生的故事。</div>'}</div><div class="study-archive" data-section="${section}">${studyCalendarView(section, older)}</div></section>`;
+  return `<section class="study-lane study-lane-${section}" id="study-${section}" aria-labelledby="study-${section}-title"><div class="study-lane-head"><div class="study-lane-icon" aria-hidden="true">${icon}</div><div><span class="study-kicker">${English} / ${String(posts.length).padStart(2, '0')}</span><h2 id="study-${section}-title">${title}</h2><p>${caption}</p></div>${state.admin ? `<button class="btn tiny" data-action="new-post" data-type="study" data-section="${section}">＋ 写一篇</button>` : ''}</div>${typeof renderActivityPanel === 'function' ? renderActivityPanel(section === 'learning' ? 'luogu' : 'github') : ''}<div class="study-today"><div class="study-subhead"><span>今天的记录</span><time datetime="${localDay()}">${date(new Date())}</time></div>${today.length ? today.map((post, index) => studyPostCard(post, index)).join('') : '<div class="study-today-empty">今天还没有新记录，留一页给正在发生的故事。</div>'}</div><div class="study-archive" data-section="${section}">${studyCalendarView(section, older)}</div></section>`;
 }
 function readingPlanCard() {
   const plan = state.readingPlan || {};

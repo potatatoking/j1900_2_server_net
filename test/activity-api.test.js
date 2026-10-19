@@ -1,0 +1,44 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs/promises';
+import os from 'node:os';
+import path from 'node:path';
+import net from 'node:net';
+import { spawn } from 'node:child_process';
+import { once } from 'node:events';
+import { fileURLToPath } from 'node:url';
+
+test('activity HTTP API serves only cached safe data and restricts configuration and synchronization', async t => {
+  const project = path.dirname(path.dirname(fileURLToPath(import.meta.url)));
+  const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'blog-activity-api-'));
+  for (const name of ['server.js', 'activity.js']) await fs.copyFile(path.join(project, name), path.join(dir, name));
+  await fs.writeFile(path.join(dir, 'package.json'), '{"type":"module"}');
+  await fs.mkdir(path.join(dir, 'public'));
+  await fs.mkdir(path.join(dir, 'data'));
+  await fs.writeFile(path.join(dir, 'data/activity-settings.json'), JSON.stringify({ github: { enabled: false, username: 'potatatoking', token: 'private-test-token' }, luogu: { enabled: false, uid: '2359012', cookie: 'private-test-cookie' } }));
+  await fs.writeFile(path.join(dir, 'data/activity-public.json'), JSON.stringify({ github: { status: 'ok', username: 'potatatoking', updatedAt: '2026-10-19T00:00:00Z', daily: [{ date: '2026-10-19', public: 2, private: 3 }], repository: 'private-test-repository', token: 'private-test-token' } }));
+  const socket = net.createServer();
+  await new Promise(resolve => socket.listen(0, '127.0.0.1', resolve));
+  const port = socket.address().port;
+  await new Promise(resolve => socket.close(resolve));
+  const child = spawn(process.execPath, ['server.js'], { cwd: dir, env: { ...process.env, PORT: String(port), BLOG_ADMIN_PASSWORD: 'activity-test-password' }, stdio: 'ignore' });
+  t.after(async () => { if (child.exitCode === null) { const done = once(child, 'exit'); child.kill(); await done; } await fs.rm(dir, { recursive: true, force: true }); });
+  const base = `http://127.0.0.1:${port}`;
+  let ready = false;
+  for (let i = 0; i < 100; i++) { try { if ((await fetch(`${base}/api/session`)).ok) { ready = true; break; } } catch {} await new Promise(resolve => setTimeout(resolve, 30)); }
+  assert.ok(ready, 'test server starts');
+  const response = await fetch(`${base}/api/activity`), text = await response.text(), data = JSON.parse(text);
+  assert.equal(response.status, 200);
+  assert.equal(data.github.totals.total, 5);
+  assert.doesNotMatch(text, /private-test|token|cookie|repository/);
+  assert.equal((await fetch(`${base}/api/activity/settings`)).status, 401);
+  assert.equal((await fetch(`${base}/api/activity/sync`, { method: 'POST' })).status, 401);
+  assert.equal((await fetch(`${base}/data/activity-settings.json`)).status, 404);
+  const login = await fetch(`${base}/api/login`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: '{"password":"activity-test-password"}' });
+  const cookie = login.headers.get('set-cookie').split(';')[0];
+  const settings = await fetch(`${base}/api/activity/settings`, { headers: { Cookie: cookie } });
+  const settingText = await settings.text();
+  assert.equal(settings.status, 200);
+  assert.equal(JSON.parse(settingText).github.tokenConfigured, true);
+  assert.doesNotMatch(settingText, /private-test/);
+});
