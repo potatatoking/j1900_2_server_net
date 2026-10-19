@@ -88,3 +88,8 @@ python -m unittest discover -s automation -p 'test_*.py'
 ## 2026年10月19日 活动记录
 
 学习区新增洛谷刷题热力图与带日期题目记录，工作区新增 GitHub 公开和私密 Commit 分组统计。每小时同步，失败保留缓存，私密记录仅公开日期和数量。详见 [更新日志](CHANGELOG.md)。
+
+
+## 学习与工作独立页面
+
+学习位于 `/study`，工作位于 `/work`。项目气泡在工作页，分为进行中和已完成；管理员登录 `/admin#work` 后维护，初始为空。旧链接仍可定位文章。详见 [更新日志](CHANGELOG.md)。

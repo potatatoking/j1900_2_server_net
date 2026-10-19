@@ -94,6 +94,7 @@ catch (error) {
 }
 db.moods ??= [];
 db.friends ??= [];
+db.projects ??= [];
 db.readingHistory ??= [];
 db.readingPlan ??= { book: '', author: '', goal: '', progress: 0, note: '' };
 db.profile.hobbyDetails ??= String(db.profile.interests || '').split(/[/／、，,|]+/).map(name => name.trim()).filter(Boolean).slice(0, 12).map(name => ({ name, detail: '' }));
@@ -203,10 +204,44 @@ function friendFields(input) {
 function duplicateFriend(url, except = '') {
   return db.friends.some(item => item.id !== except && item.url.replace(/\/$/, '') === url.replace(/\/$/, ''));
 }
+function projectFields(input) {
+  const title = clean(input.title, 60), description = clean(input.description, 600);
+  if (!title) throw new Error('请填写项目名称');
+  if (!['active', 'completed'].includes(input.status)) throw new Error('请选择进行中或已完成');
+  const url = friendUrl(input.url, true);
+  return { title, description, status: input.status, url: url ? url + new URL(String(input.url).trim()).hash : '' };
+}
 
 async function api(req, res, url) {
   if (req.method !== 'GET' && limited(req)) return json(res, 429, { error: '操作太频繁，请稍后再试' });
   const route = url.pathname;
+  if (route === '/api/projects') {
+    if (req.method === 'GET') return json(res, 200, db.projects);
+    if (req.method === 'POST') {
+      if (!requireAdmin(req, res)) return;
+      if (db.projects.length >= 60) return json(res, 400, { error: '最多记录 60 个项目' });
+      const fields = projectFields(await body(req));
+      const project = { id: crypto.randomUUID(), ...fields, createdAt: new Date().toISOString() };
+      db.projects.push(project); await save(); return json(res, 201, project);
+    }
+    return json(res, 405, { error: '请求方式不支持' });
+  }
+  const projectId = route.match(/^\/api\/projects\/([\w-]+)$/)?.[1];
+  if (projectId) {
+    if (!requireAdmin(req, res)) return;
+    const project = db.projects.find(item => item.id === projectId);
+    if (!project) return json(res, 404, { error: '项目不存在' });
+    if (req.method === 'PUT') {
+      const fields = projectFields(await body(req));
+      Object.assign(project, fields, { updatedAt: new Date().toISOString() });
+      await save(); return json(res, 200, project);
+    }
+    if (req.method === 'DELETE') {
+      db.projects = db.projects.filter(item => item.id !== projectId);
+      await save(); return json(res, 200, { ok: true });
+    }
+    return json(res, 405, { error: '请求方式不支持' });
+  }
   if (route === '/api/friends') {
     if (req.method === 'GET') {
       if (url.searchParams.get('review') === '1') {
@@ -518,7 +553,8 @@ http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: '请求方式不支持' });
     if (url.pathname === '/admin/') { res.writeHead(302, { Location: '/admin' + url.search }); return res.end(); }
-    if (url.pathname === '/friends') url.pathname = '/index.html';
+    if (['/study/', '/work/', '/friends/'].includes(url.pathname)) { res.writeHead(302, { Location: url.pathname.slice(0, -1) + url.search }); return res.end(); }
+    if (['/friends', '/study', '/work'].includes(url.pathname)) url.pathname = '/index.html';
     if (url.pathname === '/admin') url.pathname = '/admin.html';
     let target = path.resolve(publicDir, '.' + decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname));
     if (!target.startsWith(publicDir + path.sep)) return json(res, 403, { error: '无权访问' });

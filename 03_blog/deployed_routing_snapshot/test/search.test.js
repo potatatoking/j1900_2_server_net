@@ -12,7 +12,7 @@ test('home searches all sections and each other page searches only itself', asyn
   const node = { addEventListener() {} };
   const context = vm.createContext({
     document: { querySelector: () => node, addEventListener() {} },
-    window: { addEventListener() {} },
+    window: { addEventListener() {} }, URLSearchParams,
     location: { protocol: 'file:', hash: '' }
   });
   vm.runInContext(source.replace(/\nload\(\);\s*$/, '') + '\nObject.assign(state, previewData);', context);

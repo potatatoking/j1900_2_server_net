@@ -1,0 +1,29 @@
+{
+  "date": "2026-10-19",
+  "backup": "/srv/web/backups/blog-pages-20261019-213753.tar.gz",
+  "tests": {
+    "source": 54,
+    "routed": 58
+  },
+  "projects": 0,
+  "blog_data_unchanged": true,
+  "password_record_unchanged": true,
+  "activity_settings_unchanged": true,
+  "activity_backend_unchanged": true,
+  "routing_unchanged": true,
+  "uploads_unchanged": true,
+  "files": {
+    "server.js": "e624503f07420a53d0a852e16633d40f94efe2914c8279cc8d66d1581388b258",
+    "public/app.js": "9b89b090baaf4ae5c13e10d46f918a211c720dd0589e4c6d12e95d9199ad602b",
+    "public/activity.js": "eb1a2faf7dba5ff3d9794e8cab2da9eef0e24acf44f9cf43b15cac24c28b3672",
+    "public/projects.js": "8bf5f644b6ac98f49b44d7307aae5ad2a02aed1898bb04ead1271fde89e0c578",
+    "public/projects.css": "3a4e231295e1b15cad6391046062186543bc6fb89d765ce27c694f55e583c624",
+    "public/index.html": "c690372a88d1dbaad0cf293748b0ef8f9bb40f3d9b2ecdc76884ba925e62a6d9",
+    "public/admin.html": "10db637d25d9c132f184f0040c4da97a64355445d929b58f81a74c459ac5f538",
+    "test/projects.test.js": "1cbac400c04c5dbd2c567ff6dc0316ee6700c8fbb850179dea305398e3d1d3e3",
+    "test/work-pages.test.js": "cd5fb4dd42c39e27e53283d9b3342c1efe177298d40cd244154532096a7b9aee",
+    "test/search.test.js": "70381e146428b10b18857b44d2437010419f2b575353a727007e0c657a8e47fd",
+    "test/talk.test.js": "5ac338b907b17dfffe0205e747b856dc4685abfdec59f8418a204da6eba86885",
+    "test/transitions.test.js": "e6323ff5a0f1bffe0cb343acb8a56ab5506d0dca7637c3bae27b6f50463571f5"
+  }
+}
