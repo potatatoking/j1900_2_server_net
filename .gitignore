@@ -2,3 +2,10 @@ data/
 .env
 .DS_Store
 public/assets/uploads/
+
+# Maintenance documents are archived locally.
+*.docx
+*.doc
+**/CHANGELOG.md
+/prompts/
+/logs/

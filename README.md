@@ -103,32 +103,16 @@ BLOG_ADMIN_PASSWORD='换成你自己的强密码' npm start
 - 访客只能在留言角发表留言和回复，不能修改动态或个人资料。管理员可以编辑、删除整个留言话题；留言暂不支持图片上传和独立的逐条回复删除。
 - 插画在 `public/assets/rin-saber-chibi.png`，网站加载时不依赖外部图片服务。若将来用于商业用途，请先确认角色相关授权。
 
-
-## 2026-10-18 博客更新
-
-友链花园已上线：首页邀请卡片和页头入口，访客申请与管理员提交、审核管理均可用。配图优先完整显示，兼顾单图、多图及手机排版。详见 [更新日志](CHANGELOG.md)。
-
-
-## 2026-10-19 友链更新
-
-公开友链随机展示，支持手动换序；本站头像、公开地址与简介已按指定信息更新，并提供 YAML 复制。数据和管理顺序保留。详见 [更新日志](CHANGELOG.md)。
-
-
-## 2026年10月19日 活动记录
-
-学习区新增洛谷刷题热力图与带日期题目记录，工作区新增 GitHub 公开和私密 Commit 分组统计。每小时同步，失败保留缓存，私密记录仅公开日期和数量。详见 [更新日志](CHANGELOG.md)。
-
-
 ## 活动同步配置
 
-将 activity-settings.example.json 的结构保存到 data/activity-settings.json；GitHub 的 token 与洛谷 cookie 只能在私有服务器文件中填写，不能提交 Git。文件应设置为容器用户 1000 所有、权限 600，配置后重启 web。GitHub 需 Contents 和 Metadata 读取权限，并覆盖要统计的仓库；洛谷需要有效登录凭据。公开 GET /api/activity 只读聚合缓存，管理员 POST /api/activity/sync 触发更新，GET /api/activity/settings 仅返回配置状态。每小时自动同步，失败保留旧数据。数据时间均为 Asia/Shanghai；GitHub Commit 数与个人主页贡献格的统计口径不同。详见 CHANGELOG.md。
-
+将 activity-settings.example.json 的结构保存到 data/activity-settings.json；GitHub 的 token 与洛谷 cookie 只能在私有服务器文件中填写，不能提交 Git。文件应设置为容器用户 1000 所有、权限 600，配置后重启 web。GitHub 需 Contents 和 Metadata 读取权限，并覆盖要统计的仓库；洛谷需要有效登录凭据。公开 GET /api/activity 只读聚合缓存，管理员 POST /api/activity/sync 触发更新，GET /api/activity/settings 仅返回配置状态。每小时自动同步，失败保留旧数据。数据时间均为 Asia/Shanghai；GitHub Commit 数与个人主页贡献格的统计口径不同。
 
 ## 学习与工作独立页面
 
-学习位于 `/study`，工作位于 `/work`。项目列表在工作页，分为进行中和已完成；管理员登录 `/admin#work` 后维护，初始为空。旧链接仍可定位文章。详见 [更新日志](CHANGELOG.md)。
-
+学习位于 `/study`，工作位于 `/work`。项目列表在工作页，分为进行中和已完成；管理员登录 `/admin#work` 后维护，初始为空。旧链接仍可定位文章。
 
 ## 个人文章与项目列表
 
-个人文章位于 `/articles`，站长从 `/admin#articles` 发表和维护，首页与扇形导航可直达。工作项目采用进行中和已完成分组列表；扇坠支持连续拖动与释放吸附。详见 [更新日志](CHANGELOG.md)。
+个人文章位于 `/articles`，站长从 `/admin#articles` 发表和维护，首页与扇形导航可直达。工作项目采用进行中和已完成分组列表；扇坠支持连续拖动与释放吸附。
+
+维护资料采用本地归档，版本库不再存放 Word、Prompt 和维护日志。
