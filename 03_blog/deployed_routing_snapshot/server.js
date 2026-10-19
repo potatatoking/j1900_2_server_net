@@ -11,6 +11,13 @@ const publicDir = path.join(root, 'public');
 const dataDir = path.join(root, 'data');
 const dataFile = path.join(dataDir, 'blog.json');
 const port = Number(process.env.PORT || 3000);
+let activityStore = null;
+try {
+  await fs.access(path.join(root, 'activity.js'));
+  const { createActivityStore } = await import('./activity.js');
+  activityStore = await createActivityStore({ dataDir });
+} catch (error) { if (error.code !== 'ENOENT') throw error; }
+
 let routeVisitor = () => false;
 let routingConfig;
 try {
@@ -234,6 +241,17 @@ async function api(req, res, url) {
       await save(); return json(res, 200, { ok: true });
     }
     return json(res, 405, { error: '请求方式不支持' });
+  }
+  if (route === '/api/activity' && req.method === 'GET') return json(res, 200, activityStore?.snapshot() || { timezone: 'Asia/Shanghai', github: { status: 'unconfigured' }, luogu: { status: 'unconfigured' } });
+  if (route === '/api/activity/settings' && req.method === 'GET') {
+    if (!requireAdmin(req, res)) return;
+    return json(res, 200, activityStore?.settingsStatus() || {});
+  }
+  if (route === '/api/activity/sync' && req.method === 'POST') {
+    if (!requireAdmin(req, res)) return;
+    if (!activityStore) return json(res, 503, { error: '活动同步模块暂不可用' });
+    const job = activityStore.sync(); job.catch(() => {});
+    return json(res, 202, { syncing: true });
   }
   if (route === '/api/session' && req.method === 'GET') return json(res, 200, { admin: isAdmin(req), loginEnabled: Boolean(passwordRecord || adminPassword) });
   if (route === '/api/login' && req.method === 'POST') {

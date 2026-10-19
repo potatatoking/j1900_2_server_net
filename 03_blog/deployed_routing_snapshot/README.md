@@ -122,3 +122,8 @@ BLOG_ADMIN_PASSWORD='换成你自己的强密码' npm start
 本站交换资料已更新为以下四个字段，展示用户指定的头像和简介，固定使用公开 HTTPS 地址。即使从局域网或校园网入口访问，也不会把当前入口地址误写成交换资料。页面提供完整 YAML 和“复制友链资料”按钮；剪贴板不可用时选中文本，方便手动复制。
 
 修改 JavaScript 后已运行 npm test。Windows 仍只有原有的 Unix 0600 文件权限断言失败；Debian Node.js 24.22.0 隔离容器内，较新源码 38/38、带分流部署版 42/42 全部通过。新增测试覆盖排列完整性、不改原数据、待审隐私、资料逐字一致，以及剪贴板成功与降级。桌面和 390 像素手机布局、四条隔离友链换序、按钮焦点、资料复制及头像加载均已验证。
+
+
+## 活动同步配置
+
+将 activity-settings.example.json 的结构保存到 data/activity-settings.json；GitHub 的 token 与洛谷 cookie 只能在私有服务器文件中填写，不能提交 Git。文件应设置为容器用户 1000 所有、权限 600，配置后重启 web。GitHub 需 Contents 和 Metadata 读取权限，并覆盖要统计的仓库；洛谷需要有效登录凭据。公开 GET /api/activity 只读聚合缓存，管理员 POST /api/activity/sync 触发更新，GET /api/activity/settings 仅返回配置状态。每小时自动同步，失败保留旧数据。数据时间均为 Asia/Shanghai；GitHub Commit 数与个人主页贡献格的统计口径不同。详见 CHANGELOG.md。
