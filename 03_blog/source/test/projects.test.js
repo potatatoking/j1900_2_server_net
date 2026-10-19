@@ -34,7 +34,9 @@ test('project management requires admin, separates statuses and survives restart
   const before = (await call('/api/posts')).data;
   assert.deepEqual((await call('/api/projects')).data, []);
   for (const route of ['/study', '/work', '/work/', '/study/']) assert.equal((await fetch(base + route)).status, 200);
-  const sample = { title: '正在做的项目', description: '项目简介', status: 'active', url: 'https://example.com/project#details' };
+  const longDescription = '项目介绍与实现过程🥔\n'.repeat(1000) + '完整内容结尾';
+  assert.ok(Buffer.byteLength(JSON.stringify({ description: longDescription })) > 20_000);
+  const sample = { title: '正在做的项目', description: longDescription, status: 'active', url: 'https://example.com/project#details' };
   assert.equal((await call('/api/projects', 'POST', sample)).status, 401);
   assert.equal((await call('/api/projects/no-id', 'PUT', sample)).status, 401);
   assert.equal((await call('/api/projects/no-id', 'DELETE')).status, 401);
@@ -43,17 +45,21 @@ test('project management requires admin, separates statuses and survives restart
   assert.equal(created.status, 201);
   assert.equal(created.data.status, 'active');
   assert.equal(created.data.url, sample.url);
+  assert.equal(created.data.description, longDescription);
   const endpoint = `/api/projects/${created.data.id}`;
   for (const fields of [{ title: '' }, { status: 'invalid' }, { url: 'javascript:alert(1)' }, { url: 'https://name:secret@example.com' }]) {
     assert.equal((await call(endpoint, 'PUT', { ...sample, ...fields }, cookie)).status, 400);
   }
   assert.equal((await call('/api/projects')).data[0].status, 'active');
-  const edited = await call(endpoint, 'PUT', { ...sample, title: '完成的成果', status: 'completed', url: '' }, cookie);
+  const editedDescription = longDescription + '\n继续补充的项目介绍';
+  const edited = await call(endpoint, 'PUT', { ...sample, description: editedDescription, title: '完成的成果', status: 'completed', url: '' }, cookie);
   assert.equal(edited.status, 200);
   assert.equal(edited.data.status, 'completed');
   assert.equal(edited.data.createdAt, created.data.createdAt);
+  assert.equal(edited.data.description, editedDescription);
   await stop(); await start();
   assert.equal((await call('/api/projects')).data[0].title, '完成的成果');
+  assert.equal((await call('/api/projects')).data[0].description, editedDescription);
   assert.deepEqual((await call('/api/posts')).data, before);
   assert.equal((await call(endpoint, 'DELETE', undefined, cookie)).status, 401);
   const fresh = (await call('/api/login', 'POST', { password: 'projects-test-password' })).cookie;
