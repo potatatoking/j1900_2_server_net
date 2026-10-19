@@ -4,7 +4,7 @@ const modalContent = document.querySelector('#modal-content');
 const toastNode = document.querySelector('#toast');
 const adminMode = ['/admin', '/admin.html'].includes(location.pathname);
 const filePreview = location.protocol === 'file:';
-const state = { activity: null, friends: [], posts: [], topics: [], moods: [], profile: null, readingPlan: null, readingHistory: [], admin: false, loginEnabled: false, searchQuery: '' };
+const state = { activity: null, projects: [], friends: [], posts: [], topics: [], moods: [], profile: null, readingPlan: null, readingHistory: [], admin: false, loginEnabled: false, searchQuery: '' };
 const previewData = {
   moods: [],
   readingPlan: { book: '', author: '', goal: '', progress: 0, note: '' },
@@ -23,7 +23,7 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&a
 const date = value => new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(value));
 const dateKey = value => new Date(value).toLocaleDateString('sv-SE');
 function searchItems() {
-  const items = state.posts.map(post => ({ page: post.type, id: `post-${post.id}`, category: post.type === 'life' ? '生活日记' : '学习与工作', title: post.title, detail: post.content, words: [post.title, post.content, post.tag, date(post.createdAt)].join(' ') }));
+  const items = state.posts.map(post => ({ page: postPage(post), id: `post-${post.id}`, category: post.type === 'life' ? '生活日记' : studySection(post) === 'work' ? '工作记录' : '学习手记', title: post.title, detail: post.content, words: [post.title, post.content, post.tag, date(post.createdAt)].join(' ') }));
   if (state.readingPlan?.book) {
     const plan = state.readingPlan;
     items.push({ page: 'study', id: 'reading-plan', category: '阅读计划', title: plan.book, detail: plan.goal || plan.note, words: [plan.book, plan.author, plan.goal, plan.note].join(' ') });
@@ -34,6 +34,9 @@ function searchItems() {
     for (const reply of topic.replies) items.push({ page: 'talk', id: `topic-${topic.id}`, category: '留言回复', title: `${reply.author} 回复了「${topic.title}」`, detail: reply.content, words: [reply.author, reply.content, topic.title, date(reply.createdAt)].join(' ') });
   }
   for (const friend of state.friends.filter(item => item.status === 'published')) items.push({ page: 'friends', id: `friend-${friend.id}`, category: '友链花园', title: friend.name, detail: friend.description, words: [friend.name, friend.description, friend.url].join(' ') });
+  for (const project of state.projects || []) items.push({ page: 'work', id: `project-${project.id}`, category: project.status === 'completed' ? '已完成的项目' : '进行中的项目', title: project.title, detail: project.description, words: [project.title, project.description, project.url, project.status === 'completed' ? '已完成' : '进行中'].join(' ') });
+  for (const problem of state.activity?.luogu?.solved || []) items.push({ page: 'study', id: `solved-${problem.pid}`, category: '洛谷已解题', title: `${problem.pid} · ${problem.title}`, detail: problem.date || '日期待补', words: [problem.pid, problem.title, problem.date].join(' ') });
+  for (const day of state.activity?.github?.daily || []) items.push({ page: 'work', id: `commit-${day.date}`, category: 'GitHub 提交', title: `${day.date} · ${day.total} 次提交`, detail: `公开 ${day.public} 次 · 私密 ${day.private} 次`, words: [day.date, 'GitHub 提交', `公开 ${day.public}`, `私密 ${day.private}`].join(' ') });
   const profile = state.profile;
   items.push({ page: 'about', id: 'profile', category: '关于我', title: profile.name, detail: profile.intro, words: [profile.name, profile.handle, profile.intro, profile.bio, profile.location, profile.interests, ...hobbyItems(profile).map(item => item.detail), profile.email, profile.phone, profile.qq, profile.wechat, profile.github, profile.birthday, profile.workExperience, profile.education, ...educationStages.map(([key]) => profile[key])].join(' ') });
   return items;
@@ -47,7 +50,7 @@ function searchResults(query) {
 }
 function searchPanel() {
   const page = route();
-  const scope = { home: ['检索小站内容', '搜索动态、个人资料和留言…'], life: ['检索生活日记', '搜索生活日记…'], study: ['检索学习与工作', '搜索学习与工作动态…'], about: ['检索关于我', '搜索个人资料…'], talk: ['检索留言角', '搜索留言和回复…'], friends: ['检索友链花园', '搜索站点名称和简介…'] }[page];
+  const scope = { home: ['检索小站内容', '搜索动态、个人资料和留言…'], life: ['检索生活日记', '搜索生活日记…'], study: ['检索学习手记', '搜索学习笔记、书籍和刷题记录…'], work: ['检索工作记录', '搜索工作记录和项目…'], about: ['检索关于我', '搜索个人资料…'], talk: ['检索留言角', '搜索留言和回复…'], friends: ['检索友链花园', '搜索站点名称和简介…'] }[page];
   return `<section class="search-panel" aria-label="${scope[0]}"><label for="site-search">${scope[0]}</label><div class="search-field"><span aria-hidden="true">⌕</span><input id="site-search" type="search" placeholder="${scope[1]}" value="${esc(state.searchQuery)}" autocomplete="off"></div><div class="search-results" id="search-results" aria-live="polite">${searchResults(state.searchQuery)}</div></section>`;
 }
 function focusHashTarget() {
@@ -55,6 +58,7 @@ function focusHashTarget() {
   if (id) requestAnimationFrame(() => {
     let target = document.getElementById(id);
     if (!target) target = openStudyArchivedPost(id);
+    if (!target && typeof openActivitySearchTarget === 'function') target = openActivitySearchTarget(id);
     if (route() === 'study' && id.startsWith('read-')) {
       libraryExpanded = true;
       const library = document.querySelector('#reading-library');
@@ -64,6 +68,7 @@ function focusHashTarget() {
       const toggle = library?.querySelector('.library-toggle');
       if (toggle) { toggle.setAttribute('aria-expanded', 'true'); toggle.textContent = '收拢书页 ↗'; }
     }
+    if (route() === 'work' && id.startsWith('project-') && typeof projectModal === 'function') projectModal(id.slice(8));
     if (route() === 'talk' && id.startsWith('topic-')) topicConversation(id.slice(6));
     target?.scrollIntoView({ block: id === 'home-chapters' ? 'start' : 'center', behavior: motionReduced() ? 'instant' : 'smooth' });
   });
@@ -95,13 +100,25 @@ async function request(url, options = {}) {
 async function load() {
   if (filePreview) { Object.assign(state, previewData); render(); return; }
   try {
-    const [posts, topics, moods, profile, readingPlan, readingHistory, session, friends, activity] = await Promise.all([request('/api/posts'), request('/api/topics'), request('/api/moods'), request('/api/profile'), request('/api/reading-plan'), request('/api/reading-history'), adminMode ? request('/api/session') : Promise.resolve({ admin: false, loginEnabled: false }), request('/api/friends'), request('/api/activity').catch(() => null)]);
+    const [posts, topics, moods, profile, readingPlan, readingHistory, session, friends, activity, projects] = await Promise.all([request('/api/posts'), request('/api/topics'), request('/api/moods'), request('/api/profile'), request('/api/reading-plan'), request('/api/reading-history'), adminMode ? request('/api/session') : Promise.resolve({ admin: false, loginEnabled: false }), request('/api/friends'), request('/api/activity').catch(() => null), request('/api/projects')]);
     if (session.admin) friends.splice(0, friends.length, ...await request('/api/friends?review=1'));
-    Object.assign(state, { activity, friends, posts, topics, moods, profile, readingPlan, readingHistory, admin: session.admin, loginEnabled: session.loginEnabled });
+    Object.assign(state, { activity, projects, friends, posts, topics, moods, profile, readingPlan, readingHistory, admin: session.admin, loginEnabled: session.loginEnabled });
     render();
   } catch (error) { app.innerHTML = `<div class="container empty"><span class="emoji">☁️</span>暂时无法加载小站：${esc(error.message)}</div>`; }
 }
-function route() { const name = location.hash.replace('#', '').split('?')[0]; return ['home','life','study','about','talk','friends'].includes(name) ? name : location.pathname === '/friends' ? 'friends' : 'home'; }
+function postPage(post) { return post.type === 'study' ? studySection(post) === 'work' ? 'work' : 'study' : post.type; }
+function route() {
+  const name = location.hash.replace('#', '').split('?')[0];
+  const page = ['home','life','study','work','about','talk','friends'].includes(name) ? name : ({ '/friends': 'friends', '/study': 'study', '/work': 'work' })[location.pathname] || 'home';
+  if (['study', 'work'].includes(page)) {
+    const id = new URLSearchParams(location.hash.split('?')[1] || '').get('item');
+    if (id === 'study-work') return 'work';
+    if (id === 'study-learning') return 'study';
+    const post = state.posts.find(item => `post-${item.id}` === id && item.type === 'study');
+    if (post) return postPage(post);
+  }
+  return page;
+}
 function render() {
   syncFanNavigation();
   if (!state.profile) return;
@@ -119,9 +136,9 @@ function render() {
     document.title = '站长登录 | 土豆的记事簿';
     return;
   }
-  app.innerHTML = ({ home, life: () => postsPage('life'), study: () => postsPage('study'), about, talk, friends: friendsPage })[page]();
-  if (page === 'study' && typeof positionActivityMaps === 'function') positionActivityMaps();
-  document.title = `${({home:'首页',life:'生活日记',study:'学习与工作',about:'关于我',talk:'留言角',friends:'友链花园'})[page]} | ${siteName}`;
+  app.innerHTML = ({ home, life: () => postsPage('life'), study: () => postsPage('study'), work: workPage, about, talk, friends: friendsPage })[page]();
+  if (['study', 'work'].includes(page) && typeof positionActivityMaps === 'function') positionActivityMaps();
+  document.title = `${({home:'首页',life:'生活日记',study:'学习手记',work:'工作记录',about:'关于我',talk:'留言角',friends:'友链花园'})[page]} | ${siteName}`;
   focusHashTarget();
   revealSections();
 }
@@ -203,7 +220,7 @@ function changePage() {
     if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
   };
   if (!fromChapter && (fromFan || (!adminMode && differentPage && page !== 'home'))) return blurPageTransition(commit);
-  return paperTransition(commit, ({ home: '回到故事的起点', life: '生活日记', study: '学习与工作', about: '关于我', talk: '留言角', friends: '友链花园' })[page], page === 'home', differentPage);
+  return paperTransition(commit, ({ home: '回到故事的起点', life: '生活日记', study: '学习手记', work: '工作记录', about: '关于我', talk: '留言角', friends: '友链花园' })[page], page === 'home', differentPage);
 }
 let revealObserver;
 function revealSections() {
@@ -300,9 +317,11 @@ function home() {
   const latest = state.posts.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 3);
   const chapters = [
     ['life', 'LIFE JOURNAL', '生活日记', '收藏平凡日子的闪光', '01'],
-    ['study', 'LEARNING NOTES', '学习 & 工作', '记录一点一点的成长', '02'],
-    ['about', 'ABOUT ME', '关于我', '一封写给新朋友的信', '03'],
-    ['talk', 'GUESTBOOK', '留言角', '在这里交换小小心事', '04']
+    ['study', 'LEARNING NOTES', '学习手记', '记录一点一点的成长', '02'],
+    ['work', 'WORK JOURNAL', '工作记录', '让想法慢慢成为现实', '03'],
+    ['about', 'ABOUT ME', '关于我', '一封写给新朋友的信', '04'],
+    ['talk', 'GUESTBOOK', '留言角', '在这里交换小小心事', '05'],
+    ['friends', 'FRIEND GARDEN', '友链花园', '与有趣的小站相遇', '06']
   ];
   return `<div class="journal-home">
     <section class="journal-hero" aria-labelledby="journal-title">
@@ -324,10 +343,10 @@ function home() {
     ${moodHistory()}
     <button class="opening-invitation" type="button" data-home-action="explore"><span class="opening-index">01 — THE BEGINNING</span><span>往下翻，故事才刚刚开始</span><span class="opening-down" aria-hidden="true">↓</span></button>
     <section class="journal-chapters" id="home-chapters" aria-labelledby="chapters-title" tabindex="-1"><div class="explore-heading"><div><span class="journal-kicker">FIND YOUR LITTLE CORNER</span><h2 id="chapters-title">目录</h2><p>想从哪一页开始？选一个角落，慢慢逛。</p></div><button class="random-note" type="button" data-home-action="random" ${state.posts.length ? '' : 'disabled'}><span aria-hidden="true">⚄</span> 随机翻一页 ↗</button></div>
-      <nav class="chapter-grid" aria-label="博客分类">${[chapters.slice(0, 2), chapters.slice(2)].map((book, bookIndex) => `<div class="chapter-book" role="group" aria-label="${bookIndex === 0 ? '日常与成长' : '相遇与交流'}">${book.map(([page, en, title, caption, number]) => `<a class="chapter-link chapter-${page}" href="#${page}"><div class="chapter-meta"><span>${number} / ${en}</span><span class="chapter-arrow" aria-hidden="true">↗</span></div><h3>${title}</h3><p>${caption}</p><span class="chapter-count">${page === 'life' || page === 'study' ? `${state.posts.filter(post => post.type === page).length} 篇记录` : page === 'talk' ? `${state.topics.length} 条留言` : '很高兴认识你'}</span><span class="book-page-number" aria-hidden="true">— ${number} —</span></a>`).join('')}</div>`).join('')}</nav>
+      <nav class="chapter-grid" aria-label="博客分类">${[chapters.slice(0, 2), chapters.slice(2, 4), chapters.slice(4)].map((book, bookIndex) => `<div class="chapter-book" role="group" aria-label="${['日常与成长', '工作与关于我', '相遇与交流'][bookIndex]}">${book.map(([page, en, title, caption, number]) => `<a class="chapter-link chapter-${page}" href="#${page}"><div class="chapter-meta"><span>${number} / ${en}</span><span class="chapter-arrow" aria-hidden="true">↗</span></div><h3>${title}</h3><p>${caption}</p><span class="chapter-count">${['life', 'study', 'work'].includes(page) ? `${state.posts.filter(post => postPage(post) === page).length} 篇记录` : page === 'talk' ? `${state.topics.length} 条留言` : '很高兴认识你'}</span><span class="book-page-number" aria-hidden="true">— ${number} —</span></a>`).join('')}</div>`).join('')}</nav>
     </section>
     <section class="journal-latest" aria-labelledby="latest-title"><div class="journal-section-label"><h2 id="latest-title">最近碎片</h2><span>持续收集生活中的微光</span></div>
-      <div class="journal-latest-grid"><div class="journal-entries">${latest.length ? latest.map((post, index) => `<a class="journal-entry" href="#${post.type}?item=${encodeURIComponent(`post-${post.id}`)}"><span class="journal-entry-index">0${index + 1}</span><div><span class="journal-entry-category">${post.type === 'life' ? '生活日记' : '学习 & 工作'} · ${date(post.createdAt)}</span><h3>${esc(post.title)}</h3><p>${esc(post.content.slice(0, 76))}${post.content.length > 76 ? '…' : ''}</p></div><span aria-hidden="true">↗</span></a>`).join('') : '<p class="journal-empty">新的一页，等一个想记录的瞬间。</p>'}</div>
+      <div class="journal-latest-grid"><div class="journal-entries">${latest.length ? latest.map((post, index) => `<a class="journal-entry" href="#${postPage(post)}?item=${encodeURIComponent(`post-${post.id}`)}"><span class="journal-entry-index">0${index + 1}</span><div><span class="journal-entry-category">${post.type === 'life' ? '生活日记' : postPage(post) === 'work' ? '工作记录' : '学习手记'} · ${date(post.createdAt)}</span><h3>${esc(post.title)}</h3><p>${esc(post.content.slice(0, 76))}${post.content.length > 76 ? '…' : ''}</p></div><span aria-hidden="true">↗</span></a>`).join('') : '<p class="journal-empty">新的一页，等一个想记录的瞬间。</p>'}</div>
       <aside class="journal-letter"><span class="journal-kicker">A NOTE TO YOU</span><span class="letter-star" aria-hidden="true">✳</span><h3>你好呀，<br>我是${esc(state.profile.name)}。</h3><p>${esc(state.profile.bio)}</p><a href="#about">关于我的更多故事 ↗</a></aside></div>
     </section>
     <section class="journal-search" aria-label="搜索手帐">${searchPanel()}</section>
@@ -335,10 +354,11 @@ function home() {
   </div>`;
 }
 const fanPages = [
-  { id: 'home', title: '首页', en: 'THE BEGINNING', desc: '回到故事开始的地方，翻开下一页。', angle: 12 },
-  { id: 'life', title: '生活日记', en: 'LITTLE DAYS', desc: '把日常里的甜和暖，都悄悄收藏起来。', angle: 29 },
-  { id: 'study', title: '学习与工作', en: 'GROWING NOTES', desc: '每一页记录，都是一点点成长。', angle: 46 },
-  { id: 'about', title: '关于我', en: 'NICE TO MEET YOU', desc: '你好呀，很高兴在这里与你相遇。', angle: 63 },
+  { id: 'home', title: '首页', en: 'THE BEGINNING', desc: '回到故事开始的地方，翻开下一页。', angle: 10 },
+  { id: 'life', title: '生活日记', en: 'LITTLE DAYS', desc: '把日常里的甜和暖，都悄悄收藏起来。', angle: 24 },
+  { id: 'study', title: '学习', en: 'LEARNING NOTES', desc: '读到的、想到的、试过的。', angle: 38 },
+  { id: 'work', title: '工作', en: 'WORK JOURNAL', desc: '正在做的项目，与认真完成的瞬间。', angle: 52 },
+  { id: 'about', title: '关于我', en: 'NICE TO MEET YOU', desc: '你好呀，很高兴在这里与你相遇。', angle: 66 },
   { id: 'talk', title: '留言角', en: 'LET’S TALK', desc: '选一个小小话题，慢慢聊。', angle: 80 }
 ];
 let fanOpen = false;
@@ -370,7 +390,7 @@ function syncFanNavigation() {
 }
 function fanPreviewContent(page) {
   let snippets;
-  if (page.id === 'life' || page.id === 'study') snippets = state.posts.filter(post => post.type === page.id).slice(0, 2).map(post => ({ title: post.title, text: post.content.slice(0, 100) }));
+  if (['life', 'study', 'work'].includes(page.id)) snippets = state.posts.filter(post => postPage(post) === page.id).slice(0, 2).map(post => ({ title: post.title, text: post.content.slice(0, 100) }));
   else if (page.id === 'talk') snippets = state.topics.slice(0, 2).map(topic => ({ title: topic.title, text: topic.content.slice(0, 100) }));
   else if (page.id === 'about') snippets = [{ title: state.profile?.name || '土豆', text: state.profile?.bio || state.profile?.intro || '' }];
   else snippets = [{ title: '土豆的记事簿', text: '生活、学习与小小心事。' }];
@@ -412,7 +432,7 @@ function openFanNavigation() {
   const start = panel.hidden ? { opacity: 0, transform: 'scale(.12) rotate(-30deg)' } : { opacity: getComputedStyle(panel).opacity, transform: getComputedStyle(panel).transform };
   fanPanelAnimation?.cancel();
   fanOpen = true;
-  panel.innerHTML = `${fanPaperArtwork()}<svg class="fan-arc" viewBox="0 0 300 300" aria-hidden="true"><path d="M36 0 A264 264 0 0 0 300 264"/></svg><span class="fan-caption">一扇 · 一页</span>${fanPages.map((page, index) => { const point = fanPoint(page.angle); return `<button class="fan-page" type="button" data-fan-page="${page.id}" style="left:${point.x / 3}%;top:${point.y / 3}%" ${page.id === route() ? 'aria-current="page"' : ''}><small aria-hidden="true">0${index + 1}</small><span>${page.title}</span></button>`; }).join('')}<button type="button" class="fan-knob" role="slider" aria-label="滑动选择页面，回车进入" aria-valuemin="0" aria-valuemax="4" aria-valuenow="0"><svg class="fan-charm" viewBox="0 0 44 64" aria-hidden="true"><defs><radialGradient id="fan-charm-jade" cx="35%" cy="25%" r="80%"><stop stop-color="#fffaf0"/><stop offset=".55" stop-color="#f3d5dd"/><stop offset="1" stop-color="#c998b3"/></radialGradient></defs><circle class="charm-focus-ring" cx="22" cy="23" r="21"/><path class="charm-cord" d="M22 36v10"/><g class="charm-fringe"><ellipse cx="22" cy="47" rx="3" ry="3.5"/><path d="M19 50q-2 5-2 10 5 3 10 0 0-5-2-10Z"/><path class="charm-threads" d="m20 51-1 9m3-9v10m2-10 1 9"/></g><g class="charm-flower"><path transform="rotate(0 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(72 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(144 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(216 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(288 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><g class="charm-veins"><path transform="rotate(0 22 23)" d="M22 19v-6"/><path transform="rotate(72 22 23)" d="M22 19v-6"/><path transform="rotate(144 22 23)" d="M22 19v-6"/><path transform="rotate(216 22 23)" d="M22 19v-6"/><path transform="rotate(288 22 23)" d="M22 19v-6"/></g><circle class="charm-heart" cx="22" cy="23" r="4"/><circle class="charm-glint" cx="20.8" cy="21.8" r="1.2"/></g></svg></button><p class="fan-help">轻移扇坠<br>松开翻页</p>`;
+  panel.innerHTML = `${fanPaperArtwork()}<svg class="fan-arc" viewBox="0 0 300 300" aria-hidden="true"><path d="M36 0 A264 264 0 0 0 300 264"/></svg><span class="fan-caption">一扇 · 一页</span>${fanPages.map((page, index) => { const point = fanPoint(page.angle); return `<button class="fan-page" type="button" data-fan-page="${page.id}" style="left:${point.x / 3}%;top:${point.y / 3}%" ${page.id === route() ? 'aria-current="page"' : ''}><small aria-hidden="true">0${index + 1}</small><span>${page.title}</span></button>`; }).join('')}<button type="button" class="fan-knob" role="slider" aria-label="滑动选择页面，回车进入" aria-valuemin="0" aria-valuemax="${fanPages.length - 1}" aria-valuenow="0"><svg class="fan-charm" viewBox="0 0 44 64" aria-hidden="true"><defs><radialGradient id="fan-charm-jade" cx="35%" cy="25%" r="80%"><stop stop-color="#fffaf0"/><stop offset=".55" stop-color="#f3d5dd"/><stop offset="1" stop-color="#c998b3"/></radialGradient></defs><circle class="charm-focus-ring" cx="22" cy="23" r="21"/><path class="charm-cord" d="M22 36v10"/><g class="charm-fringe"><ellipse cx="22" cy="47" rx="3" ry="3.5"/><path d="M19 50q-2 5-2 10 5 3 10 0 0-5-2-10Z"/><path class="charm-threads" d="m20 51-1 9m3-9v10m2-10 1 9"/></g><g class="charm-flower"><path transform="rotate(0 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(72 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(144 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(216 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><path transform="rotate(288 22 23)" d="M22 24C10 19 13 7 22 7S34 19 22 24Z"/><g class="charm-veins"><path transform="rotate(0 22 23)" d="M22 19v-6"/><path transform="rotate(72 22 23)" d="M22 19v-6"/><path transform="rotate(144 22 23)" d="M22 19v-6"/><path transform="rotate(216 22 23)" d="M22 19v-6"/><path transform="rotate(288 22 23)" d="M22 19v-6"/></g><circle class="charm-heart" cx="22" cy="23" r="4"/><circle class="charm-glint" cx="20.8" cy="21.8" r="1.2"/></g></svg></button><p class="fan-help">轻移扇坠<br>松开翻页</p>`;
   panel.hidden = false;
   root.classList.add('is-open');
   const toggle = root.querySelector('#fan-toggle');
@@ -541,14 +561,14 @@ if (fanRoot) {
     else if (event.target.closest('.fan-knob')) {
       if (['ArrowRight','ArrowDown','ArrowLeft','ArrowUp','Home','End'].includes(event.key)) {
         event.preventDefault();
-        const index = event.key === 'Home' ? 0 : event.key === 'End' ? 4 : fanSelection + (['ArrowRight','ArrowDown'].includes(event.key) ? 1 : -1);
+        const index = event.key === 'Home' ? 0 : event.key === 'End' ? fanPages.length - 1 : fanSelection + (['ArrowRight','ArrowDown'].includes(event.key) ? 1 : -1);
         selectFanPage(index);
       } else if (['Enter',' '].includes(event.key)) { event.preventDefault(); navigateFanSelection(); }
     }
   });
   document.addEventListener('pointerdown', event => { if (fanOpen && !event.target.closest('#fan-navigation')) closeFanNavigation(); });
 }
-function pageHead(eyebrow, title, desc, action = '') { return `<div class="page-head"><div class="page-head-copy"><a class="back-to-directory" href="#home?item=home-chapters">← 返回目录</a><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p>${desc}</p>${action ? `<div class="page-head-action">${action}</div>` : ''}</div>${['talk', 'study'].includes(route()) ? '' : '<img class="page-head-art" src="./assets/rin-saber-chibi.png" alt="" aria-hidden="true">'}</div>`; }
+function pageHead(eyebrow, title, desc, action = '') { return `<div class="page-head"><div class="page-head-copy"><a class="back-to-directory" href="#home?item=home-chapters">← 返回目录</a><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p>${desc}</p>${action ? `<div class="page-head-action">${action}</div>` : ''}</div>${['talk', 'study', 'work'].includes(route()) ? '' : '<img class="page-head-art" src="./assets/rin-saber-chibi.png" alt="" aria-hidden="true">'}</div>`; }
 const lifeArchiveState = { year: '', month: '' };
 function lifeArchivePosts() {
   return state.posts.filter(post => post.type === 'life').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
@@ -674,8 +694,14 @@ function readingLogEditor(id, logId) {
   if (!log || !state.admin) return;
   openModal(`<h2>编辑阅读日志</h2><p>保留原始记录时间，修正进度或心得。</p><form id="reading-log-form" data-id="${esc(id)}" data-log="${esc(logId)}"><label for="log-progress">当时的阅读进度</label><input class="field" type="number" min="0" max="100" step="1" name="progress" id="log-progress" required value="${Number(log.progress) || 0}"><label for="log-note">这次的心得</label><textarea class="field" id="log-note" name="note" maxlength="2000">${esc(log.note)}</textarea><p class="form-error" role="alert"></p><button class="btn" type="submit">保存日志</button></form>`);
 }
+function growthPageNav(page) {
+  return `<nav class="growth-page-nav" aria-label="学习与工作页面"><a href="#study" ${page === 'study' ? 'aria-current="page"' : ''}><span>01 / LEARNING</span>学习手记 ↗</a><a href="#work" ${page === 'work' ? 'aria-current="page"' : ''}><span>02 / WORK</span>工作记录 ↗</a></nav>`;
+}
 function studyPage() {
-  return `<div class="container page page-study">${pageHead('GROWING NOTES', '学习与工作 📖', '把每一点进步，认真收进日子里。')}<nav class="study-index" aria-label="学习与工作分类"><button type="button" class="study-index-link" data-study-jump="study-learning"><span class="study-index-number">01</span><span><strong>学习内容</strong><small>读到的、想到的、试过的</small></span><span aria-hidden="true">↗</span></button><button type="button" class="study-index-link" data-study-jump="study-work"><span class="study-index-number">02</span><span><strong>工作内容</strong><small>做过的、完成的、正在推进的</small></span><span aria-hidden="true">↗</span></button></nav>${studyLane('learning', '学习内容', 'LEARNING', '✏️', '一点点积累，慢慢长成喜欢的样子。')}${readingPlanCard()}${readingHistoryView()}${studyLane('work', '工作内容', 'WORK', '📎', '把每个认真完成的瞬间，留在这里。')}${bottomSearch()}</div>`;
+  return `<div class="container page page-study">${pageHead('LEARNING NOTES', '学习手记 📖', '把读到的、想到的，慢慢收进日子里。')}${growthPageNav('study')}${studyLane('learning', '学习内容', 'LEARNING', '✏️', '一点点积累，慢慢长成喜欢的样子。')}${readingPlanCard()}${readingHistoryView()}${bottomSearch()}</div>`;
+}
+function workPage() {
+  return `<div class="container page page-work">${pageHead('WORK JOURNAL', '工作记录 📎', '让正在做的事，一点点有了形状。')}${growthPageNav('work')}${typeof renderProjects === 'function' ? renderProjects() : ''}${studyLane('work', '工作内容', 'WORK', '📎', '把每个认真完成的瞬间，留在这里。')}${bottomSearch()}</div>`;
 }
 function todaysQuote() {
   const day = Math.floor(Date.parse(localDay()) / 86400000);
@@ -1171,7 +1197,7 @@ app.addEventListener('click', event => {
       const candidates = otherPosts.length ? otherPosts : state.posts;
       const post = candidates[Math.floor(Math.random() * candidates.length)];
       homeInteraction.lastPost = post.id;
-      location.hash = `${post.type}?item=${encodeURIComponent(`post-${post.id}`)}`;
+      location.hash = `${postPage(post)}?item=${encodeURIComponent(`post-${post.id}`)}`;
     }
   }
 
@@ -1267,7 +1293,7 @@ document.addEventListener('submit', async event => {
       await request('/api/password', { method: 'PUT', body: JSON.stringify(values) });
       form.reset(); state.admin = false; state.friends = await request('/api/friends'); await requestModalClose(); render(); toast('密码已修改，请使用新密码重新登录');
     }
-    if (form.id === 'post-form') { const editing = Boolean(form.dataset.id); const post = await request(editing ? `/api/posts/${form.dataset.id}` : '/api/posts', { method: editing ? 'PUT' : 'POST', body: JSON.stringify(values) }); if (editing) state.posts = state.posts.map(item => item.id === post.id ? post : item); else state.posts.unshift(post); await requestModalClose(); render(); toast(editing ? '动态已更新' : '动态发布成功'); }
+    if (form.id === 'post-form') { const editing = Boolean(form.dataset.id), previousPage = route(); const post = await request(editing ? `/api/posts/${form.dataset.id}` : '/api/posts', { method: editing ? 'PUT' : 'POST', body: JSON.stringify(values) }); if (editing) state.posts = state.posts.map(item => item.id === post.id ? post : item); else state.posts.unshift(post); await requestModalClose(); if (['study', 'work'].includes(previousPage) && postPage(post) !== previousPage) location.hash = `${postPage(post)}?item=${encodeURIComponent(`post-${post.id}`)}`; else render(); toast(editing ? '动态已更新' : '动态发布成功'); }
     if (form.id === 'profile-form') {
       values.hobbyDetails = [...form.querySelectorAll('.hobby-row')].map(row => ({
         name: row.querySelector('.hobby-name').value.trim(),

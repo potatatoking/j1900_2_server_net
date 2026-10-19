@@ -99,13 +99,24 @@ document.addEventListener('keydown', event => {
   target?.focus();
 });
 let activityPollTimer;
+function openActivitySearchTarget(id) {
+  const source = id.startsWith('solved-') ? 'luogu' : id.startsWith('commit-') ? 'github' : '';
+  if (!source || (source === 'luogu' ? route() !== 'study' : route() !== 'work')) return null;
+  const problem = source === 'luogu' ? state.activity?.luogu?.solved?.find(item => item.pid === id.slice(7)) : null;
+  const day = source === 'github' ? id.slice(7) : problem?.date;
+  if (day) Object.assign(activityViewState[source], { year: day.slice(0, 4), day });
+  updateActivityPanel(source);
+  const panel = document.querySelector(`[data-activity-panel="${source}"]`);
+  if (source === 'luogu' && problem && !day) { const undated = panel?.querySelector('.activity-undated'); if (undated) undated.open = true; }
+  return panel;
+}
 function pollActivitySync(attempt = 0) {
   clearTimeout(activityPollTimer);
   if (!state.activity?.syncing || attempt >= 90) return;
   activityPollTimer = setTimeout(async () => {
     try {
       state.activity = await request('/api/activity');
-      if (route() === 'study') { updateActivityPanel('github'); updateActivityPanel('luogu'); }
+      if (['study', 'work'].includes(route())) { updateActivityPanel('github'); updateActivityPanel('luogu'); }
       pollActivitySync(attempt + 1);
     } catch { /* Keep the last complete page if the connection drops. */ }
   }, 2000);

@@ -63,7 +63,7 @@ test('each inner page places its single search below the primary content', async
   const { run, context } = await setup();
   for (const [page, expression, content] of [
     ['talk', 'talk()', 'talk-bubbles'], ['life', "postsPage('life')", 'life-archive'],
-    ['study', 'studyPage()', 'study-work'], ['about', 'about()', 'saber-scene']
+    ['study', 'studyPage()', 'reading-library'], ['work', 'workPage()', 'study-work'], ['about', 'about()', 'saber-scene']
   ]) {
     context.location.hash = `#${page}`;
     const html = run(expression);

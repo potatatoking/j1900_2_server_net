@@ -122,3 +122,8 @@ BLOG_ADMIN_PASSWORD='换成你自己的强密码' npm start
 ## 活动同步配置
 
 将 activity-settings.example.json 的结构保存到 data/activity-settings.json；GitHub 的 token 与洛谷 cookie 只能在私有服务器文件中填写，不能提交 Git。文件应设置为容器用户 1000 所有、权限 600，配置后重启 web。GitHub 需 Contents 和 Metadata 读取权限，并覆盖要统计的仓库；洛谷需要有效登录凭据。公开 GET /api/activity 只读聚合缓存，管理员 POST /api/activity/sync 触发更新，GET /api/activity/settings 仅返回配置状态。每小时自动同步，失败保留旧数据。数据时间均为 Asia/Shanghai；GitHub Commit 数与个人主页贡献格的统计口径不同。详见 CHANGELOG.md。
+
+
+## 学习与工作独立页面
+
+学习位于 `/study`，工作位于 `/work`。项目气泡在工作页，分为进行中和已完成；管理员登录 `/admin#work` 后维护，初始为空。旧链接仍可定位文章。详见 [更新日志](CHANGELOG.md)。

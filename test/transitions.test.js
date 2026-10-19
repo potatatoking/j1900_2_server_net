@@ -23,7 +23,7 @@ function harness(reduced = false, admin = false) {
   const context = vm.createContext({
     document: { body, querySelector: selector => selector === '#paper-transition' ? layer : node, addEventListener() {} },
     window: { addEventListener() {}, scrollTo() {}, matchMedia: () => ({ matches: reduced }) },
-    location: { protocol: 'file:', pathname: admin ? '/admin' : '/', hash: '' }, scrollTo() {}, commits
+    location: { protocol: 'file:', pathname: admin ? '/admin' : '/', hash: '' }, URLSearchParams, scrollTo() {}, commits
   });
   vm.runInContext(source, context);
   return { context, handlers, body, bodyClasses, node, commits, layer, animations, turn: vm.runInContext('paperTransition', context), blur: vm.runInContext('blurPageTransition', context), update: vm.runInContext('updateContent', context), change: vm.runInContext('changePage', context) };
@@ -120,7 +120,7 @@ test('fan navigation commits after the old view blurs and completes the new view
 });
 
 test('every public inner page uses the same blur for ordinary links and deep links', async () => {
-  for (const target of ['#life', '#study', '#study?item=study-work', '#about', '#about?item=profile', '#talk']) {
+  for (const target of ['#life', '#study', '#work', '#work?item=study-work', '#study?item=study-work', '#about', '#about?item=profile', '#talk']) {
     const h = harness();
     h.body.dataset.page = 'home';
     h.context.location.hash = target;
@@ -131,7 +131,7 @@ test('every public inner page uses the same blur for ordinary links and deep lin
     assert.equal(h.layer.hidden, true);
     h.animations[0].finish();
     await new Promise(resolve => setImmediate(resolve));
-    assert.deepEqual(h.commits, [target.slice(1).split('?')[0]]);
+    assert.deepEqual(h.commits, [target.includes('study-work') ? 'work' : target.slice(1).split('?')[0]]);
     h.animations[1].finish();
     await navigation;
     assert.equal(h.bodyClasses.has('page-blur-transition'), false);
@@ -204,8 +204,8 @@ function clickChapter(h, page, modifiers = {}) {
   for (const callback of h.handlers.click) callback({ target, button: 0, ...modifiers });
 }
 
-test('all four directory links turn a paper sheet before revealing their destination', async () => {
-  for (const page of ['life', 'study', 'about', 'talk']) {
+test('all directory links including work turn a paper sheet before revealing their destination', async () => {
+  for (const page of ['life', 'study', 'work', 'about', 'talk', 'friends']) {
     const h = harness();
     h.body.dataset.page = 'home';
     clickChapter(h, page);
