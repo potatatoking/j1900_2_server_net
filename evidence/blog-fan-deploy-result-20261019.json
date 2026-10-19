@@ -1,0 +1,17 @@
+{
+  "date": "2026-10-19",
+  "backup": "/srv/web/backups/blog-fan-20261019-224422.tar.gz",
+  "tests": {
+    "source": 60,
+    "routed": 64
+  },
+  "unchanged_data_auth_activity_backend_routing": true,
+  "files": {
+    "public/app.js": "11cd9241e2be6423cd4fabcf79d863289397c386e9b90db71b1f024134a65ae6",
+    "public/projects.css": "f8ca1561d49c4b268d194e58dc0373730b4e8e7d27815dd66e79be371f1b7023",
+    "public/index.html": "93fd8208caaed40fca1fe845abdfc8b2fc26f33248982a8dd3eb703b8034cf42",
+    "public/admin.html": "ff26683df3fc8e2bea81ba1372a83ad1b4d363881de622fafbe68f551aec2da8",
+    "test/transitions.test.js": "a35e380cfce29a6f5bbf84de35943fe1bd8e633de16d4154586f62ea1f964bcc",
+    "test/fan-drag.test.js": "b69444cb044c6af4b1bf540c1cc7c5d3832ba113a6c3c02d0887a7494db6bd01"
+  }
+}

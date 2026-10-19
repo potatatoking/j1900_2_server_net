@@ -1,0 +1,113 @@
+{
+  "date": "2026-10-19",
+  "linux_node": "24.22.0",
+  "linux_tests": {
+    "source": {
+      "pass": 60,
+      "fail": 0
+    },
+    "routed": {
+      "pass": 64,
+      "fail": 0
+    }
+  },
+  "windows_tests": {
+    "source": {
+      "pass": 59,
+      "fail": 1
+    },
+    "routed": {
+      "pass": 63,
+      "fail": 1
+    },
+    "known_failure": "Existing Unix 0600 file mode assertion on Windows"
+  },
+  "browser": {
+    "local_article_publish_edit_detail_search": true,
+    "project_details_and_status": true,
+    "desktop_mouse_continuous_drag_and_release": true,
+    "mobile_touch_drag_and_release": true,
+    "320_and_390_no_horizontal_overflow": true,
+    "production_articles_and_empty_projects": true,
+    "production_fan_drag_to_articles": true
+  },
+  "word_pages": {
+    "brief": 4,
+    "detailed": 18,
+    "overview": 14
+  },
+  "screenshots": [
+    {
+      "name": "articles-admin-320.png",
+      "sha256": "adf313bc462df2ab3c3e1952290d02e32ecddc9e865d3a0ff22c9b6ce920fc76"
+    },
+    {
+      "name": "articles-detail-desktop.png",
+      "sha256": "e9c7ee912d828789f4ff85caaecb4ecf647974c6ac0251316ef5bbe8797ad85a"
+    },
+    {
+      "name": "articles-detail-mobile.png",
+      "sha256": "499d9f0c0382be00c7d22229ee9fdd9c28b08ed3a55ef5d5c589a55580a915ef"
+    },
+    {
+      "name": "articles-fan-desktop.png",
+      "sha256": "669b940c9e4befa3405c5877b89d0f0bf30dae1f1ab26110590922430a0adbcd"
+    },
+    {
+      "name": "articles-home-entry.png",
+      "sha256": "447a9bbcf1dea4422c48b1d049494670fcc033ae0f24b847e31cbc2df24d16a6"
+    },
+    {
+      "name": "articles-list-desktop.png",
+      "sha256": "a79dd070a969d79467dc9c245843e26db294b4b84ce57836f0c2c0e47f055885"
+    },
+    {
+      "name": "articles-list-mobile.png",
+      "sha256": "9e09dc7a5ef186f30a84fe7e592c0dbff052c6598ea629b4e1c9d91f806f965a"
+    },
+    {
+      "name": "fan-mid-drag.png",
+      "sha256": "6086a67357942346db451f845bdebc51e193d993e0fb7c91e48c7d9567d1e34a"
+    },
+    {
+      "name": "fan-touch-mid-drag.png",
+      "sha256": "a4264460c9064c50718ced15348afdeb12c579b09dd18777b38dbb161773c985"
+    },
+    {
+      "name": "list-admin-320.png",
+      "sha256": "2e0e20fa86d5f5c8d9438933e9140e52854c8cb1d0f474955151bb5ed61e0053"
+    },
+    {
+      "name": "list-desktop.png",
+      "sha256": "9ed0fd8d9b40bf3879744abcbbca0a281498978835a92d17df1e38d72c7b7029"
+    },
+    {
+      "name": "list-detail-mobile.png",
+      "sha256": "e576937a56f524af79e77059caf22b71dd56d93adab6f1d9e8f261f719beb1fc"
+    },
+    {
+      "name": "list-mobile.png",
+      "sha256": "d764604dbd7cbc7ab7820d66d50c8dc322f061b1d7a8ddee99f2023b1c514e49"
+    },
+    {
+      "name": "production-articles-desktop.png",
+      "sha256": "c2c4c9cfae1d37e9fc2c54982b42c581bf0e2d083a934aa2329fe8f88c57e684"
+    },
+    {
+      "name": "production-articles-mobile.png",
+      "sha256": "3e4ca47fab88572b5182ddefd83c5e8552b34f74b521c48f9d8e04a2cc3e0d68"
+    },
+    {
+      "name": "production-fan-drag.png",
+      "sha256": "eea570e96b7c105b130767d3880428c8980923ef8692b9040b4833f9ae3285ae"
+    },
+    {
+      "name": "production-list-desktop.png",
+      "sha256": "ad825e482655428b79a2d29429ea5874eff63f73476ab9e4cef052a189767681"
+    },
+    {
+      "name": "production-list-mobile.png",
+      "sha256": "fcdf9a4d0db899a31672ac77983ffeddab5b86b3f233a93554cca410fe6dbac4"
+    }
+  ]
+}

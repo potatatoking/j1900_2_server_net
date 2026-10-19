@@ -46,19 +46,19 @@ test('legacy work hashes, direct paths and post links resolve to their proper in
   assert.equal(run("postPage(state.posts.find(p=>p.id==='job'))"), 'work');
   assert.equal(run("fanPages.find(p=>p.id==='work').title"), '工作');
 });
-test('project bubbles group by status, escape titles, expose admin actions only after login and appear in work search', async () => {
+test('project lists group by status, escape titles, expose admin actions only after login and appear in work search', async () => {
   const { run, node } = await setup();
   run(`state.projects=[{id:'one',title:'<script>bad</script>',description:'气泡简介',status:'active',url:'https://example.com'},{id:'two',title:'已经完成',description:'完成简介',status:'completed',url:''}]`);
   const active = run("projectGroup('active')"), complete = run("projectGroup('completed')");
-  assert.match(active, /&lt;script&gt;bad&lt;\/script&gt;/); assert.doesNotMatch(active, /<script>|已经完成/);
+  assert.match(active, /&lt;script&gt;bad&lt;\/script&gt;/); assert.doesNotMatch(active, /<script>|已经完成|project-bubble|project-cloud|float-delay/); assert.match(active, /class="project-list"/); assert.match(active, /class="project-row"/);
   assert.match(complete, /已经完成/); assert.doesNotMatch(complete, /气泡简介/);
   assert.doesNotMatch(run('renderProjects()'), /data-action="new-project"/);
   run("projectModal('one')"); assert.doesNotMatch(node.innerHTML, /data-action="edit-project"|data-action="toggle-project"/);
   run("state.admin=true;projectModal('one')"); assert.match(node.innerHTML, /标记为已完成/);
   run("projectModal('two')"); assert.match(node.innerHTML, /移回进行中/);
   assert.match(run("searchResults('气泡简介')"), /#work\?item=project-one/);
-  run('state.projects=[]'); assert.match(run('renderProjects()'), /新的想法正在酝酿中/);
-  assert.doesNotMatch(run('renderProjects()'), /class="project-bubble /);
+  run('state.projects=[]'); assert.match(run('renderProjects()'), /还没有添加进行中的项目。/);
+  assert.doesNotMatch(run('renderProjects()'), /class="project-row"/);
 });
 test('moving a post from work to learning saves its classification and opens the learning page', async () => {
   const { context, run, handlers } = await setup();
@@ -72,4 +72,40 @@ test('moving a post from work to learning saves its classification and opens the
   assert.equal(context.calls[0].body.section, 'learning');
   assert.equal(context.location.hash, 'study?item=post-job');
   assert.equal(run("state.posts.find(p=>p.id==='job').section"), 'learning');
+});
+
+test('personal articles have independent list, readable detail, escaped content and scoped search', async () => {
+  const { run, context } = await setup();
+  run(`state.posts.push({id:'essay',type:'article',title:'想法独有词<script>',content:'第一段\\n\\n第二段 <img src=x>',tag:'随笔',createdAt:'2026-10-19T00:00:00Z'})`);
+  context.location.hash = '#articles';
+  const list = run('articlesPage()');
+  assert.match(list, /想法独有词&lt;script&gt;/);
+  assert.match(list, /阅读全文/);
+  assert.doesNotMatch(list, /学习独有词|工作独有词|data-action="new-post"/);
+  assert.match(run("searchResults('想法独有词')"), /#articles\?item=post-essay/);
+  assert.match(run("searchResults('学习独有词')"), /找到 0 条/);
+  context.location.hash = '#articles?item=post-essay';
+  const detail = run('articlesPage()');
+  assert.match(detail, /class="article-body">第一段\n\n第二段 &lt;img src=x&gt;/);
+  assert.doesNotMatch(detail, /<script>|<img src=x>/);
+  run('state.admin=true');
+  assert.match(run('articlesPage()'), /编辑文章|删除文章/);
+  context.location.hash = '#articles?item=post-missing';
+  assert.match(run('articlesPage()'), /暂时找不到/);
+  context.location.hash = '#work';
+  assert.match(run("searchResults('想法独有词')"), /找到 0 条/);
+  context.location.hash = '#home';
+  assert.match(run("searchResults('想法独有词')"), /个人文章/);
+});
+
+test('article direct paths, home entry, fan navigation and editor expose the correct destinations', async () => {
+  const { run, context, node } = await setup();
+  context.location.hash = ''; context.location.pathname = '/articles';
+  assert.equal(run('route()'), 'articles');
+  assert.match(run('home()'), /class="article-directory-link" href="#articles"/);
+  assert.equal(run("fanPages.filter(p=>p.id==='articles').length"), 1);
+  assert.equal(run('fanPages.length'), 7);
+  run("state.admin=true;postModal('article')");
+  assert.match(node.innerHTML, /发表文章|name="type" value="article"/);
+  assert.doesNotMatch(node.innerHTML, /id="post-section"/);
 });
