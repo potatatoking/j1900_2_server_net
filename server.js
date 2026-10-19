@@ -461,7 +461,7 @@ async function api(req, res, url) {
     if (req.method === 'POST') {
       if (!requireAdmin(req, res)) return;
       const input = await body(req);
-      const type = input.type === 'study' ? 'study' : input.type === 'life' ? 'life' : null;
+      const type = ['study', 'life', 'article'].includes(input.type) ? input.type : null;
       const title = clean(input.title, 100), content = clean(input.content, 5000), tag = clean(input.tag, 30);
       const section = type === 'study' ? (input.section === 'work' ? 'work' : 'learning') : undefined;
       if (!type || !title || !content) return json(res, 400, { error: '请填写完整的标题和内容' });
@@ -479,7 +479,7 @@ async function api(req, res, url) {
     if (!post) return json(res, 404, { error: '动态不存在' });
     if (req.method === 'PUT') {
       const input = await body(req);
-      const type = input.type === 'study' ? 'study' : input.type === 'life' ? 'life' : null;
+      const type = ['study', 'life', 'article'].includes(input.type) ? input.type : null;
       const title = clean(input.title, 100), content = clean(input.content, 5000), tag = clean(input.tag, 30);
       const section = type === 'study' ? (input.section === 'work' ? 'work' : 'learning') : undefined;
       if (!type || !title || !content) return json(res, 400, { error: '请填写完整的标题和内容' });
@@ -538,8 +538,8 @@ http.createServer(async (req, res) => {
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: '请求方式不支持' });
     if (url.pathname === '/admin/') { res.writeHead(302, { Location: '/admin' + url.search }); return res.end(); }
-    if (['/study/', '/work/', '/friends/'].includes(url.pathname)) { res.writeHead(302, { Location: url.pathname.slice(0, -1) + url.search }); return res.end(); }
-    if (['/friends', '/study', '/work'].includes(url.pathname)) url.pathname = '/index.html';
+    if (['/study/', '/work/', '/friends/', '/articles/'].includes(url.pathname)) { res.writeHead(302, { Location: url.pathname.slice(0, -1) + url.search }); return res.end(); }
+    if (['/friends', '/study', '/work', '/articles'].includes(url.pathname)) url.pathname = '/index.html';
     if (url.pathname === '/admin') url.pathname = '/admin.html';
     let target = path.resolve(publicDir, '.' + decodeURIComponent(url.pathname === '/' ? '/index.html' : url.pathname));
     if (!target.startsWith(publicDir + path.sep)) return json(res, 403, { error: '无权访问' });

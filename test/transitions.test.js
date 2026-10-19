@@ -16,14 +16,14 @@ function harness(reduced = false, admin = false) {
   const sheet = { animate };
   const layer = { hidden: true, animate, classList: { toggle() {} }, querySelector: selector => selector === '.turn-sheet' ? sheet : {} };
   const handlers = {};
-  const node = { animate, open: false, firstElementChild: { style: {} }, querySelector: () => null, addEventListener(event, callback) { (handlers[event] ??= []).push(callback); } };
+  const node = { animate, open: false, getBoundingClientRect: () => ({top:0,right:300}), firstElementChild: { style: {} }, querySelector: () => null, addEventListener(event, callback) { (handlers[event] ??= []).push(callback); } };
   const bodyClasses = new Set();
   const body = { dataset: { page: 'life' }, classList: { add: name => bodyClasses.add(name), remove: name => bodyClasses.delete(name), contains: name => bodyClasses.has(name) } };
   const commits = [];
   const context = vm.createContext({
     document: { body, querySelector: selector => selector === '#paper-transition' ? layer : node, addEventListener() {} },
     window: { addEventListener() {}, scrollTo() {}, matchMedia: () => ({ matches: reduced }) },
-    location: { protocol: 'file:', pathname: admin ? '/admin' : '/', hash: '' }, URLSearchParams, scrollTo() {}, commits
+    location: { protocol: 'file:', pathname: admin ? '/admin' : '/', hash: '' }, URLSearchParams, scrollTo() {}, commits, clearTimeout() {}, cancelAnimationFrame() {}, requestAnimationFrame: () => 1
   });
   vm.runInContext(source, context);
   return { context, handlers, body, bodyClasses, node, commits, layer, animations, turn: vm.runInContext('paperTransition', context), blur: vm.runInContext('blurPageTransition', context), update: vm.runInContext('updateContent', context), change: vm.runInContext('changePage', context) };
