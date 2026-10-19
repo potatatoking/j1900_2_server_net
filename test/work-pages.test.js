@@ -57,6 +57,9 @@ test('project lists group by status, escape titles, expose admin actions only af
   run("state.admin=true;projectModal('one')"); assert.match(node.innerHTML, /标记为已完成/);
   run("projectModal('two')"); assert.match(node.innerHTML, /移回进行中/);
   assert.match(run("searchResults('气泡简介')"), /#work\?item=project-one/);
+  run("projectEditor({id:'one',title:'项目',description:'长简介'.repeat(1000),status:'active'})");
+  assert.doesNotMatch(node.innerHTML, /name="description" maxlength=/);
+  assert.ok(node.innerHTML.includes('长简介'.repeat(1000)));
   run('state.projects=[]'); assert.match(run('renderProjects()'), /还没有添加进行中的项目。/);
   assert.doesNotMatch(run('renderProjects()'), /class="project-row"/);
 });

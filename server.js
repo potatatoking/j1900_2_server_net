@@ -191,7 +191,7 @@ function duplicateFriend(url, except = '') {
   return db.friends.some(item => item.id !== except && item.url.replace(/\/$/, '') === url.replace(/\/$/, ''));
 }
 function projectFields(input) {
-  const title = clean(input.title, 60), description = clean(input.description, 600);
+  const title = clean(input.title, 60), description = String(input.description ?? '').trim();
   if (!title) throw new Error('请填写项目名称');
   if (!['active', 'completed'].includes(input.status)) throw new Error('请选择进行中或已完成');
   const url = friendUrl(input.url, true);
@@ -206,7 +206,7 @@ async function api(req, res, url) {
     if (req.method === 'POST') {
       if (!requireAdmin(req, res)) return;
       if (db.projects.length >= 60) return json(res, 400, { error: '最多记录 60 个项目' });
-      const fields = projectFields(await body(req));
+      const fields = projectFields(await body(req, Infinity));
       const project = { id: crypto.randomUUID(), ...fields, createdAt: new Date().toISOString() };
       db.projects.push(project); await save(); return json(res, 201, project);
     }
@@ -218,7 +218,7 @@ async function api(req, res, url) {
     const project = db.projects.find(item => item.id === projectId);
     if (!project) return json(res, 404, { error: '项目不存在' });
     if (req.method === 'PUT') {
-      const fields = projectFields(await body(req));
+      const fields = projectFields(await body(req, Infinity));
       Object.assign(project, fields, { updatedAt: new Date().toISOString() });
       await save(); return json(res, 200, project);
     }
