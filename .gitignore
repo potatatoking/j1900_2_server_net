@@ -22,4 +22,23 @@ parameters.local.json
 *.private.json
 *.bundle
 *私密*
-parameters.local.json
+
+# Maintenance documents are archived locally.
+*.docx
+*.doc
+**/CHANGELOG.md
+/prompts/
+/logs/
+/evidence/
+/DOCUMENTS.md
+/00_overview/总项目介绍_简要版.md
+/00_overview/总项目介绍_详细版.md
+/01_server_net/服务器与网络_简要版.md
+/01_server_net/服务器与网络_详细版.md
+
+
+/03_blog/个人博客Blog_简要版.md
+/03_blog/个人博客Blog_详细版.md
+/04_hardware/土豆的服务器和软路由_简要版.md
+/04_hardware/土豆的服务器和软路由_详细版.md
+/CHANGELOG.md
