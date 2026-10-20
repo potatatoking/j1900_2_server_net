@@ -42,3 +42,14 @@ parameters.local.json
 /04_hardware/土豆的服务器和软路由_简要版.md
 /04_hardware/土豆的服务器和软路由_详细版.md
 /CHANGELOG.md
+
+# Local network configurations and retired deployment snapshots.
+*.local.yaml
+*.local.yml
+**/routing.json
+/03_blog/deployed_routing_snapshot/
+/01_server_net/source/campus-access/campus-route
+/01_server_net/source/openclash-config/openclash_custom_overwrite.sh
+/01_server_net/source/sakura-frp/tunnel-routing-before.json
+/01_server_net/source/claude-code-container/compose.fixed-ip.yaml
+/01_server_net/source/SSD迁移记录.md

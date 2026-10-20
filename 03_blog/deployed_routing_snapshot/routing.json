@@ -1,9 +1,0 @@
-{
-  "enabled": true,
-  "entryHosts": ["example.net", "example.net:443", "cn.example.net:40475"],
-  "trustedProxyIps": ["10.42.0.3"],
-  "campusCidrs": ["203.0.113.22/32", "203.0.113.23/32", "172.20.128.0/17", "10.42.0.0/24"],
-  "campusTarget": "http://172.20.131.2:8080",
-  "mainlandTarget": "https://cn.example.net:40475",
-  "chinaCidrsFile": "china-cidrs.txt"
-}

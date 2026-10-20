@@ -15,18 +15,8 @@ and a JavaScript package manager are not needed at runtime.
 
 ## US locale and time zone
 
-The ISP exit `203.0.113.21` is located by IPinfo in Salt Lake City, Utah.
-Compose sets `TZ=America/Denver`, `LANG=en_US.UTF-8`, `LC_ALL=en_US.UTF-8`,
-and `LANGUAGE=en_US:en`. It mounts the host's Denver zoneinfo file at
-`/etc/localtime` and the included `timezone` file at `/etc/timezone`.
-Copy `timezone` with the other deployment files. Daylight saving time follows
-the zoneinfo rules. The existing image already includes the required locale.
-
-Applied on 2026-10-16 to `10.42.0.102`. System and process clocks agree;
-Claude version and HTTPS connectivity checks pass. Changes before deployment
-are backed up at `/home/deploy/claude-code-container/locale-before-us-20261016-084031/`.
-Restore its Compose and Dockerfile files and recreate with the current
-`-f compose.yaml -f compose.fixed-ip.yaml` options to roll back.
+Compose uses the America/Denver time zone and an English UTF-8 locale.
+Adjust them for your environment. The included timezone file matches that choice.
 
 ## Persistent files
 
@@ -49,9 +39,8 @@ An unauthenticated status is expected until account login is explicitly started.
 
 ## Login later, after network/IP configuration
 
-For the fixed LAN IP `10.42.0.102` and OpenWrt gateway, see
-[FIXED-IP.md](FIXED-IP.md). When that network configuration is deployed, include
-`-f compose.fixed-ip.yaml` last in Compose commands so recreation keeps the IP.
+For optional fixed addresses, see [FIXED-IP.md](FIXED-IP.md). Keep any network
+overlay in a local file and include it consistently when recreating the container.
 
 ```bash
 sudo docker exec -it -w /workspace claude-code claude
