@@ -1,6 +1,6 @@
 # 个人博客源码入口
 
-这里保留综合项目内的个人博客正式源码。功能介绍、后台使用、图片上传及活动同步统一见[博客正式分支](https://github.com/potatatoking/blog/blob/officaluse1.1/README.md)，避免重复维护长说明。
+这里保留综合项目内的个人博客正式源码。功能介绍、后台使用、图片上传及活动同步见[博客使用说明](https://github.com/potatatoking/blog/blob/officaluse1.1/README.md)。
 
 需要 Node.js 20+，当前无需安装 npm 依赖。在本目录将 `.env.example` 复制为 `.env` 并修改管理员密码，然后执行：
 

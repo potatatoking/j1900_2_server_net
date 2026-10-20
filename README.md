@@ -36,8 +36,7 @@ python automation/prepare_plan.py parameters.local.json --out generated
 
 生成器只写本地计划，不连接服务器或自动部署。容器部署脚本中的网络、基础镜像和路径需先审阅；不能把示例地址直接应用到生产环境。
 
-## 文档与更新
+## 项目说明与更新
 
-- [更新记录](CHANGELOG.md)：日志与版本变化，合并维护。
-
-介绍采用 Markdown（`.md`），本 README 是总入口。Word 与详细旧资料不随仓库提供；账号、令牌、访问清单、生产网络配置与数据不提交 Git。部署前备份内容、认证与上传文件，第三方许可证保留随源码发布。
+- [功能更新记录](CHANGELOG.md)。
+- [博客功能与使用说明](https://github.com/potatatoking/blog/blob/officaluse1.1/README.md)。
