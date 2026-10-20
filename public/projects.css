@@ -10,7 +10,6 @@
 @media(prefers-reduced-motion:reduce){.project-row{transition:none}}
 .journal-chapters .chapter-work{--chapter-accent:#987a6f;--chapter-wash:#e7d4ca}.journal-chapters .chapter-friends{--chapter-accent:#9a7893;--chapter-wash:#e6d8e4}
 
-.fan-panel .fan-knob{transition:none}.fan-panel.is-dragging,.fan-panel.is-dragging .fan-knob{cursor:grabbing}.fan-panel.is-dragging .fan-charm{transform:rotate(-5deg)}.fan-charm{transition:filter .2s,transform .22s cubic-bezier(.22,1,.36,1)}@media(prefers-reduced-motion:reduce){.fan-charm{transition:none}.fan-panel.is-dragging .fan-charm{transform:none}}
 
 @media(max-width:380px){body.admin-site:not(.is-entry) .site-header{flex-wrap:wrap;height:auto;min-height:78px}.admin-site .header-friends{margin-left:0}.admin-site #login-button{margin-left:auto}}
 
