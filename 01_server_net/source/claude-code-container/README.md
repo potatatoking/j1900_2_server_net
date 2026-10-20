@@ -1,54 +1,13 @@
-# Claude Code container
+# Claude Code CLI 容器模板
 
-Dedicated container for the official Claude Code CLI, pinned to version 2.1.300.
-It starts an idle process. Installing and starting this container does not start
-Claude account login or make an inference request.
+模板固定版本：**2.1.300**。构建来源、下载地址与校验值以本目录 Dockerfile 和部署脚本为准，不代表上游最新版本。
 
-## Deploy on Debian
+## 使用
 
-Place these files in `~/claude-code-container`, run `sudo -v`, then `bash deploy.sh`.
+先审阅 `compose.yaml`、Dockerfile 与 `deploy.sh`，按自己的目录、网络和基础镜像修改本地配置。`deploy.sh` 会实际安装或启动服务，不能作为只读检查执行。
 
-The base is Microsoft's Debian 13 development-container image, pinned by digest.
-The CLI is Anthropic's official Linux x64 native binary distributed through npm.
-Its archive is verified against the registry's SHA-512 integrity value. Node.js
-and a JavaScript package manager are not needed at runtime.
+`data/claude/` 保存账号与配置，`workspace/` 保存项目。容器默认保持空闲，不自动登录或调用模型。可用 `docker exec -it claude-code claude` 进入 CLI。
 
-## US locale and time zone
+本地可选网络覆盖文件需按自己的子网、DNS 和 DHCP 预留填写；重建时一致加载，不将固定地址覆盖提交 Git。
 
-Compose uses the America/Denver time zone and an English UTF-8 locale.
-Adjust them for your environment. The included timezone file matches that choice.
-
-## Persistent files
-
-- `data/claude`: configuration, future login credentials, and session state.
-- `workspace`: project files available inside the container at `/workspace`.
-
-The container runs as UID/GID 1000, matching the current Debian user `deploy`.
-`CLAUDE_CONFIG_DIR` also keeps the separate `.claude.json` configuration within
-the persistent configuration directory. No host credential directory, Docker
-socket, or network port is mounted or published.
-
-## Verify without logging in
-
-```bash
-sudo docker exec claude-code claude --version
-sudo docker exec claude-code claude auth status
-```
-
-An unauthenticated status is expected until account login is explicitly started.
-
-## Login later, after network/IP configuration
-
-For optional fixed addresses, see [FIXED-IP.md](FIXED-IP.md). Keep any network
-overlay in a local file and include it consistently when recreating the container.
-
-```bash
-sudo docker exec -it -w /workspace claude-code claude
-```
-
-Use the Claude account login flow to use subscription allowances. Enable Remote
-Control only after login and outbound network access are configured. Host SSH
-access remains on Debian; no second SSH server is needed inside the container.
-
-Update the pinned CLI version and archive integrity in `Dockerfile`, then rebuild
-with `sudo docker compose up -d --build` when an update is wanted.
+通用网络与备份要求见[服务器说明](../../README.md)。修改源码、安装依赖和归档资料遵循[总维护 Prompt](../../../PROMPT.md)。

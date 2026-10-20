@@ -23,7 +23,7 @@ parameters.local.json
 *.bundle
 *私密*
 
-# Maintenance documents are archived locally.
+# Detailed archives stay local; concise root documents are tracked.
 *.docx
 *.doc
 **/CHANGELOG.md
@@ -53,3 +53,7 @@ parameters.local.json
 /01_server_net/source/sakura-frp/tunnel-routing-before.json
 /01_server_net/source/claude-code-container/compose.fixed-ip.yaml
 /01_server_net/source/SSD迁移记录.md
+
+# Concise project maintenance documents.
+!/CHANGELOG.md
+!/PROMPT.md
