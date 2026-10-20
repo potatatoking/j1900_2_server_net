@@ -19,35 +19,30 @@ function harness(reduced = false) {
   });
   vm.runInContext(source,context);
   const run = code => vm.runInContext(code,context);
-  run("fanOpen=true;fanSelection=3;setFanAngle(44);navigateFanSelection=()=>{commits.push(fanPages[fanSelection].id)}");
+  run("fanOpen=true;fanSelection=3;selectFanPage(3,false);navigateFanSelection=()=>{commits.push(fanPages[fanSelection].id)}");
   const target={closest:s=>s==='#fan-panel'?panel:s==='.fan-knob'?knob:null};
   const event=(angle,extra={})=>({target,pointerId:1,button:0,clientX:300-Math.cos(angle*Math.PI/180)*264,clientY:Math.sin(angle*Math.PI/180)*264,preventDefault(){},...extra});
   const dispatch=(type,angle,extra)=>{for(const fn of handlers[type]||[])fn(event(angle,extra))};
-  const frame=now=>{const queue=[...frames.values()];frames.clear();for(const fn of queue)fn(now)};
-  return {run,knob,frames,timers,commits,dispatch,frame};
+  return {run,knob,commits,dispatch};
 }
-test('drag follows intermediate angles continuously, batches frames and resists midpoint jitter',()=>{
-  const h=harness();h.dispatch('pointerdown',44);h.dispatch('pointermove',48);h.dispatch('pointermove',49);
-  assert.equal(h.frames.size,1);h.frame(0);
-  assert.ok(Math.abs(h.run('fanAngle')-49)<.001);
+test('fan drag previews the nearest existing page and keeps the charm on its page position',()=>{
+  const h=harness();h.dispatch('pointerdown',44);h.dispatch('pointermove',49);
   assert.equal(h.run('fanSelection'),3);
-  h.dispatch('pointermove',50.5);h.frame(16);assert.equal(h.run('fanSelection'),3);
-  h.dispatch('pointermove',52);h.frame(32);assert.equal(h.run('fanSelection'),4);
-  h.dispatch('pointermove',50);h.frame(48);assert.equal(h.run('fanSelection'),4);
+  h.dispatch('pointermove',50.5);assert.equal(h.run('fanSelection'),4);
+  const expected=h.run('fanPoint(56,264)');
+  assert.ok(Math.abs(parseFloat(h.knob.style.left)-expected.x/3)<.001);
+  assert.ok(Math.abs(parseFloat(h.knob.style.top)-expected.y/3)<.001);
   assert.equal(h.commits.length,0);
-  assert.equal(h.timers.size,1,'only the latest preview may wait');
-  h.dispatch('pointermove',100);h.frame(64);assert.equal(h.run('fanAngle'),80);
 });
-test('release smoothly snaps before navigating once and suppresses its synthetic click',()=>{
-  const h=harness();h.dispatch('pointerdown',44);h.dispatch('pointermove',53);h.frame(0);h.dispatch('pointerup',53);
-  assert.equal(h.commits.length,0);assert.ok(h.run('fanAngle')<56);
-  h.frame(10);h.frame(95);assert.ok(h.run('fanAngle')>53&&h.run('fanAngle')<56);
-  h.frame(200);assert.equal(h.run('fanAngle'),56);assert.deepEqual(h.commits,['articles']);
-  h.dispatch('click',56);assert.deepEqual(h.commits,['articles']);
+test('releasing a moved fan enters the selected page immediately; taps and cancelled drags do not',()=>{
+  const h=harness();h.dispatch('pointerdown',44);h.dispatch('pointermove',53);h.dispatch('pointerup',53);
+  assert.deepEqual(h.commits,['articles']);
+  const tap=harness();tap.dispatch('pointerdown',44);tap.dispatch('pointermove',44.1);tap.dispatch('pointerup',44.1);assert.deepEqual(tap.commits,[]);
+  const cancelled=harness();cancelled.dispatch('pointerdown',44);cancelled.dispatch('pointermove',65);cancelled.dispatch('pointercancel',65);cancelled.dispatch('pointerup',65);assert.deepEqual(cancelled.commits,[]);
 });
-test('pointer cancellation restores the selection and reduced motion releases immediately',()=>{
-  const h=harness();h.dispatch('pointerdown',44);h.dispatch('pointermove',65);h.frame(0);h.dispatch('pointercancel',65);h.frame(0);h.frame(200);
-  assert.equal(h.run('fanSelection'),3);assert.equal(h.run('fanAngle'),44);assert.deepEqual(h.commits,[]);assert.equal(h.timers.size,0);
-  const r=harness(true);r.dispatch('pointerdown',44);r.dispatch('pointermove',53);r.frame(0);r.dispatch('pointerup',53);
-  assert.equal(r.run('fanAngle'),56);assert.deepEqual(r.commits,['articles']);assert.equal(r.frames.size,0);
+test('restored fan retains all seven pages, keyboard endpoints and reduced-motion navigation',()=>{
+  const h=harness(true);assert.equal(h.run('fanPages.length'),7);
+  h.dispatch('keydown',44,{key:'Home'});assert.equal(h.run('fanSelection'),0);
+  h.dispatch('keydown',44,{key:'End'});assert.equal(h.run('fanSelection'),6);
+  h.dispatch('keydown',44,{key:'Enter'});assert.deepEqual(h.commits,['talk']);
 });

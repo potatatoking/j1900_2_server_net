@@ -368,11 +368,6 @@ let fanPanelAnimation = null;
 let fanPreviewAnimation = null;
 let fanNavigatePending = false;
 let fanDrag = null;
-let fanAngle = fanPages[0].angle;
-let fanAngleFrame = 0;
-let fanDragFrame = 0;
-let fanPreviewTimer;
-let fanSuppressClickUntil = 0;
 let blurNavigationAnimation = null;
 function fanPoint(angle, radius = 210) {
   const radians = angle * Math.PI / 180;
@@ -403,46 +398,7 @@ function fanPreviewContent(page) {
   else snippets = [{ title: '土豆的记事簿', text: '生活、学习与小小心事。' }];
   return `<div class="fan-preview-copy"><span>${page.en}</span><h2>${page.title}</h2><p>${page.desc}</p><div class="fan-preview-stories">${snippets.map(item => `<article><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p></article>`).join('')}</div><small>滑动选页 · 松开前往</small></div>`;
 }
-function setFanAngle(angle) {
-  fanAngle = Math.max(fanPages[0].angle, Math.min(fanPages.at(-1).angle, angle));
-  const knob = document.querySelector('#fan-panel .fan-knob');
-  if (!knob) return;
-  const point = fanPoint(fanAngle, 264);
-  knob.style.left = `${point.x / 3}%`;
-  knob.style.top = `${point.y / 3}%`;
-}
-function animateFanAngle(angle, done) {
-  cancelAnimationFrame(fanAngleFrame);
-  fanAngleFrame = 0;
-  const start = fanAngle;
-  if (motionReduced() || Math.abs(start - angle) < .05) { setFanAngle(angle); done?.(); return; }
-  let began;
-  const tick = now => {
-    began ??= now;
-    const progress = Math.min(1, (now - began) / 170);
-    setFanAngle(start + (angle - start) * (1 - (1 - progress) ** 3));
-    if (progress < 1) fanAngleFrame = requestAnimationFrame(tick);
-    else { fanAngleFrame = 0; done?.(); }
-  };
-  fanAngleFrame = requestAnimationFrame(tick);
-}
-function previewFanPage(page) {
-  const layer = document.querySelector('#fan-preview');
-  fanPreviewAnimation?.cancel();
-  if (page.id === route() && !fanDrag?.moved) {
-    layer.hidden = true;
-    document.body.classList.remove('fan-previewing');
-    return;
-  }
-  document.body.classList.add('fan-previewing');
-  layer.hidden = false;
-  layer.innerHTML = fanPreviewContent(page);
-  if (layer.animate && !motionReduced()) fanPreviewAnimation = layer.animate([
-    { opacity: .5, transform: 'translateY(6px)' },
-    { opacity: 1, transform: 'translateY(0)' }
-  ], { duration: 160, easing: 'cubic-bezier(.22,1,.36,1)' });
-}
-function selectFanPage(index, preview = true, moveKnob = true) {
+function selectFanPage(index, preview = true) {
   fanSelection = Math.max(0, Math.min(fanPages.length - 1, index));
   const page = fanPages[fanSelection];
   const panel = document.querySelector('#fan-panel');
@@ -450,13 +406,26 @@ function selectFanPage(index, preview = true, moveKnob = true) {
   for (const button of panel.querySelectorAll('[data-fan-page]')) button.classList.toggle('is-selected', button.dataset.fanPage === page.id);
   for (const leaf of panel.querySelectorAll('[data-fan-leaf]')) leaf.classList.toggle('is-selected', leaf.dataset.fanLeaf === page.id);
   const knob = panel.querySelector('.fan-knob');
-  if (moveKnob) animateFanAngle(page.angle);
+  const point = fanPoint(page.angle, 264);
+  knob.style.left = `${point.x / 3}%`;
+  knob.style.top = `${point.y / 3}%`;
   knob.setAttribute('aria-valuenow', String(fanSelection));
   knob.setAttribute('aria-valuetext', page.title);
-  clearTimeout(fanPreviewTimer);
   if (!preview) return;
-  if (fanDrag?.moved) fanPreviewTimer = setTimeout(() => { if (fanOpen) previewFanPage(page); }, 75);
-  else previewFanPage(page);
+  const layer = document.querySelector('#fan-preview');
+  if (page.id === route()) {
+    layer.hidden = true;
+    document.body.classList.remove('fan-previewing');
+    return;
+  }
+  document.body.classList.add('fan-previewing');
+  layer.hidden = false;
+  layer.innerHTML = fanPreviewContent(page);
+  fanPreviewAnimation?.cancel();
+  if (layer.animate && !motionReduced()) fanPreviewAnimation = layer.animate([
+    { opacity: 0, transform: 'translateY(16px)', filter: 'blur(6px)' },
+    { opacity: 1, transform: 'translateY(0)', filter: 'blur(0)' }
+  ], { duration: 280, easing: 'cubic-bezier(.22,1,.36,1)' });
 }
 function openFanNavigation() {
   if (adminMode || route() === 'home') return;
@@ -471,9 +440,7 @@ function openFanNavigation() {
   const toggle = root.querySelector('#fan-toggle');
   toggle.setAttribute('aria-expanded', 'true');
   toggle.setAttribute('aria-label', '收起扇形导航');
-  const index = fanPages.findIndex(page => page.id === route());
-  setFanAngle(fanPages[Math.max(0, index)].angle);
-  selectFanPage(index, false, false);
+  selectFanPage(fanPages.findIndex(page => page.id === route()), false);
   if (panel.animate && !motionReduced()) fanPanelAnimation = panel.animate([
     start,
     { opacity: 1, transform: 'scale(1) rotate(0)' }
@@ -481,7 +448,6 @@ function openFanNavigation() {
   panel.querySelector('.fan-knob').focus({ preventScroll: true });
 }
 function clearFanPreview() {
-  clearTimeout(fanPreviewTimer);
   document.body.classList.remove('fan-previewing');
   const preview = document.querySelector('#fan-preview');
   if (preview) preview.hidden = true;
@@ -495,11 +461,6 @@ function closeFanNavigation(animate = true, focus = true, keepPreview = false) {
   const start = !panel.hidden && fanPanelAnimation ? { opacity: getComputedStyle(panel).opacity, transform: getComputedStyle(panel).transform } : { opacity: 1, transform: 'scale(1) rotate(0)' };
   fanOpen = false;
   fanDrag = null;
-  cancelAnimationFrame(fanAngleFrame);
-  cancelAnimationFrame(fanDragFrame);
-  fanAngleFrame = fanDragFrame = 0;
-  clearTimeout(fanPreviewTimer);
-  panel.classList.remove('is-dragging');
   root.classList.remove('is-open');
   toggle.setAttribute('aria-expanded', 'false');
   toggle.setAttribute('aria-label', '打开扇形导航');
@@ -557,26 +518,9 @@ async function blurPageTransition(commit) {
   finally { if (version === paperVersion) { blurNavigationAnimation?.cancel(); blurNavigationAnimation = null; document.body.classList.remove('page-blur-transition'); } }
 }
 const fanRoot = !adminMode && document.querySelector('#fan-navigation');
-function updateFanDrag() {
-  fanDragFrame = 0;
-  if (!fanDrag?.moved) return;
-  setFanAngle(fanDrag.angle);
-  const nearest = fanPages.reduce((best, page, index) => Math.abs(page.angle - fanAngle) < Math.abs(fanPages[best].angle - fanAngle) ? index : best, 0);
-  // Keep a small buffer around each midpoint so a resting finger does not flicker between pages.
-  if (nearest !== fanSelection && Math.abs(fanPages[nearest].angle - fanAngle) + 2 < Math.abs(fanPages[fanSelection].angle - fanAngle)) selectFanPage(nearest, true, false);
-}
-function cancelFanDrag() {
-  if (!fanDrag) return;
-  const original = fanDrag.selection;
-  fanDrag = null;
-  cancelAnimationFrame(fanDragFrame); fanDragFrame = 0;
-  document.querySelector('#fan-panel').classList.remove('is-dragging');
-  clearFanPreview();
-  selectFanPage(original, false);
-}
 if (fanRoot) {
   const previewFanItem = target => {
-    if (!fanOpen || Date.now() < fanSuppressClickUntil) return;
+    if (!fanOpen) return;
     const item = target.closest('[data-fan-page]');
     if (!item) return;
     const index = fanPages.findIndex(page => page.id === item.dataset.fanPage);
@@ -587,7 +531,6 @@ if (fanRoot) {
   });
   fanRoot.addEventListener('focusin', event => previewFanItem(event.target));
   fanRoot.addEventListener('click', event => {
-    if (Date.now() < fanSuppressClickUntil && !event.target.closest('#fan-toggle')) { event.preventDefault(); return; }
     if (event.target.closest('#fan-toggle')) return fanOpen ? closeFanNavigation() : openFanNavigation();
     const item = event.target.closest('[data-fan-page]');
     if (item) { selectFanPage(fanPages.findIndex(page => page.id === item.dataset.fanPage)); navigateFanSelection(); }
@@ -595,39 +538,26 @@ if (fanRoot) {
   fanRoot.addEventListener('pointerdown', event => {
     const panel = event.target.closest('#fan-panel');
     if (!panel || !fanOpen || event.button !== 0) return;
-    cancelAnimationFrame(fanAngleFrame); fanAngleFrame = 0;
     previewFanItem(event.target);
-    const rect = document.querySelector('#fan-panel').getBoundingClientRect();
-    const pointerAngle = Math.atan2(event.clientY - rect.top, rect.right - event.clientX) * 180 / Math.PI;
-    fanDrag = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false, selection: fanSelection, offset: event.target.closest('.fan-knob') ? fanAngle - pointerAngle : 0, angle: fanAngle };
+    fanDrag = { id: event.pointerId, x: event.clientX, y: event.clientY, moved: false };
   });
   fanRoot.addEventListener('pointermove', event => {
     if (!fanDrag || event.pointerId !== fanDrag.id) return;
     if (Math.hypot(event.clientX - fanDrag.x, event.clientY - fanDrag.y) < 6 && !fanDrag.moved) return;
-    const panel = document.querySelector('#fan-panel');
-    if (!fanDrag.moved) { panel.setPointerCapture(event.pointerId); panel.classList.add('is-dragging'); cancelAnimationFrame(fanAngleFrame); fanAngleFrame = 0; }
+    if (!fanDrag.moved) document.querySelector('#fan-panel').setPointerCapture(event.pointerId);
     fanDrag.moved = true;
-    const rect = panel.getBoundingClientRect();
-    fanDrag.angle = Math.atan2(event.clientY - rect.top, rect.right - event.clientX) * 180 / Math.PI + fanDrag.offset;
-    if (!fanDragFrame) fanDragFrame = requestAnimationFrame(updateFanDrag);
+    const rect = document.querySelector('#fan-panel').getBoundingClientRect();
+    const angle = Math.atan2(event.clientY - rect.top, rect.right - event.clientX) * 180 / Math.PI;
+    const nearest = fanPages.reduce((best, page, index) => Math.abs(page.angle - angle) < Math.abs(fanPages[best].angle - angle) ? index : best, 0);
+    if (nearest !== fanSelection) selectFanPage(nearest);
   });
   fanRoot.addEventListener('pointerup', event => {
     if (!fanDrag || event.pointerId !== fanDrag.id) return;
     const moved = fanDrag.moved;
-    cancelAnimationFrame(fanDragFrame); fanDragFrame = 0;
-    if (moved) updateFanDrag();
     fanDrag = null;
-    document.querySelector('#fan-panel').classList.remove('is-dragging');
-    if (moved) {
-      event.preventDefault(); fanSuppressClickUntil = Date.now() + 350;
-      // Release selects the nearest page even when the pointer ended inside the midpoint buffer.
-      const nearest = fanPages.reduce((best, page, index) => Math.abs(page.angle - fanAngle) < Math.abs(fanPages[best].angle - fanAngle) ? index : best, 0);
-      selectFanPage(nearest, true, false);
-      animateFanAngle(fanPages[nearest].angle, () => { if (fanOpen) navigateFanSelection(); });
-    }
+    if (moved) { event.preventDefault(); navigateFanSelection(); }
   });
-  fanRoot.addEventListener('pointercancel', cancelFanDrag);
-  fanRoot.addEventListener('lostpointercapture', cancelFanDrag);
+  fanRoot.addEventListener('pointercancel', () => { fanDrag = null; });
   fanRoot.addEventListener('keydown', event => {
     if (event.key === 'Escape') { event.preventDefault(); closeFanNavigation(); }
     else if (event.target.closest('.fan-knob')) {
