@@ -108,3 +108,7 @@ BLOG_ADMIN_PASSWORD='换成你自己的强密码' npm start
 将 activity-settings.example.json 的结构保存到 data/activity-settings.json；GitHub 的 token 与洛谷 cookie 只能在私有服务器文件中填写，不能提交 Git。文件应设置为容器用户 1000 所有、权限 600，配置后重启 web。GitHub 需 Contents 和 Metadata 读取权限，并覆盖要统计的仓库；洛谷需要有效登录凭据。公开 GET /api/activity 只读聚合缓存，管理员 POST /api/activity/sync 触发更新，GET /api/activity/settings 仅返回配置状态。每小时自动同步，失败保留旧数据。数据时间均为 Asia/Shanghai；GitHub Commit 数与个人主页贡献格的统计口径不同。
 
 维护资料采用本地归档，版本库不再存放 Word、Prompt 和维护日志。
+
+## 友链图片
+
+友链申请和管理员编辑支持图片网址或本地上传，可预览、替换和移除图片。本地图片支持 PNG、JPEG、WebP，单张不超过 2 MB；图片与友链一起提交，访客申请仍需审核，管理员提交直接发布。编辑已上传图片的友链时可直接保留原图，也可改为图片网址。不选择图片时使用站点名称作为占位。
