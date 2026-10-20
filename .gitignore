@@ -3,9 +3,13 @@ data/
 .DS_Store
 public/assets/uploads/
 
-# Maintenance documents are archived locally.
+# Detailed archives stay local; concise root documents are tracked.
 *.docx
 *.doc
 **/CHANGELOG.md
 /prompts/
 /logs/
+
+# Concise project maintenance documents.
+!/CHANGELOG.md
+!/PROMPT.md
