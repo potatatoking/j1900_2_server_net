@@ -41,8 +41,6 @@ npm start
 
 活动同步配置结构见 `activity-settings.example.json`，实际文件位于 `data/activity-settings.json`。GitHub 只读令牌、洛谷登录凭据只在服务器私有配置中填写；页面只公开允许展示的聚合数据。同步失败保留旧记录，凭据过期后需重新授权。
 
-## 文档
+## 更新记录
 
-- [更新记录](CHANGELOG.md)：日志与版本变化的唯一入口。
-
-介绍统一为 Markdown（`.md`），以本 README 为准；日志见 CHANGELOG.md。实际内容、上传图片、认证及生产配置需单独备份，不包含在 GitHub 源码中。
+[查看功能更新](CHANGELOG.md)。
