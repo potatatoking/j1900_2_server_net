@@ -277,11 +277,67 @@ function friendCard(friend, review = false) {
 function friendsPage() {
   const published = shuffleFriends(state.friends.filter(item => item.status === 'published'));
   const pending = state.friends.filter(item => item.status === 'pending');
-  return `<div class="container page-friends">${pageHead('FRIENDS & LITTLE WORLDS', '友链花园', '把喜欢的小站种在这里，让有趣的灵魂沿着链接相遇。', '<button class="btn friend-apply" type="button" data-action="new-friend">✧ 留下你的小站</button>')}<div class="friends-intro"><span>一条链接，一次新的相遇。</span><div class="friends-order"><small>${published.length} 个小世界，随机相遇。</small><button class="quiet-button" type="button" data-action="shuffle-friends" ${published.length < 2 ? 'disabled' : ''}>换个顺序 ↻</button></div></div><section class="friends-grid" aria-label="已收录的友链">${published.length ? published.map(item => friendCard(item)).join('') : '<div class="friends-empty"><span aria-hidden="true">✳</span><h2>花园正在等第一位朋友</h2><p>带着你的小站来坐坐，写下我们相遇的第一笔。</p><button class="quiet-button" data-action="new-friend">申请成为友链 ↗</button></div>'}</section>${state.admin ? `<section class="friends-review"><h2>待审核 <small>${pending.length}</small></h2><p>审核通过后，站点才会出现在公开花园中。已发布友链可在编辑中下架。</p><div class="friends-grid">${pending.length ? pending.map(item => friendCard(item, true)).join('') : '<p>目前没有待审核的申请。</p>'}</div></section>` : ''}<aside class="friends-note"><div><span class="journal-kicker">LET’S EXCHANGE A LINK</span><h2>也欢迎把土豆种进你的花园</h2><div class="own-friend-heading"><span class="friend-avatar"><img src="${esc(ownFriendProfile.avatar)}" alt="土豆的记事簿头像" loading="lazy" referrerpolicy="no-referrer" data-friend-avatar><span hidden>土</span></span><p>${esc(ownFriendProfile.name)}<br>${esc(ownFriendProfile.descr)}</p></div><a class="friend-site-url" href="${esc(ownFriendProfile.link)}" target="_blank" rel="noopener noreferrer">${esc(ownFriendProfile.link)}</a><pre class="friend-exchange-code" id="own-friend-yaml" tabindex="0" aria-label="本站友链资料 YAML">${esc(ownFriendYaml())}</pre><button class="quiet-button" type="button" data-action="copy-friend-profile">复制友链资料</button></div><div><h3>申请前的小约定</h3><p>请填写能正常访问的个人站点、简短介绍，以及可选的头像地址。友善交流，认真记录；访客申请经站长审核后展示。</p><button class="quiet-button" data-action="new-friend">${state.admin ? '管理员也可以直接提交 ↗' : '留下你的小站 ↗'}</button></div></aside>${searchPanel()}</div>`;
+  return `<div class="container page-friends">${pageHead('FRIENDS & LITTLE WORLDS', '友链花园', '把喜欢的小站种在这里，让有趣的灵魂沿着链接相遇。', '<button class="btn friend-apply" type="button" data-action="new-friend">✧ 留下你的小站</button>')}<div class="friends-intro"><span>一条链接，一次新的相遇。</span><div class="friends-order"><small>${published.length} 个小世界，随机相遇。</small><button class="quiet-button" type="button" data-action="shuffle-friends" ${published.length < 2 ? 'disabled' : ''}>换个顺序 ↻</button></div></div><section class="friends-grid" aria-label="已收录的友链">${published.length ? published.map(item => friendCard(item)).join('') : '<div class="friends-empty"><span aria-hidden="true">✳</span><h2>花园正在等第一位朋友</h2><p>带着你的小站来坐坐，写下我们相遇的第一笔。</p><button class="quiet-button" data-action="new-friend">申请成为友链 ↗</button></div>'}</section>${state.admin ? `<section class="friends-review"><h2>待审核 <small>${pending.length}</small></h2><p>审核通过后，站点才会出现在公开花园中。已发布友链可在编辑中下架。</p><div class="friends-grid">${pending.length ? pending.map(item => friendCard(item, true)).join('') : '<p>目前没有待审核的申请。</p>'}</div></section>` : ''}<aside class="friends-note"><div><span class="journal-kicker">LET’S EXCHANGE A LINK</span><h2>也欢迎把土豆种进你的花园</h2><div class="own-friend-heading"><span class="friend-avatar"><img src="${esc(ownFriendProfile.avatar)}" alt="土豆的记事簿头像" loading="lazy" referrerpolicy="no-referrer" data-friend-avatar><span hidden>土</span></span><p>${esc(ownFriendProfile.name)}<br>${esc(ownFriendProfile.descr)}</p></div><a class="friend-site-url" href="${esc(ownFriendProfile.link)}" target="_blank" rel="noopener noreferrer">${esc(ownFriendProfile.link)}</a><pre class="friend-exchange-code" id="own-friend-yaml" tabindex="0" aria-label="本站友链资料 YAML">${esc(ownFriendYaml())}</pre><button class="quiet-button" type="button" data-action="copy-friend-profile">复制友链资料</button></div><div><h3>申请前的小约定</h3><p>请填写能正常访问的个人站点、简短介绍，并填写图片网址或上传一张图片（选填）。友善交流，认真记录；访客申请经站长审核后展示。</p><button class="quiet-button" data-action="new-friend">${state.admin ? '管理员也可以直接提交 ↗' : '留下你的小站 ↗'}</button></div></aside>${searchPanel()}</div>`;
 }
 function friendModal(friend = null) {
-  openModal(`<div class="eyebrow">A NEW LITTLE WORLD</div><h2>${friend ? '整理这株小小的友链' : '在花园留下一颗种子'}</h2><p>${state.admin ? '管理员提交直接发布；编辑时可调整审核状态。' : '写下你的小站，审核通过后就能在花园里相遇。'}</p><form id="friend-form" ${friend ? `data-id="${esc(friend.id)}"` : ''}><label for="friend-name">站点名称</label><input class="field" id="friend-name" name="name" required maxlength="60" value="${esc(friend?.name)}"><label for="friend-url">站点网址</label><input class="field" id="friend-url" name="url" type="url" required maxlength="1000" placeholder="https://example.com" value="${esc(friend?.url)}"><label for="friend-description">一句话介绍</label><textarea class="field" id="friend-description" name="description" required maxlength="240">${esc(friend?.description)}</textarea><label for="friend-avatar">头像网址（选填）</label><input class="field" id="friend-avatar" name="avatar" type="url" maxlength="1000" placeholder="https://example.com/avatar.png" value="${esc(friend?.avatar)}">${friend && state.admin ? `<label for="friend-status">展示状态</label><select class="field" id="friend-status" name="status"><option value="published" ${friend.status === 'published' ? 'selected' : ''}>已发布（审核通过）</option><option value="pending" ${friend.status === 'pending' ? 'selected' : ''}>待审核 / 下架</option></select>` : ''}<p class="form-error" role="alert"></p><button class="btn" type="submit">${friend ? '保存友链' : state.admin ? '发布友链' : '提交申请'}</button></form>`);
+  const localImage = /^\/assets\/uploads\//.test(friend?.avatar || '');
+  openModal(`<div class="eyebrow">A NEW LITTLE WORLD</div><h2>${friend ? '整理这株小小的友链' : '在花园留下一颗种子'}</h2><p>${state.admin ? '管理员提交直接发布；编辑时可调整审核状态。' : '写下你的小站，审核通过后就能在花园里相遇。'}</p>
+    <form id="friend-form" ${friend ? `data-id="${esc(friend.id)}"` : ''} data-avatar="${localImage ? esc(friend.avatar) : ''}">
+      <label for="friend-name">站点名称</label><input class="field" id="friend-name" name="name" required maxlength="60" value="${esc(friend?.name)}">
+      <label for="friend-url">站点网址</label><input class="field" id="friend-url" name="url" type="url" required maxlength="1000" placeholder="https://example.com" value="${esc(friend?.url)}">
+      <label for="friend-description">一句话介绍</label><textarea class="field" id="friend-description" name="description" required maxlength="240">${esc(friend?.description)}</textarea>
+      <fieldset class="friend-image-source"><legend>友链图片（选填）</legend><label><input type="radio" name="avatarSource" value="url" ${!localImage ? 'checked' : ''}> 图片网址</label><label><input type="radio" name="avatarSource" value="upload" ${localImage ? 'checked' : ''}> 本地上传</label></fieldset>
+      <div data-friend-source="url" ${localImage ? 'hidden' : ''}><label for="friend-avatar">图片网址</label><input class="field" id="friend-avatar" name="avatar" type="url" maxlength="1000" placeholder="https://example.com/avatar.png" value="${localImage ? '' : esc(friend?.avatar)}" ${localImage ? 'disabled' : ''}></div>
+      <div data-friend-source="upload" ${!localImage ? 'hidden' : ''}><label for="friend-avatar-file">选择图片</label><input class="field" id="friend-avatar-file" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="friend-image-help" ${!localImage ? 'disabled' : ''}><p class="friend-image-help" id="friend-image-help">PNG、JPEG 或 WebP，单张不超过 2 MB；提交时上传。</p></div>
+      <div class="friend-image-preview"><img alt="友链图片预览" data-friend-preview-image hidden><span data-friend-image-placeholder>未选择图片</span><button class="btn subtle" type="button" data-remove-friend-image hidden>移除图片</button></div>
+      ${friend && state.admin ? `<label for="friend-status">展示状态</label><select class="field" id="friend-status" name="status"><option value="published" ${friend.status === 'published' ? 'selected' : ''}>已发布（审核通过）</option><option value="pending" ${friend.status === 'pending' ? 'selected' : ''}>待审核 / 下架</option></select>` : ''}
+      <p class="form-error" role="alert"></p><button class="btn" type="submit">${friend ? '保存友链' : state.admin ? '发布友链' : '提交申请'}</button>
+    </form>`);
+  updateFriendImage(modal.querySelector('#friend-form'));
 }
+function updateFriendImage(form) {
+  const uploading = form.elements.avatarSource.value === 'upload';
+  const input = form.querySelector('#friend-avatar-file');
+  form.querySelector('[data-friend-source="url"]').hidden = uploading;
+  form.querySelector('[data-friend-source="upload"]').hidden = !uploading;
+  form.elements.avatar.disabled = uploading;
+  input.disabled = !uploading;
+  const source = uploading ? input.dataset.image || form.dataset.avatar : form.elements.avatar.value.trim();
+  const image = form.querySelector('[data-friend-preview-image]');
+  const placeholder = form.querySelector('[data-friend-image-placeholder]');
+  image.hidden = true; placeholder.hidden = false; placeholder.textContent = source ? '正在读取图片…' : '未选择图片';
+  image.onload = () => { image.hidden = false; placeholder.hidden = true; };
+  image.onerror = () => { image.hidden = true; placeholder.hidden = false; placeholder.textContent = '图片暂时无法预览'; };
+  if (source && /^(https?:\/\/|\/assets\/uploads\/|data:image\/)/.test(source)) image.src = source;
+  else { image.removeAttribute('src'); if (source) placeholder.textContent = '请填写完整的 http 或 https 图片网址'; }
+  form.querySelector('[data-remove-friend-image]').hidden = !source;
+}
+document.addEventListener('change', async event => {
+  const form = event.target.closest('#friend-form');
+  if (!form) return;
+  if (event.target.name === 'avatarSource' || event.target.id === 'friend-avatar') return updateFriendImage(form);
+  if (event.target.id !== 'friend-avatar-file') return;
+  const input = event.target, file = input.files[0];
+  if (!file) return;
+  const submit = form.querySelector('[type="submit"]'), error = form.querySelector('.form-error');
+  if (submit.disabled) return;
+  submit.disabled = true; input.disabled = true; error.textContent = '';
+  try {
+    const image = await imageData(file);
+    if (form.isConnected) { input.dataset.image = image; updateFriendImage(form); }
+  } catch (problem) { input.value = ''; error.textContent = problem.message; }
+  finally { submit.disabled = false; input.disabled = form.elements.avatarSource.value !== 'upload'; }
+});
+document.addEventListener('click', event => {
+  const remove = event.target.closest('[data-remove-friend-image]');
+  if (!remove) return;
+  const form = remove.closest('form');
+  if (form.querySelector('[type="submit"]').disabled) return;
+  delete form.querySelector('#friend-avatar-file').dataset.image;
+  form.dataset.avatar = ''; form.elements.avatar.value = '';
+  form.querySelector('.form-error').textContent = '';
+  updateFriendImage(form);
+});
 document.addEventListener('error', event => {
   if (event.target.matches?.('[data-friend-avatar]')) { event.target.hidden = true; event.target.nextElementSibling.hidden = false; }
 }, true);
@@ -1292,6 +1348,13 @@ document.addEventListener('submit', async event => {
       }
     }
     if (form.id === 'friend-form') {
+      if (values.avatarSource === 'upload') {
+        const image = form.querySelector('#friend-avatar-file').dataset.image;
+        values.avatar = form.dataset.avatar || '';
+        if (image) values.avatarImage = image;
+      }
+      delete values.avatarSource;
+      button.textContent = values.avatarImage ? '正在上传并提交…' : '正在提交…';
       const editing = Boolean(form.dataset.id);
       const friend = await request(editing ? `/api/friends/${form.dataset.id}` : '/api/friends', { method: editing ? 'PUT' : 'POST', body: JSON.stringify(values) });
       if (state.admin || friend.status === 'published') state.friends = state.friends.filter(item => item.id !== friend.id).concat(friend);
@@ -1356,7 +1419,7 @@ document.addEventListener('submit', async event => {
       if (!message) { message = document.createElement('p'); message.className = 'form-error'; message.setAttribute('role', 'alert'); button.before(message); }
       message.textContent = error.message;
     } else { toast(error.message); }
-    if (form.matches('.reply-form')) button.textContent = originalButtonText;
+    if (form.matches('.reply-form') || form.id === 'friend-form') button.textContent = originalButtonText;
     button.disabled = false;
   }
 });
