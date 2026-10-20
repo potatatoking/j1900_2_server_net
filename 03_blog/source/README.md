@@ -8,6 +8,6 @@
 npm start
 ```
 
-网站为 <http://localhost:3000>，后台为 <http://localhost:3000/admin>；修改 JavaScript 后运行 `npm test`。
+网站为 `http://localhost:3000`，后台为 `http://localhost:3000/admin`；修改 JavaScript 后运行 `npm test`。
 
 更新前备份 `data/`、`.env` 与 `public/assets/uploads/`。服务器的分流集成单独维护，不从旧快照覆盖；通用 Docker 模板见[部署说明](../deployment/README.md)。

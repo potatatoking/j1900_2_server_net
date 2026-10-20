@@ -14,7 +14,7 @@
 
 ## 运行项目
 
-在对应源码目录执行 `npm start`；修改 JavaScript 后运行 `npm test`。
+在对应源码目录执行 `npm start`；修改 JavaScript 后运行 `npm test`。安装依赖优先使用 pnpm，添加新依赖前先确认。
 
 博客首次启动前，将该目录的 `.env.example` 复制为 `.env` 并设置自己的管理员密码。
 
@@ -38,7 +38,6 @@ python automation/prepare_plan.py parameters.local.json --out generated
 
 ## 文档与更新
 
-- [维护 Prompt](PROMPT.md)：整个仓库的开发与整理约定。
 - [更新记录](CHANGELOG.md)：日志与版本变化，合并维护。
 
-介绍采用 Markdown（`.md`），本 README 是总入口。详细旧资料和 Word 保存在所有者本地；账号、令牌、访问清单、生产网络配置与数据不提交 Git。部署前备份内容、认证与上传文件，第三方许可证保留随源码发布。
+介绍采用 Markdown（`.md`），本 README 是总入口。Word 与详细旧资料不随仓库提供；账号、令牌、访问清单、生产网络配置与数据不提交 Git。部署前备份内容、认证与上传文件，第三方许可证保留随源码发布。

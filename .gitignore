@@ -56,4 +56,4 @@ parameters.local.json
 
 # Concise project maintenance documents.
 !/CHANGELOG.md
-!/PROMPT.md
+/PROMPT.md
