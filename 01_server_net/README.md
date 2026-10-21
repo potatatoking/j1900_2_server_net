@@ -1,6 +1,6 @@
 # 第一部分：服务器与网络
 
-[返回总项目](../README.md) · [查看三部分边界](../PROJECT_STRUCTURE.md)
+[返回总项目](../README.md) · [查看维护边界](../PROJECT_STRUCTURE.md)
 
 本目录提供容器构建材料和通用说明，模板使用前需按自己的网络、存储目录和基础镜像调整。
 
@@ -14,6 +14,8 @@
 | [deepseek-harness-container](source/deepseek-harness-container/README.md) | Harness 与主备密钥路由 |
 | [zcode-container](source/zcode-container/README.md) | ZCode 网页及命令行环境 |
 | [sakura-frp](source/sakura-frp/README.md) | OpenWrt FRP 安装与检查模板 |
+
+本部分为个人博客与命令行工具提供运行环境，配置与业务数据分别保存。
 
 ## 网络参数
 

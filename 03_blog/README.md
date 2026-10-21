@@ -1,6 +1,6 @@
 # 第三部分：个人博客
 
-[返回总项目](../README.md) · [查看完整源码说明](source/README.md) · [查看三部分边界](../PROJECT_STRUCTURE.md)
+[返回总项目](../README.md) · [查看完整源码说明](source/README.md) · [查看维护边界](../PROJECT_STRUCTURE.md)
 
 本部分负责公开内容、管理员后台、文章、图片、留言、友链、活动统计与入口分流。正式源码仅位于 `source/`；`deployment/` 提供 Docker 模板，`deployment_reference/` 保存部署参考工具，`learning/` 是独立教学示例。
 

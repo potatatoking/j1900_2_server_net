@@ -1,84 +1,40 @@
-# 基于 J1900 的个人服务器与 AI 博客平台
+# 基于 J1900 的个人服务器与博客平台
 
-本仓库的 `main` 分支是统一维护入口，三个部分独立运行、独立配置和独立保存数据。
+两台 J1900 主机分别运行 Debian 和 OpenWrt，提供个人博客、命令行工具容器、指定容器代理以及校园与公网访问。正式维护分支为 main。
 
-## 三个部分
+## 项目入口
 
 | 部分 | 负责什么 | 入口 |
 | --- | --- | --- |
-| 01 · 服务器与网络 | Debian、OpenWrt、Docker、地址与路由、代理、FRP 和 DDNS | [服务器与网络](01_server_net/README.md) |
-| 03 · 个人博客 | 公开内容、管理员后台、图片、留言、活动统计与访问分流 | [个人博客](03_blog/README.md) |
+| 服务器与网络 | 主机、Docker、CLI 工具、路由、代理、FRP 和 DDNS | [说明](01_server_net/README.md) |
+| 个人博客 | 内容、图片、留言、活动统计与入口分流 | [说明](03_blog/README.md) |
 
-```text
-01_server_net/       服务器、网络与工具容器
+博客正式源码位于 03_blog/source，部署模板位于 03_blog/deployment；automation 只负责本地参数校验与材料生成。博客的源码与原有提交历史继续保留。
 
+## 运行与测试
 
-03_blog/
-  source/            博客完整源码与独立运行配置
-  deployment/        博客 Docker 部署模板
-  deployment_reference/  地址表更新等部署参考工具
-  learning/          独立教学示例
-automation/          总项目的参数校验与本地计划生成器
-PROJECT_STRUCTURE.md 三部分边界、接口及仓库合并记录
-package.json         总项目的启动与测试命令
-```
-
-两份应用源码已连同原仓库历史合入，不使用 Git 子模块，克隆本仓库即可获得三个部分。职责、数据边界和导入版本见[项目结构](PROJECT_STRUCTURE.md)。
-
-## 从总项目启动
-
-统一使用 Node.js 22+，目前无需安装 npm 依赖。在总项目根目录执行：
-
-```sh
-
-```
-
-
-
-博客首次启动前，将 `03_blog/source/.env.example` 复制为同目录的 `.env` 并设置自己的管理员密码，再在另一个终端执行：
+使用 Node.js 22+，无需安装额外 npm 依赖。先将博客源码目录的 .env.example 复制为 .env，并设置管理员密码。
 
 ```sh
 npm run start:blog
-```
-
-打开 `http://localhost:3000`；管理员入口为 `/admin`。启动命令只运行应用，不连接路由器或自动部署生产服务。
-
-## 测试与维护
-
-```sh
 npm test
-npm run test:network
-
-npm run test:blog
-```
-
-参数生成器另用 Python 3 验证：
-
-```sh
 python -m unittest discover -s automation -p 'test_*.py'
 ```
 
-部分 Linux 环境需将 `python` 换成 `python3`。修改 JavaScript 后必须运行 `npm test`；安装依赖优先使用 pnpm，添加新依赖前先确认。Windows 的 Unix 文件权限断言差异应单独记录，不能删去断言。
+博客默认入口为 http://localhost:3000，管理员入口为 /admin。根目录测试包含服务器密钥路由和博客；启动或测试命令不会连接路由器或部署生产服务。Windows 的 Unix 文件权限断言差异需要单独记录，不能删除断言。
 
-## 配置、部署与备份
+修改 JavaScript 后必须运行 npm test，安装依赖优先使用 pnpm，添加新依赖前先确认。真实凭据、运行配置、账号数据、文章和上传文件不提交 Git。博客更新保留 .env、routing.json、data 与上传目录。
 
-真实网络参数、令牌、认证文件、文章、对话和上传文件留在各自的私有配置或数据目录，不提交 Git。更新前备份应用数据，保留生产 `.env`、`services.json`、博客 `routing.json` 和已有容器卷。
+## 部署计划
 
-将 `automation/parameters.example.json` 复制为私有的 `parameters.local.json`，按自己的环境填写后执行：
+复制 automation/parameters.example.json 为私有参数文件，按实际网络填写。
 
 ```sh
 python automation/prepare_plan.py parameters.local.json --check
 python automation/prepare_plan.py parameters.local.json --out generated
 ```
 
-生成器仅输出本地部署材料，不修改服务器。
-
-## 项目记录
-
-- [功能更新](CHANGELOG.md)
-- [项目结构与合并来源](PROJECT_STRUCTURE.md)
-- [个人感想](#个人感想)
-- [项目介绍](#项目介绍)
+生成器只写本地材料。服务器与网络规则由第一部分管理，博客的业务数据与应用代码独立保存。更多内容见 [项目结构](PROJECT_STRUCTURE.md) 和 [功能更新](CHANGELOG.md)。
 
 ## 个人感想
 
@@ -103,7 +59,7 @@ Web 支持多运营商、Chat/Work、历史、文件与 Git、交互审批；博
 首先配置了主路由获取debain和openwrt的ip地址，然后通过ssh链接了我的电脑（有ai助力方便多了）（事实上过程并不顺利，比如自带网卡没开，dns地址错误的问题看了好久）
 
 然后为了防止自动分配的dhcp变动，在主路由给debain和openwrt绑定了固定ip
-接着开始安装docker，总共安装了4个docker，ip从101分配到104，两个运行个人网站，两个运行ai服务
+接着开始安装docker，为个人博客和命令行工具分别部署容器，并分配独立地址
 
 先将自己在前几天喂了无数prompt制作出的html协议的网站ai一键部署到101的docker，然后将103和104的docker分别安装codex和cc的cli
 
@@ -131,7 +87,7 @@ Web 支持多运营商、Chat/Work、历史、文件与 Git、交互审批；博
 
 ## 项目介绍
 
-项目名称：基于 J1900 的个人服务器与 AI 博客平台
+项目名称：基于 J1900 的个人服务器与博客平台
 
 一、项目目标
 
@@ -159,7 +115,7 @@ Web 支持多运营商、Chat/Work、历史、文件与 Git、交互审批；博
 
 第二步，配置基础网络。确定主路由、服务器和旁路由的 IP，配置 SSH、网关、DNS 和 DHCP 地址范围。
 
-第三步，部署容器。安装 Docker 和 Compose，将博客、AI 工具和工作台分别部署，配置独立 IP、数据挂载及重启策略。
+第三步，部署容器。安装 Docker 和 Compose，将博客和 AI 命令行工具分别部署，配置独立 IP、数据挂载及重启策略。
 
 第四步，配置网络分流。通过 OpenWrt 接管指定 AI 容器的流量，配置前置代理与 ISP 出口，检查实际出口和域名解析。
 
@@ -205,7 +161,7 @@ ISP 服务拒绝直接连接，DNS 也曾出现异常解析。通过前置代理
 
 完成两台 J1900 的分工部署，已记录的硬件与网络费用约为 301.2 元，不含部分供电配件。
 
-实现博客、AI 工具和工作台的独立部署与数据持久化，降低服务更新时的相互影响。
+实现博客和 AI 命令行工具的独立部署与数据持久化，降低服务更新时的相互影响。
 
 完成个人博客的内容管理、公网域名接入和 HTTPS 访问。
 
