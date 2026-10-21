@@ -44,7 +44,7 @@ def generate(p,out):
       'network':{'lan':str(lan),'gateway':net['openwrt_ip'],'host_default_gateway':net['main_router'],'macvlan_parent':net['parent_interface']},
       'proxy_source_ips':proxy_ips,'no_remote_changes':True,
       'manual_steps':['physical boot media','account OAuth/MFA','manual DNS TXT unless DNS API authorized'],
-      'source_adaptation':['OpenClash access whitelist and firewall must match generated rules','New blog branch does not contain deployed visitor-routing integration']}
+      'source_adaptation':['OpenClash access whitelist and firewall must match generated rules','Blog visitor routing is optional; configure private routing.json and validate trusted proxies before enabling']}
     (out/'plan.json').write_text(json.dumps(plan,ensure_ascii=False,indent=2),encoding='utf-8')
     (out/'parameters.json').write_text(json.dumps(p,ensure_ascii=False,indent=2),encoding='utf-8')
     quoted=lambda value:json.dumps(str(value),ensure_ascii=False)

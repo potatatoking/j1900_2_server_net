@@ -1,0 +1,17 @@
+{
+  "name": "j1900-personal-platform",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Personal server and blog platform on Debian and OpenWrt",
+  "scripts": {
+    "start:blog": "npm --prefix 03_blog/source start",
+    "dev:blog": "npm --prefix 03_blog/source run dev",
+    "test": "npm run test:network && npm run test:blog",
+    "test:network": "npm --prefix 01_server_net/source/deepseek-harness-container test",
+    "test:blog": "npm --prefix 03_blog/source test",
+    "test:automation": "python -m unittest discover -s automation -p test_*.py"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}
