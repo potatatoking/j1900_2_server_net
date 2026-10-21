@@ -1,13 +1,58 @@
-# 个人博客源码入口
+# 土豆的记事簿 · 个人博客
 
-这里保留综合项目内的个人博客正式源码。功能介绍、后台使用、图片上传及活动同步见[博客使用说明](https://github.com/potatatoking/blog/blob/officaluse1.1/README.md)。
+记录生活、学习、工作与个人想法的博客，提供独立管理后台。**正式版本在 `officaluse1.1` 分支**；`main` 与 `officaluse1.0` 是保留的早期版本。
 
-需要 Node.js 20+，当前无需安装 npm 依赖。在本目录将 `.env.example` 复制为 `.env` 并修改管理员密码，然后执行：
+## 主要功能
+
+- 生活、学习、工作、个人文章、关于和留言页面，配合首页、站内搜索与扇形导航。
+- 管理员发布图文、维护资料与阅读记录、管理留言和友链。
+- 项目列表区分进行中/已完成，项目介绍不限长度。
+- 友链随机排序；图片可填写网址或本地上传，支持 PNG/JPEG/WebP、单张最多 2 MB，可预览与移除。访客申请需审核，管理员提交直接发布。
+- 可配置洛谷刷题记录及 GitHub 活动统计；私密仓库只公开日期与数量，公开/私密分类统计。
+
+## 快速开始
+
+需要 Node.js 20+，当前项目无需安装 npm 依赖。选择正式分支后，在项目根目录执行：
 
 ```sh
+cp .env.example .env
+# 编辑 .env，将 BLOG_ADMIN_PASSWORD 替换为自己的强密码
 npm start
 ```
 
-网站为 `http://localhost:3000`，后台为 `http://localhost:3000/admin`；修改 JavaScript 后运行 `npm test`。
+浏览 `http://localhost:3000`；管理后台为 `http://localhost:3000/admin`。运行 `npm test` 执行测试。直接打开 HTML 只能看静态演示，不能保存内容。
 
-更新前备份 `data/`、`.env` 与 `public/assets/uploads/`。服务器的分流集成单独维护，不从旧快照覆盖；通用 Docker 模板见[部署说明](../deployment/README.md)。
+## 目录与备份
+
+| 位置 | 用途 |
+| --- | --- |
+| `public/` | 页面、样式及本地资源 |
+| `server.js` | 内容、登录和管理接口 |
+| `activity.js` | 可选活动同步 |
+| `test/` | 自动测试 |
+| `data/` | 内容、认证与活动配置，不提交 Git |
+| `public/assets/uploads/` | 上传图片，不提交 Git |
+
+更新代码前备份 `data/`、上传目录和私有 `.env`。管理员修改密码后，认证记录保存在 `data/admin-auth.json`；更新时应保留它，避免账号状态丢失。
+
+## 部署与活动同步
+
+可直接运行 Node 服务，或使用[综合项目中的通用 Docker 模板](https://github.com/potatatoking/j1900_2_server_net/tree/main/03_blog/deployment)。正式访问应配置 HTTPS；仅在受信任反向代理后按实际情况设置安全 Cookie 与代理选项，不照搬示例网络地址。
+
+活动同步配置结构见 `activity-settings.example.json`，实际文件位于 `data/activity-settings.json`。GitHub 只读令牌、洛谷登录凭据只在服务器私有配置中填写；页面只公开允许展示的聚合数据。同步失败保留旧记录，凭据过期后需重新授权。
+
+## 可选网络分流
+
+复制 `routing.example.json` 为 `routing.json`，按部署环境填写入口域名、可信代理、校园出口与网段，再将 `enabled` 改为 `true` 并重启。示例域名与地址不能用于生产；真实 `routing.json` 不提交 Git。文件缺失或禁用时保持单入口行为。
+
+首页、学习、工作、友链、文章与管理员入口按来源分为校园、其他大陆和境外，分别使用 `campusTarget`、`mainlandTarget`、`globalTarget`。校园入口是终点，已经进入后不因共享出口或不同 WLAN 网段回跳；其他入口已匹配目标时也不重复跳转。后台 API、静态资源和写请求不分流。
+
+页面加载、网络变化、恢复在线及返回页面时会重新检查 `/api/route`，保留路径、查询参数与锚点。编辑弹窗打开或开始填写表单后暂缓自动导航，检查失败保留当前页面。添加 `?route=global` 可保持当前入口；不同域名不共享登录 Cookie，切换管理员入口后可能需要重新登录。
+
+仅信任配置中代理追加的最后一个 `X-Forwarded-For` 地址，不接受其他来源伪造的转发头。`china-cidrs.txt` 同步自现有部署的 APNIC 分配数据快照，需随地址分配变化维护；它不能代替精确定位，也无法还原代理前的网络。校园 WAN 变化应由路由器侧 DDNS 更新固定域名，不逐台配置客户端 IP。端口映射和 DHCP 静态绑定在主路由或 OpenWrt 管理。
+
+更新时保留服务器的 `routing.json`、内容、上传图片和认证文件，不用示例配置覆盖实际配置。
+
+## 更新记录
+
+[查看功能更新](CHANGELOG.md)。

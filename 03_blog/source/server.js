@@ -11,6 +11,17 @@ const publicDir = path.join(root, 'public');
 const dataDir = path.join(root, 'data');
 const dataFile = path.join(dataDir, 'blog.json');
 const port = Number(process.env.PORT || 3000);
+let routeVisitor = () => false;
+let routingConfig;
+try {
+  routingConfig = JSON.parse(await fs.readFile(path.join(root, 'routing.json'), 'utf8'));
+} catch (error) { if (error.code !== 'ENOENT') throw error; }
+if (routingConfig?.enabled) {
+  const { createVisitorRouter } = await import('./visitor-routing.js');
+  const cidrs = (await fs.readFile(path.join(root, routingConfig.chinaCidrsFile), 'utf8'))
+    .split(/\r?\n/).map(line => line.trim()).filter(line => line && !line.startsWith('#'));
+  routeVisitor = createVisitorRouter(routingConfig, cidrs);
+}
 let activityStore = null;
 try {
   await fs.access(path.join(root, 'activity.js'));
@@ -548,6 +559,7 @@ const mime = { '.html': 'text/html; charset=utf-8', '.css': 'text/css; charset=u
 http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
+    if (routeVisitor(req, res, url)) return;
     if (url.pathname.startsWith('/api/')) return await api(req, res, url);
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: '请求方式不支持' });
     if (url.pathname === '/admin/') { res.writeHead(302, { Location: '/admin' + url.search }); return res.end(); }

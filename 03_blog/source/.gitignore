@@ -1,4 +1,16 @@
 data/
 .env
+/routing.json
 .DS_Store
 public/assets/uploads/
+
+# Detailed archives stay local; concise root documents are tracked.
+*.docx
+*.doc
+**/CHANGELOG.md
+/prompts/
+/logs/
+
+# Concise project maintenance documents.
+!/CHANGELOG.md
+/PROMPT.md
