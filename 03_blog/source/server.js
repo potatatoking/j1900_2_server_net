@@ -485,7 +485,7 @@ async function api(req, res, url) {
     if (req.method === 'POST') {
       if (!requireAdmin(req, res)) return;
       const input = await body(req);
-      const type = ['study', 'life', 'article'].includes(input.type) ? input.type : null;
+      const type = ['study', 'life', 'article', 'update'].includes(input.type) ? input.type : null;
       const title = clean(input.title, 100), content = clean(input.content, 5000), tag = clean(input.tag, 30);
       const section = type === 'study' ? (input.section === 'work' ? 'work' : 'learning') : undefined;
       if (!type || !title || !content) return json(res, 400, { error: '请填写完整的标题和内容' });
@@ -503,7 +503,7 @@ async function api(req, res, url) {
     if (!post) return json(res, 404, { error: '动态不存在' });
     if (req.method === 'PUT') {
       const input = await body(req);
-      const type = ['study', 'life', 'article'].includes(input.type) ? input.type : null;
+      const type = ['study', 'life', 'article', 'update'].includes(input.type) ? input.type : null;
       const title = clean(input.title, 100), content = clean(input.content, 5000), tag = clean(input.tag, 30);
       const section = type === 'study' ? (input.section === 'work' ? 'work' : 'learning') : undefined;
       if (!type || !title || !content) return json(res, 400, { error: '请填写完整的标题和内容' });

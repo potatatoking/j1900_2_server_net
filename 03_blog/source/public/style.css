@@ -312,3 +312,21 @@ body:not(.is-entry) .talk-side{padding:33px 27px 28px;border-top:5px solid #aa8a
 }
 
 .site-footer button{border:0;background:none;padding:0;color:inherit;font:inherit;cursor:pointer}.site-footer button:hover{color:#cc6c89}
+
+.work-updates-footer{margin:32px 0 8px;text-align:center;color:#9d7e8c}
+.work-updates-link{border:0;background:none;padding:8px 16px;color:inherit;font:inherit;font-size:12px;letter-spacing:.12em;cursor:pointer}
+.work-updates-link:hover,.work-updates-link:focus-visible{color:#a84e75;text-decoration:underline;text-underline-offset:4px}
+.work-updates-link:focus-visible{outline:2px solid #c285a0;outline-offset:3px;border-radius:3px}
+.work-updates-footer hr{border:0;border-top:1px solid #dfbfce;margin:10px 0 0}
+.modal:has(.blog-updates){max-width:680px;max-height:85dvh;overflow-y:auto}
+.blog-updates-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-right:12px}
+.blog-updates-heading h2{margin-top:7px}.blog-updates-heading .quiet-button{white-space:nowrap}
+.blog-updates-list{list-style:none;padding:0;margin:25px 0 0}
+.blog-updates-list>li{margin:0 0 24px;padding:0 0 24px;border-bottom:1px solid #efdee5}
+.blog-updates-list>li:last-child{margin-bottom:0;border-bottom:0;padding-bottom:0}
+.blog-updates-list time{font-size:12px;color:#987586;font-variant-numeric:tabular-nums}
+.blog-update-tag{margin-left:10px;font-size:11px;color:#a85b7b}
+.blog-updates-list h3{font-size:16px;margin:9px 0;color:#704a58}
+.blog-updates-list .blog-update-content{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.9;font-size:13px;color:#735b67;margin:0 0 12px}
+.blog-updates-list .admin-actions{justify-content:flex-end}
+@media(max-width:480px){.modal:has(.blog-updates){padding:26px 20px}.blog-updates-heading{align-items:flex-start;flex-wrap:wrap}.work-updates-footer{margin-top:24px}}

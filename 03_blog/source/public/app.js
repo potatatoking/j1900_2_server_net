@@ -23,7 +23,7 @@ const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&a
 const date = value => new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(value));
 const dateKey = value => new Date(value).toLocaleDateString('sv-SE');
 function searchItems() {
-  const items = state.posts.map(post => ({ page: postPage(post), id: `post-${post.id}`, category: post.type === 'article' ? '个人文章' : post.type === 'life' ? '生活日记' : studySection(post) === 'work' ? '工作记录' : '学习手记', title: post.title, detail: post.content, words: [post.title, post.content, post.tag, date(post.createdAt)].join(' ') }));
+  const items = state.posts.map(post => ({ page: postPage(post), id: `post-${post.id}`, category: post.type === 'update' ? '更新日志' : post.type === 'article' ? '个人文章' : post.type === 'life' ? '生活日记' : studySection(post) === 'work' ? '工作记录' : '学习手记', title: post.title, detail: post.content, words: [post.title, post.content, post.tag, date(post.createdAt)].join(' ') }));
   if (state.readingPlan?.book) {
     const plan = state.readingPlan;
     items.push({ page: 'study', id: 'reading-plan', category: '阅读计划', title: plan.book, detail: plan.goal || plan.note, words: [plan.book, plan.author, plan.goal, plan.note].join(' ') });
@@ -57,6 +57,10 @@ function focusHashTarget() {
   const id = new URLSearchParams(location.hash.split('?')[1] || '').get('item');
   if (id) requestAnimationFrame(() => {
     let target = document.getElementById(id);
+    if (route() === 'work' && state.posts.some(post => post.type === 'update' && `post-${post.id}` === id)) {
+      blogUpdatesModal();
+      target = document.getElementById(id);
+    }
     if (!target) target = openStudyArchivedPost(id);
     if (!target && typeof openActivitySearchTarget === 'function') target = openActivitySearchTarget(id);
     if (route() === 'study' && id.startsWith('read-')) {
@@ -106,7 +110,7 @@ async function load() {
     render();
   } catch (error) { app.innerHTML = `<div class="container empty"><span class="emoji">☁️</span>暂时无法加载小站：${esc(error.message)}</div>`; }
 }
-function postPage(post) { return post.type === 'article' ? 'articles' : post.type === 'study' ? studySection(post) === 'work' ? 'work' : 'study' : post.type; }
+function postPage(post) { return post.type === 'update' ? 'work' : post.type === 'article' ? 'articles' : post.type === 'study' ? studySection(post) === 'work' ? 'work' : 'study' : post.type; }
 function route() {
   const name = location.hash.replace('#', '').split('?')[0];
   const page = ['home','life','study','work','articles','about','talk','friends'].includes(name) ? name : ({ '/friends': 'friends', '/study': 'study', '/work': 'work', '/articles': 'articles' })[location.pathname] || 'home';
@@ -114,7 +118,7 @@ function route() {
     const id = new URLSearchParams(location.hash.split('?')[1] || '').get('item');
     if (id === 'study-work') return 'work';
     if (id === 'study-learning') return 'study';
-    const post = state.posts.find(item => `post-${item.id}` === id && ['study', 'article'].includes(item.type));
+    const post = state.posts.find(item => `post-${item.id}` === id && ['study', 'article', 'update'].includes(item.type));
     if (post) return postPage(post);
   }
   return page;
@@ -767,7 +771,15 @@ function studyPage() {
   return `<div class="container page page-study">${pageHead('LEARNING NOTES', '学习手记 📖', '把读到的、想到的，慢慢收进日子里。')}${growthPageNav('study')}${studyLane('learning', '学习内容', 'LEARNING', '✏️', '一点点积累，慢慢长成喜欢的样子。')}${readingPlanCard()}${readingHistoryView()}${bottomSearch()}</div>`;
 }
 function workPage() {
-  return `<div class="container page page-work">${pageHead('WORK JOURNAL', '工作记录 📎', '让正在做的事，一点点有了形状。')}${growthPageNav('work')}${typeof renderProjects === 'function' ? renderProjects() : ''}${studyLane('work', '工作内容', 'WORK', '📎', '把每个认真完成的瞬间，留在这里。')}${bottomSearch()}</div>`;
+  return `<div class="container page page-work">${pageHead('WORK JOURNAL', '工作记录 📎', '让正在做的事，一点点有了形状。')}${growthPageNav('work')}${typeof renderProjects === 'function' ? renderProjects() : ''}${studyLane('work', '工作内容', 'WORK', '📎', '把每个认真完成的瞬间，留在这里。')}${bottomSearch()}<footer class="work-updates-footer"><button type="button" class="work-updates-link" data-action="show-updates" aria-haspopup="dialog">更新日志</button><hr></footer></div>`;
+}
+function blogUpdates() {
+  return state.posts.filter(post => post.type === 'update').slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt) || String(a.id).localeCompare(String(b.id)));
+}
+function blogUpdatesModal() {
+  const updates = blogUpdates();
+  openModal(`<section class="blog-updates" aria-labelledby="blog-updates-title"><header class="blog-updates-heading"><div><span class="journal-kicker">CHANGELOG</span><h2 id="blog-updates-title">更新日志</h2><p>博客的新功能与修复记录 · 最近更新在前</p></div>${state.admin ? '<button type="button" class="quiet-button" data-action="new-post" data-type="update">＋ 写更新</button>' : ''}</header>${updates.length ? `<ol class="blog-updates-list">${updates.map(post => `<li><article id="post-${esc(post.id)}"><time datetime="${esc(post.createdAt)}">${date(post.createdAt)}</time>${post.tag ? `<span class="blog-update-tag">${esc(post.tag)}</span>` : ''}<h3>${esc(post.title)}</h3><p class="blog-update-content">${esc(post.content)}</p>${postImageGallery(post.images)}${state.admin ? `<div class="admin-actions"><button type="button" class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button type="button" class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></div>` : ''}</article></li>`).join('')}</ol>` : '<p class="blog-updates-empty">还没有更新记录。</p>'}</section>`);
+  modal.setAttribute('aria-labelledby', 'blog-updates-title');
 }
 function todaysQuote() {
   const day = Math.floor(Date.parse(localDay()) / 86400000);
@@ -968,6 +980,10 @@ function passwordModal() {
   document.querySelector('#current-password')?.focus();
 }
 function postModal(type, post = null, section = 'learning') {
+  if (type === 'update') {
+    openModal(`<h2>${post ? '编辑更新日志' : '写一条更新日志'}</h2><p>${post ? '保留原来的发布日期。' : '记录这次新增的功能或修复的问题。'}</p><form id="post-form" ${post ? `data-id="${esc(post.id)}"` : ''}><input type="hidden" name="type" value="update"><label for="post-title">标题</label><input class="field" id="post-title" name="title" maxlength="100" required value="${esc(post?.title)}"><label for="post-tag">分类</label><input class="field" id="post-tag" name="tag" maxlength="30" value="${esc(post?.tag)}" placeholder="功能更新 / 交互优化 / Debug"><label for="post-content">更新内容</label><textarea class="field" id="post-content" name="content" maxlength="5000" required>${esc(post?.content)}</textarea>${postImageEditor(post?.images)}<button class="btn" type="submit">${post ? '保存修改' : '发布更新'}</button></form>`);
+    return;
+  }
   const selected = post ? studySection(post) : section;
   openModal(`<h2>${type === 'article' ? (post ? '编辑个人文章' : '写一篇个人文章') : post ? '编辑动态 ✎' : '写一篇新动态 ✎'}</h2><p>${post ? '修改后会保留原来的发表日期。' : '把今天想留住的事情写下来吧。'}</p><form id="post-form" ${post ? `data-id="${esc(post.id)}"` : ''}><input type="hidden" name="type" value="${type}">${type === 'study' ? `<label for="post-section">内容分类</label><select class="field" id="post-section" name="section"><option value="learning" ${selected === 'learning' ? 'selected' : ''}>学习内容</option><option value="work" ${selected === 'work' ? 'selected' : ''}>工作内容</option></select>` : ''}<label for="post-title">标题</label><input class="field" id="post-title" name="title" maxlength="100" required value="${esc(post?.title)}" placeholder="今天想写什么？"><label for="post-tag">小标签</label><input class="field" id="post-tag" name="tag" maxlength="30" value="${esc(post?.tag)}" placeholder="比如：${type === 'article' ? '随笔 / 想法 / 感悟' : type === 'study' ? '学习笔记 / 工作记录' : '日常碎片'}"><label for="post-content">正文</label><textarea class="field" id="post-content" name="content" maxlength="5000" required placeholder="慢慢写，别着急...">${esc(post?.content)}</textarea>${postImageEditor(post?.images)}<button class="btn" type="submit">${post ? '保存修改' : type === 'article' ? '发表文章' : '发布这篇动态 🥔'}</button></form>`);
 }
@@ -1278,6 +1294,7 @@ app.addEventListener('click', event => {
 document.addEventListener('click', async event => {
   const button = event.target.closest('[data-action]'); if (!button) return;
   const { action, id, type, section, date: moodDate } = button.dataset;
+  if (action === 'show-updates') { blogUpdatesModal(); return; }
   try {
     if (action === 'open-topic') {
       const sourceRect = button.getBoundingClientRect();
@@ -1320,7 +1337,7 @@ document.addEventListener('click', async event => {
     if (action === 'edit-reading-log' && state.admin) readingLogEditor(id, button.dataset.log);
     if (action === 'change-password') passwordModal();
     if (action === 'logout') { await request('/api/logout', { method: 'POST' }); state.admin = false; state.friends = await request('/api/friends'); await requestModalClose(); render(); toast('已退出登录'); }
-    if (action === 'delete-post' && confirm('确定删除这篇内容吗？')) { await request(`/api/posts/${id}`, { method: 'DELETE' }); state.posts = state.posts.filter(p => p.id !== id); if (route() === 'articles' && location.hash.includes('?')) location.hash = '#articles'; else render(); toast('内容已删除'); }
+    if (action === 'delete-post' && confirm('确定删除这篇内容吗？')) { const isUpdate = state.posts.some(post => post.id === id && post.type === 'update'); await request(`/api/posts/${id}`, { method: 'DELETE' }); state.posts = state.posts.filter(p => p.id !== id); if (isUpdate) { await requestModalClose(); render(); blogUpdatesModal(); } else if (route() === 'articles' && location.hash.includes('?')) location.hash = '#articles'; else render(); toast('内容已删除'); }
     if (action === 'delete-topic' && confirm('确定删除这条留言和所有回复吗？')) { await request(`/api/topics/${id}`, { method: 'DELETE' }); state.topics = state.topics.filter(t => t.id !== id); render(); toast('留言已删除'); }
   } catch (error) { toast(error.message); }
 });
@@ -1366,7 +1383,7 @@ document.addEventListener('submit', async event => {
       await request('/api/password', { method: 'PUT', body: JSON.stringify(values) });
       form.reset(); state.admin = false; state.friends = await request('/api/friends'); await requestModalClose(); render(); toast('密码已修改，请使用新密码重新登录');
     }
-    if (form.id === 'post-form') { const editing = Boolean(form.dataset.id), previousPage = route(); const post = await request(editing ? `/api/posts/${form.dataset.id}` : '/api/posts', { method: editing ? 'PUT' : 'POST', body: JSON.stringify(values) }); if (editing) state.posts = state.posts.map(item => item.id === post.id ? post : item); else state.posts.unshift(post); await requestModalClose(); if (['study', 'work', 'articles'].includes(previousPage) && postPage(post) !== previousPage) location.hash = `${postPage(post)}?item=${encodeURIComponent(`post-${post.id}`)}`; else render(); toast(editing ? '动态已更新' : '动态发布成功'); }
+    if (form.id === 'post-form') { const editing = Boolean(form.dataset.id), previousPage = route(); const post = await request(editing ? `/api/posts/${form.dataset.id}` : '/api/posts', { method: editing ? 'PUT' : 'POST', body: JSON.stringify(values) }); if (editing) state.posts = state.posts.map(item => item.id === post.id ? post : item); else state.posts.unshift(post); await requestModalClose(); if (['study', 'work', 'articles'].includes(previousPage) && postPage(post) !== previousPage) location.hash = `${postPage(post)}?item=${encodeURIComponent(`post-${post.id}`)}`; else render(); if (post.type === 'update') blogUpdatesModal(); toast(post.type === 'update' ? (editing ? '更新日志已修改' : '更新日志已发布') : editing ? '动态已更新' : '动态发布成功'); }
     if (form.id === 'profile-form') {
       values.hobbyDetails = [...form.querySelectorAll('.hobby-row')].map(row => ({
         name: row.querySelector('.hobby-name').value.trim(),

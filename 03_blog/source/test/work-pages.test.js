@@ -112,3 +112,23 @@ test('article direct paths, home entry, fan navigation and editor expose the cor
   assert.match(node.innerHTML, /发表文章|name="type" value="article"/);
   assert.doesNotMatch(node.innerHTML, /id="post-section"/);
 });
+
+test('work footer opens a separate newest-first changelog without mixing updates into work records', async () => {
+  const { run, node, context } = await setup();
+  run(`state.posts.push({id:'old-update',type:'update',title:'历史功能',content:'原来的内容',tag:'功能',createdAt:'2026-10-18T17:05:00Z'},{id:'new-update',type:'update',title:'修复<script>',content:'正文 <img src=x>\\n保留换行',tag:'debug',createdAt:'2026-10-22T02:00:00Z'});openModal=html=>{modalContent.innerHTML=html};`);
+  const work = run('workPage()');
+  assert.match(work, /class="work-updates-footer"><button[^>]*data-action="show-updates"[^>]*>更新日志<\/button><hr><\/footer><\/div>$/);
+  assert.doesNotMatch(work, /历史功能|修复&lt;script&gt;/);
+  assert.match(work, /工作独有词|往日归档/);
+  assert.equal(run("postPage(state.posts.find(p=>p.id==='new-update'))"), 'work');
+  assert.match(run("searchResults('历史功能')"), /更新日志|#work\?item=post-old-update/);
+  run('blogUpdatesModal()');
+  assert.ok(node.innerHTML.indexOf('post-new-update') < node.innerHTML.indexOf('post-old-update'));
+  assert.match(node.innerHTML, /修复&lt;script&gt;|正文 &lt;img src=x&gt;/);
+  assert.doesNotMatch(node.innerHTML, /<script>|<img src=x>|data-action="edit-post"|data-action="new-post"/);
+  run('state.admin=true;blogUpdatesModal()');
+  assert.match(node.innerHTML, /data-type="update"|data-action="edit-post"|data-action="delete-post"/);
+  run("postModal('update',state.posts.find(p=>p.id==='old-update'))");
+  assert.match(node.innerHTML, /编辑更新日志|name="type" value="update"|保留原来的发布日期/);
+  context.location.hash='#study?item=post-old-update';assert.equal(run('route()'),'work');
+});
