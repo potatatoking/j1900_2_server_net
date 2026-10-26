@@ -13,6 +13,7 @@
 | [antigravity-container](source/antigravity-container/README.md) | Antigravity CLI 容器 |
 | [deepseek-harness-container](source/deepseek-harness-container/README.md) | Harness 与主备密钥路由 |
 | [zcode-container](source/zcode-container/README.md) | ZCode 网页及命令行环境 |
+| [docker-proxy-guard](source/docker-proxy-guard/README.md) | 指定容器透明代理与断路保护 |
 | [sakura-frp](source/sakura-frp/README.md) | OpenWrt FRP 安装与检查模板 |
 
 本部分为个人博客与命令行工具提供运行环境，配置与业务数据分别保存。

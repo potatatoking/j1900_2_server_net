@@ -15,8 +15,8 @@ test('activity HTTP API serves only cached safe data and restricts configuration
   await fs.writeFile(path.join(dir, 'package.json'), '{"type":"module"}');
   await fs.mkdir(path.join(dir, 'public'));
   await fs.mkdir(path.join(dir, 'data'));
-  await fs.writeFile(path.join(dir, 'data/activity-settings.json'), JSON.stringify({ github: { enabled: false, username: 'potatatoking', token: 'private-test-token' }, luogu: { enabled: false, uid: '2359012', cookie: 'private-test-cookie' } }));
-  await fs.writeFile(path.join(dir, 'data/activity-public.json'), JSON.stringify({ github: { status: 'ok', username: 'potatatoking', updatedAt: '2026-10-19T00:00:00Z', daily: [{ date: '2026-10-19', public: 2, private: 3 }], repository: 'private-test-repository', token: 'private-test-token' } }));
+  await fs.writeFile(path.join(dir, 'data/activity-settings.json'), JSON.stringify({ github: { enabled: false, username: 'example-user', token: 'private-test-token' }, luogu: { enabled: false, uid: '1234567', cookie: 'private-test-cookie' } }));
+  await fs.writeFile(path.join(dir, 'data/activity-public.json'), JSON.stringify({ github: { status: 'ok', username: 'example-user', updatedAt: '2026-10-19T00:00:00Z', daily: [{ date: '2026-10-19', public: 2, private: 3 }], repository: 'private-test-repository', token: 'private-test-token' } }));
   const socket = net.createServer();
   await new Promise(resolve => socket.listen(0, '127.0.0.1', resolve));
   const port = socket.address().port;

@@ -50,11 +50,11 @@ test('public friend cards shuffle while pending reviews retain their order and s
 });
 
 test('the supplied exchange profile copies exactly and remains selectable without clipboard support', async () => {
-  const expected = '- name: 土豆的记事簿\n  link: https://20080618.xyz/\n  avatar: https://20080618.xyz/assets/uploads/a0fe7f5d-a4e6-4176-8cd3-97a2a808899c.webp\n  descr: 一颗与世无争的小土豆';
+  const expected = '- name: 个人记事簿\n  link: https://blog.example.test/\n  avatar: https://blog.example.test/assets/avatar.svg\n  descr: 记录生活与学习';
   const enabled = await setup();
   assert.equal(enabled.run('ownFriendYaml()'), expected);
   const html = enabled.run('friendsPage()');
-  assert.match(html, /https:\/\/20080618.xyz\/assets\/uploads\/a0fe7f5d-a4e6-4176-8cd3-97a2a808899c.webp/);
+  assert.match(html, /https:\/\/blog\.example\.test\/assets\/avatar\.svg/);
   assert.doesNotMatch(html, /staging.invalid/);
   const event = { target: { closest: () => ({ dataset: { action: 'copy-friend-profile' } }) } };
   await enabled.handlers.click(event);

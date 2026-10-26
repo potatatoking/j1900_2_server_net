@@ -1,4 +1,4 @@
-# 土豆的记事簿 · 个人博客
+# 个人记事簿 · 个人博客
 
 记录生活、学习、工作与个人想法的博客，提供独立管理后台。本目录属于[总项目的第三部分](../README.md)，在总仓库 `main` 分支统一维护；原 `blog:officaluse1.1` 的源码与提交历史已一并导入。
 
@@ -13,7 +13,7 @@
 
 ## 快速开始
 
-需要 Node.js 20+，当前项目无需安装 npm 依赖。在本源码目录执行以下命令，或配置好同目录 `.env` 后从总项目根目录执行 `npm run start:blog`：
+需要 Node.js 22+，当前项目无需安装 npm 依赖。在本源码目录执行以下命令，或配置好同目录 `.env` 后从总项目根目录执行 `npm run start:blog`：
 
 ```sh
 cp .env.example .env
@@ -38,7 +38,7 @@ npm start
 
 ## 部署与活动同步
 
-可直接运行 Node 服务，或使用[综合项目中的通用 Docker 模板](https://github.com/potatatoking/j1900_2_server_net/tree/main/03_blog/deployment)。正式访问应配置 HTTPS；仅在受信任反向代理后按实际情况设置安全 Cookie 与代理选项，不照搬示例网络地址。
+可直接运行 Node 服务，或使用[综合项目中的通用 Docker 模板](../deployment/README.md)。正式访问应配置 HTTPS；仅在受信任反向代理后按实际情况设置安全 Cookie 与代理选项，不照搬示例网络地址。
 
 活动同步配置结构见 `activity-settings.example.json`，实际文件位于 `data/activity-settings.json`。GitHub 只读令牌、洛谷登录凭据只在服务器私有配置中填写；页面只公开允许展示的聚合数据。同步失败保留旧记录，凭据过期后需重新授权。
 

@@ -1,0 +1,13 @@
+[Unit]
+Description=Fail-closed egress for selected Docker applications
+Wants=network-online.target
+After=network-online.target
+Before=docker.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/nft -f /etc/docker-proxy-guard/egress.nft
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

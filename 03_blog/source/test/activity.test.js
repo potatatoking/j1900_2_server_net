@@ -7,21 +7,21 @@ import { activityDay, blankActivity, collectGithub, collectLuogu, normalizeLuogu
 
 test('GitHub counts all branches once per repository, separates visibility and publishes no private metadata', async () => {
   const sha = n => String(n).padStart(40, 'a');
-  const own = (n, timestamp = '2026-10-18T17:00:00Z') => ({ sha: sha(n), author: { login: 'potatatoking' }, commit: { author: { date: timestamp }, message: 'do not publish this private message' } });
-  const repository = (id, name, isPrivate) => ({ id, name, private: isPrivate, owner: { login: 'potatatoking' } });
+  const own = (n, timestamp = '2026-10-18T17:00:00Z') => ({ sha: sha(n), author: { login: 'example-user' }, commit: { author: { date: timestamp }, message: 'do not publish this private message' } });
+  const repository = (id, name, isPrivate) => ({ id, name, private: isPrivate, owner: { login: 'example-user' } });
   const seenHeaders = [];
   const fetchImpl = async (url, options) => {
     seenHeaders.push(options.headers);
     const u = new URL(url), p = u.pathname;
     let body;
-    if (p === '/user') body = { login: 'potatatoking' };
+    if (p === '/user') body = { login: 'example-user' };
     else if (p === '/user/repos') body = [repository(1, 'public-repo', false), repository(2, 'private-secret-name', true)];
     else if (p.endsWith('/branches')) body = [{ name: 'main' }, { name: 'feature' }];
     else if (p.includes('/public-repo/commits')) body = u.searchParams.get('sha') === 'main' ? [own(1)] : [own(1), own(2, '2026-10-18T01:00:00Z')];
     else body = [own(3), { ...own(4), author: { login: 'other-person' } }, { ...own(5), author: null }];
     return new Response(JSON.stringify(body), { status: 200 });
   };
-  const result = await collectGithub({ username: 'potatatoking', token: 'secret-token', fetchImpl, now: new Date('2026-10-19T00:00:00Z') });
+  const result = await collectGithub({ username: 'example-user', token: 'secret-token', fetchImpl, now: new Date('2026-10-19T00:00:00Z') });
   assert.deepEqual(result.totals, { public: 2, private: 1, total: 3 });
   assert.deepEqual(result.unattributed, { public: 0, private: 1 });
   assert.deepEqual(result.daily, [{ date: '2026-10-18', public: 1, private: 0, total: 1 }, { date: '2026-10-19', public: 1, private: 1, total: 2 }]);
@@ -30,9 +30,9 @@ test('GitHub counts all branches once per repository, separates visibility and p
 });
 
 test('GitHub rejects mismatched credentials and does not silently turn upstream errors into zero totals', async () => {
-  await assert.rejects(collectGithub({ username: 'potatatoking' }), /只读凭据/);
-  await assert.rejects(collectGithub({ username: 'potatatoking', token: 'secret', fetchImpl: async () => new Response('{"login":"different"}') }), /不匹配/);
-  await assert.rejects(collectGithub({ username: 'potatatoking', token: 'secret', fetchImpl: async () => new Response('private-secret-name', { status: 403 }) }), error => /权限不足/.test(error.message) && !error.message.includes('private-secret'));
+  await assert.rejects(collectGithub({ username: 'example-user' }), /只读凭据/);
+  await assert.rejects(collectGithub({ username: 'example-user', token: 'secret', fetchImpl: async () => new Response('{"login":"different"}') }), /不匹配/);
+  await assert.rejects(collectGithub({ username: 'example-user', token: 'secret', fetchImpl: async () => new Response('private-secret-name', { status: 403 }) }), error => /权限不足/.test(error.message) && !error.message.includes('private-secret'));
 });
 
 test('Luogu accepted records deduplicate problems by earliest readable day and preserve unknown dates', () => {
@@ -67,7 +67,7 @@ test('Luogu collector reads all accepted pages and never requests submission sou
 
 test('public serialization whitelists aggregate fields and drops credentials, repository names and messages', () => {
   const input = blankActivity();
-  Object.assign(input.github, { token: 'secret-token', repository: 'private-secret-repository', message: 'private-message', username: 'potatatoking', daily: [{ date: '2026-10-18', public: 2, private: 3 }], status: 'ok' });
+  Object.assign(input.github, { token: 'secret-token', repository: 'private-secret-repository', message: 'private-message', username: 'example-user', daily: [{ date: '2026-10-18', public: 2, private: 3 }], status: 'ok' });
   input.luogu.cookie = 'secret-cookie';
   const safe = sanitizeActivity(input), serialized = JSON.stringify(safe);
   assert.doesNotMatch(serialized, /secret|private-message|token|cookie|repository/);
@@ -75,9 +75,9 @@ test('public serialization whitelists aggregate fields and drops credentials, re
 });
 
 test('current Luogu content-only schema and HTML context preserve actual problem names and dates', async () => {
-  const result = await collectLuogu({ uid: 2359012, fetchImpl: async (url, options) => {
+  const result = await collectLuogu({ uid: 1234567, fetchImpl: async (url, options) => {
     assert.equal(options.headers['x-lentille-request'], 'content-only');
-    const data = url.includes('/user/') ? { passed: [{ pid: 'P1914', name: '小书童——凯撒密码' }] } : { records: { count: 1, result: [{ id: 304123876, status: 12, user: { uid: 2359012 }, problem: { pid: 'P1914', name: '小书童——凯撒密码' }, submitTime: 1792382019 }] } };
+    const data = url.includes('/user/') ? { passed: [{ pid: 'P1914', name: '小书童——凯撒密码' }] } : { records: { count: 1, result: [{ id: 304123876, status: 12, user: { uid: 1234567 }, problem: { pid: 'P1914', name: '小书童——凯撒密码' }, submitTime: 1792382019 }] } };
     return new Response(`<html><script id="lentille-context" type="application/json">${JSON.stringify({ template: 'record.list', data })}</script></html>`);
   } });
   assert.equal(result.solved[0].title, '小书童——凯撒密码');
@@ -90,9 +90,9 @@ test('concurrent activity refreshes coalesce and a failed upstream preserves the
   const dir = await fs.mkdtemp(path.join(os.tmpdir(), 'blog-activity-store-'));
   t.after(() => fs.rm(dir, { recursive: true, force: true }));
   const initial = blankActivity();
-  Object.assign(initial.github, { status: 'ok', username: 'potatatoking', updatedAt: '2026-10-18T00:00:00Z', daily: [{ date: '2026-10-18', public: 0, private: 8, total: 8 }] });
+  Object.assign(initial.github, { status: 'ok', username: 'example-user', updatedAt: '2026-10-18T00:00:00Z', daily: [{ date: '2026-10-18', public: 0, private: 8, total: 8 }] });
   await fs.writeFile(path.join(dir, 'activity-public.json'), JSON.stringify(initial));
-  await fs.writeFile(path.join(dir, 'activity-settings.json'), JSON.stringify({ github: { enabled: true, username: 'potatatoking', includePrivate: true, token: 'test-secret-token' } }));
+  await fs.writeFile(path.join(dir, 'activity-settings.json'), JSON.stringify({ github: { enabled: true, username: 'example-user', includePrivate: true, token: 'test-secret-token' } }));
   let calls = 0, rejectRequest;
   const store = await createActivityStore({ dataDir: dir, intervalMs: 0, collectGithubImpl: async () => { calls++; await new Promise((resolve, reject) => { rejectRequest = reject; }); } });
   t.after(() => store.close());

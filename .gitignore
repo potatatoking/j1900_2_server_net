@@ -57,3 +57,12 @@ parameters.local.json
 # Concise project maintenance documents.
 !/CHANGELOG.md
 /PROMPT.md
+
+# Private deployment and runtime metadata
+/private/
+*.local.json
+*.local.env
+*.credentials.txt
+**/*.sqlite
+**/*.sqlite-wal
+**/*.sqlite-shm

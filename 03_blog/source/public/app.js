@@ -129,7 +129,7 @@ function render() {
   const page = route();
   document.body.classList.toggle('is-entry', page === 'home');
   document.body.dataset.page = page;
-  const siteName = '土豆的记事簿';
+  const siteName = '个人记事簿';
   document.querySelector('#brand-name').textContent = siteName;
   document.querySelector('#footer-brand').textContent = `🥔 ${siteName}`;
   const accountButton = document.querySelector('#login-button');
@@ -137,7 +137,7 @@ function render() {
   if (adminMode && !state.admin) {
     document.body.classList.remove('is-entry');
     app.innerHTML = `<section class="admin-login modal"><div class="eyebrow">PRIVATE NOTEBOOK</div><h1>站长登录</h1><p>登录后管理动态、心情、资料和留言。</p>${loginForm()}</section>`;
-    document.title = '站长登录 | 土豆的记事簿';
+    document.title = '站长登录 | 个人记事簿';
     return;
   }
   app.innerHTML = ({ home, life: () => postsPage('life'), study: () => postsPage('study'), work: workPage, articles: articlesPage, about, talk, friends: friendsPage })[page]();
@@ -259,10 +259,10 @@ function setHomeSearch(open) {
   (open ? search.querySelector('#site-search') : toggle).focus({ preventScroll: true });
 }
 const ownFriendProfile = Object.freeze({
-  name: '土豆的记事簿',
-  link: 'https://20080618.xyz/',
-  avatar: 'https://20080618.xyz/assets/uploads/a0fe7f5d-a4e6-4176-8cd3-97a2a808899c.webp',
-  descr: '一颗与世无争的小土豆'
+  name: '个人记事簿',
+  link: 'https://blog.example.test/',
+  avatar: 'https://blog.example.test/assets/avatar.svg',
+  descr: '记录生活与学习'
 });
 function ownFriendYaml() {
   return `- name: ${ownFriendProfile.name}\n  link: ${ownFriendProfile.link}\n  avatar: ${ownFriendProfile.avatar}\n  descr: ${ownFriendProfile.descr}`;
@@ -281,7 +281,7 @@ function friendCard(friend, review = false) {
 function friendsPage() {
   const published = shuffleFriends(state.friends.filter(item => item.status === 'published'));
   const pending = state.friends.filter(item => item.status === 'pending');
-  return `<div class="container page-friends">${pageHead('FRIENDS & LITTLE WORLDS', '友链花园', '把喜欢的小站种在这里，让有趣的灵魂沿着链接相遇。', '<button class="btn friend-apply" type="button" data-action="new-friend">✧ 留下你的小站</button>')}<div class="friends-intro"><span>一条链接，一次新的相遇。</span><div class="friends-order"><small>${published.length} 个小世界，随机相遇。</small><button class="quiet-button" type="button" data-action="shuffle-friends" ${published.length < 2 ? 'disabled' : ''}>换个顺序 ↻</button></div></div><section class="friends-grid" aria-label="已收录的友链">${published.length ? published.map(item => friendCard(item)).join('') : '<div class="friends-empty"><span aria-hidden="true">✳</span><h2>花园正在等第一位朋友</h2><p>带着你的小站来坐坐，写下我们相遇的第一笔。</p><button class="quiet-button" data-action="new-friend">申请成为友链 ↗</button></div>'}</section>${state.admin ? `<section class="friends-review"><h2>待审核 <small>${pending.length}</small></h2><p>审核通过后，站点才会出现在公开花园中。已发布友链可在编辑中下架。</p><div class="friends-grid">${pending.length ? pending.map(item => friendCard(item, true)).join('') : '<p>目前没有待审核的申请。</p>'}</div></section>` : ''}<aside class="friends-note"><div><span class="journal-kicker">LET’S EXCHANGE A LINK</span><h2>也欢迎把土豆种进你的花园</h2><div class="own-friend-heading"><span class="friend-avatar"><img src="${esc(ownFriendProfile.avatar)}" alt="土豆的记事簿头像" loading="lazy" referrerpolicy="no-referrer" data-friend-avatar><span hidden>土</span></span><p>${esc(ownFriendProfile.name)}<br>${esc(ownFriendProfile.descr)}</p></div><a class="friend-site-url" href="${esc(ownFriendProfile.link)}" target="_blank" rel="noopener noreferrer">${esc(ownFriendProfile.link)}</a><pre class="friend-exchange-code" id="own-friend-yaml" tabindex="0" aria-label="本站友链资料 YAML">${esc(ownFriendYaml())}</pre><button class="quiet-button" type="button" data-action="copy-friend-profile">复制友链资料</button></div><div><h3>申请前的小约定</h3><p>请填写能正常访问的个人站点、简短介绍，并填写图片网址或上传一张图片（选填）。友善交流，认真记录；访客申请经站长审核后展示。</p><button class="quiet-button" data-action="new-friend">${state.admin ? '管理员也可以直接提交 ↗' : '留下你的小站 ↗'}</button></div></aside>${searchPanel()}</div>`;
+  return `<div class="container page-friends">${pageHead('FRIENDS & LITTLE WORLDS', '友链花园', '把喜欢的小站种在这里，让有趣的灵魂沿着链接相遇。', '<button class="btn friend-apply" type="button" data-action="new-friend">✧ 留下你的小站</button>')}<div class="friends-intro"><span>一条链接，一次新的相遇。</span><div class="friends-order"><small>${published.length} 个小世界，随机相遇。</small><button class="quiet-button" type="button" data-action="shuffle-friends" ${published.length < 2 ? 'disabled' : ''}>换个顺序 ↻</button></div></div><section class="friends-grid" aria-label="已收录的友链">${published.length ? published.map(item => friendCard(item)).join('') : '<div class="friends-empty"><span aria-hidden="true">✳</span><h2>花园正在等第一位朋友</h2><p>带着你的小站来坐坐，写下我们相遇的第一笔。</p><button class="quiet-button" data-action="new-friend">申请成为友链 ↗</button></div>'}</section>${state.admin ? `<section class="friends-review"><h2>待审核 <small>${pending.length}</small></h2><p>审核通过后，站点才会出现在公开花园中。已发布友链可在编辑中下架。</p><div class="friends-grid">${pending.length ? pending.map(item => friendCard(item, true)).join('') : '<p>目前没有待审核的申请。</p>'}</div></section>` : ''}<aside class="friends-note"><div><span class="journal-kicker">LET’S EXCHANGE A LINK</span><h2>也欢迎把土豆种进你的花园</h2><div class="own-friend-heading"><span class="friend-avatar"><img src="${esc(ownFriendProfile.avatar)}" alt="个人记事簿头像" loading="lazy" referrerpolicy="no-referrer" data-friend-avatar><span hidden>土</span></span><p>${esc(ownFriendProfile.name)}<br>${esc(ownFriendProfile.descr)}</p></div><a class="friend-site-url" href="${esc(ownFriendProfile.link)}" target="_blank" rel="noopener noreferrer">${esc(ownFriendProfile.link)}</a><pre class="friend-exchange-code" id="own-friend-yaml" tabindex="0" aria-label="本站友链资料 YAML">${esc(ownFriendYaml())}</pre><button class="quiet-button" type="button" data-action="copy-friend-profile">复制友链资料</button></div><div><h3>申请前的小约定</h3><p>请填写能正常访问的个人站点、简短介绍，并填写图片网址或上传一张图片（选填）。友善交流，认真记录；访客申请经站长审核后展示。</p><button class="quiet-button" data-action="new-friend">${state.admin ? '管理员也可以直接提交 ↗' : '留下你的小站 ↗'}</button></div></aside>${searchPanel()}</div>`;
 }
 function friendModal(friend = null) {
   const localImage = /^\/assets\/uploads\//.test(friend?.avatar || '');
@@ -455,7 +455,7 @@ function fanPreviewContent(page) {
   if (['life', 'study', 'work', 'articles'].includes(page.id)) snippets = state.posts.filter(post => postPage(post) === page.id).slice(0, 2).map(post => ({ title: post.title, text: post.content.slice(0, 100) }));
   else if (page.id === 'talk') snippets = state.topics.slice(0, 2).map(topic => ({ title: topic.title, text: topic.content.slice(0, 100) }));
   else if (page.id === 'about') snippets = [{ title: state.profile?.name || '土豆', text: state.profile?.bio || state.profile?.intro || '' }];
-  else snippets = [{ title: '土豆的记事簿', text: '生活、学习与小小心事。' }];
+  else snippets = [{ title: '个人记事簿', text: '生活、学习与小小心事。' }];
   return `<div class="fan-preview-copy"><span>${page.en}</span><h2>${page.title}</h2><p>${page.desc}</p><div class="fan-preview-stories">${snippets.map(item => `<article><h3>${esc(item.title)}</h3><p>${esc(item.text)}</p></article>`).join('')}</div><small>滑动选页 · 松开前往</small></div>`;
 }
 function selectFanPage(index, preview = true) {

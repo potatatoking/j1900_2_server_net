@@ -8,7 +8,7 @@ async function setup() {
   const context = vm.createContext({
     document: { addEventListener(name, callback) { handlers[name] = callback; } },
     state: { admin: false, activity: {
-      github: { status: 'ok', username: 'potatatoking', updatedAt: '2026-10-19T00:00:00Z', totals: { public: 2, private: 3, total: 5 }, unattributed: { public: 0, private: 1 }, daily: [{ date: '2024-02-29', public: 2, private: 3, total: 5 }], repository: 'private-secret-name', token: 'private-secret-token' },
+      github: { status: 'ok', username: 'example-user', updatedAt: '2026-10-19T00:00:00Z', totals: { public: 2, private: 3, total: 5 }, unattributed: { public: 0, private: 1 }, daily: [{ date: '2024-02-29', public: 2, private: 3, total: 5 }], repository: 'private-secret-name', token: 'private-secret-token' },
       luogu: { status: 'ok', uid: '123', updatedAt: '2026-10-19T00:00:00Z', totalSolved: 2, undatedCount: 1, daily: [{ date: '2024-02-29', count: 1 }], solved: [{ pid: 'P1001', title: '<script>alert(1)</script>', date: '2024-02-29', recordId: '1234' }, { pid: 'P1002', title: 'Unknown date', date: null }] }
     } }
   });

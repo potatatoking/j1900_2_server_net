@@ -162,7 +162,7 @@ export async function writeActivitySnapshot(dataDir, snapshot) {
 
 export async function createActivityStore({ dataDir, fetchImpl = fetch, intervalMs = 3600_000, collectGithubImpl = collectGithub, collectLuoguImpl = collectLuogu } = {}) {
   const settingsFile = path.join(dataDir, 'activity-settings.json');
-  let settings = { github: { enabled: false, username: 'potatatoking', includePrivate: true, token: '' }, luogu: { enabled: false, uid: '', cookie: '' } };
+  let settings = { github: { enabled: false, username: '', includePrivate: true, token: '' }, luogu: { enabled: false, uid: '', cookie: '' } };
   let value = blankActivity(), pending = null;
   try { settings = { ...settings, ...JSON.parse(await fs.readFile(settingsFile, 'utf8')) }; } catch (error) { if (error.code !== 'ENOENT') throw new Error('活动读取配置无效'); }
   try { value = sanitizeActivity(JSON.parse(await fs.readFile(path.join(dataDir, 'activity-public.json'), 'utf8'))); } catch (error) { if (error.code !== 'ENOENT') throw new Error('活动缓存文件无效'); }
