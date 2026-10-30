@@ -89,6 +89,8 @@ catch (error) {
   db = initialData;
   await fs.writeFile(dataFile, JSON.stringify(db, null, 2));
 }
+db.drafts ??= [];
+db.documents ??= [];
 db.moods ??= [];
 db.friends ??= [];
 db.projects ??= [];
@@ -181,6 +183,130 @@ async function body(req, maxLength = 20_000) {
 function requireAdmin(req, res) {
   if (isAdmin(req)) return true;
   json(res, 401, { error: '请先以站长身份登录' }); return false;
+}
+
+
+// Store structured document nodes, never executable HTML from an editor.
+async function writingFields(input, previous = {}) {
+  const type = ['study', 'life', 'article', 'update'].includes(input.type) ? input.type : null;
+  if (!type) throw new Error('内容分类无效');
+  const field = (name, max) => {
+    const value = String(input[name] ?? '');
+    if (value.length > max) throw new Error('内容超出长度限制');
+    return value.trim();
+  };
+  const allowed = new Set(['p','h2','h3','blockquote','ul','ol','li','strong','em','u','a','br','img']);
+  let count = 0, textLength = 0;
+  const imageUrls = new Set();
+  function node(value, depth = 0) {
+    if (!value || typeof value !== 'object' || depth > 30 || ++count > 15000) throw new Error('文档过于复杂');
+    if (value.type === 'text') {
+      if (typeof value.text !== 'string' || (textLength += value.text.length) > 100000) throw new Error('正文最多 10 万字');
+      return { type: 'text', text: value.text };
+    }
+    if (!allowed.has(value.type)) throw new Error('文档包含不支持的格式');
+    if (value.type === 'br') return { type: 'br' };
+    if (value.type === 'img') {
+      if (!/^\/assets\/uploads\/[\w-]+\.(png|jpg|webp)$/.test(value.src || '')) throw new Error('请先上传正文图片');
+      imageUrls.add(value.src);
+      return { type: 'img', src: value.src, alt: clean(value.alt, 200) };
+    }
+    if (!Array.isArray(value.children)) throw new Error('文档格式错误');
+    return { type: value.type, ...(value.type === 'a' ? { href: friendUrl(value.href) } : {}), children: value.children.map(child => node(child, depth + 1)) };
+  }
+  let document;
+  if (input.document != null) {
+    if (!Array.isArray(input.document)) throw new Error('文档格式错误');
+    document = input.document.map(value => node(value));
+    for (const url of imageUrls) await fs.access(path.join(publicDir, url));
+  }
+  function plain(nodes) { return nodes.map(n => n.type === 'text' ? n.text : n.type === 'img' ? '' : n.type === 'br' ? '\n' : plain(n.children || []) + (['p','h2','h3','li','blockquote'].includes(n.type) ? '\n' : '')).join(''); }
+  const attachments = input.attachments ?? previous.attachments ?? [];
+  if (!Array.isArray(attachments) || attachments.length > 10 || attachments.some(id => typeof id !== 'string' || !db.documents.some(d => d.id === id))) throw new Error('附件无效，最多添加 10 个文档');
+  return { type, title: field('title', 100), tag: field('tag', 30),
+    content: document ? plain(document).trim() : field('content', 100000),
+    ...(document ? { document } : {}),
+    images: await postImages(input.images ?? previous.images),
+    attachments: [...new Set(attachments)], sourceUrl: friendUrl(input.sourceUrl || '', true),
+    ...(type === 'study' ? { section: input.section === 'work' ? 'work' : 'learning' } : {}) };
+}
+function canPublish(value) {
+  return value.title && (value.content || value.sourceUrl || value.attachments.length || value.images.length || JSON.stringify(value.document || []).includes('"img"'));
+}
+async function commentFields(input) {
+  if (input.document == null && input.attachments == null && input.sourceUrl == null) {
+    if (Buffer.byteLength(JSON.stringify(input)) > 20000) throw new Error('内容太长了');
+    return {};
+  }
+  const value = await writingFields({...input, type:'article'});
+  if (value.content.length > 10000) throw new Error('留言正文最多 1 万字');
+  return {content:value.content, document:value.document, attachments:value.attachments, sourceUrl:value.sourceUrl};
+}
+async function writingApi(req, res, route) {
+  if (!['/api/documents','/api/writing/images'].includes(route) && !route.startsWith('/api/documents/') && !route.startsWith('/api/drafts')) return false;
+  if (!['GET','HEAD'].includes(req.method) && limited(req)) { json(res,429,{error:'操作太频繁，请稍后再试'}); return true; }
+  if (route === '/api/writing/images' && req.method === 'POST') {
+    const input = await body(req, 3000000);
+    json(res,201,{url:await storeImage(input.image)}); return true;
+  }
+  if (route === '/api/documents' && req.method === 'POST') {
+    const input = await body(req, 14000000);
+    const name = clean(input.name, 180).replace(/[\r\n\x00-\x1f]/g, '');
+    const ext = path.extname(name).toLowerCase();
+    const allowed = ['.pdf','.doc','.docx','.txt','.md','.odt'];
+    if (!allowed.includes(ext) || typeof input.data !== 'string' || !/^[A-Za-z0-9+/]+={0,2}$/.test(input.data)) throw new Error('支持 PDF、Word、TXT、Markdown 和 ODT 文档');
+    const bytes = Buffer.from(input.data, 'base64');
+    if (!bytes.length || bytes.length > 10000000) throw new Error('文档不能为空，且不能超过 10 MB');
+    if ((ext === '.pdf' && bytes.toString('ascii',0,5) !== '%PDF-') || (['.docx','.odt'].includes(ext) && !bytes.subarray(0,4).equals(Buffer.from([80,75,3,4]))) || (ext === '.doc' && !bytes.subarray(0,8).equals(Buffer.from([208,207,17,224,161,177,26,225])))) throw new Error('文档内容与扩展名不符');
+    const file = { id: crypto.randomUUID(), name, size: bytes.length, ext, createdAt: new Date().toISOString() };
+    const dir = path.join(dataDir, 'documents');
+    await fs.mkdir(dir, { recursive: true });
+    await fs.writeFile(path.join(dir, file.id + ext), bytes);
+    db.documents.push(file); await save(); json(res, 201, file); return true;
+  }
+  const fileId = route.match(/^\/api\/documents\/([\w-]+)$/)?.[1];
+  if (fileId && fileId !== 'metadata' && ['GET','HEAD'].includes(req.method)) {
+    const file = db.documents.find(d => d.id === fileId);
+    const published = [...db.posts,...db.topics,...db.topics.flatMap(t=>t.replies)].some(p => p.attachments?.includes(fileId));
+    if (!file || (!published && !isAdmin(req))) { json(res,404,{ error: '文档不存在' }); return true; }
+    const bytes = await fs.readFile(path.join(dataDir, 'documents', file.id + file.ext));
+    res.writeHead(200, { 'Content-Type': 'application/octet-stream', 'Content-Length': bytes.length, 'Content-Disposition': `attachment; filename="document${file.ext}"; filename*=UTF-8''${encodeURIComponent(file.name)}`, 'X-Content-Type-Options':'nosniff', 'Cache-Control':'private, no-store' });
+    res.end(req.method === 'HEAD' ? undefined : bytes); return true;
+  }
+  if (route === '/api/documents/metadata' && req.method === 'GET') {
+    const visible = new Set([...db.posts,...db.topics,...db.topics.flatMap(t=>t.replies)].flatMap(p => p.attachments || []));
+    json(res,200, db.documents.filter(d => isAdmin(req) || visible.has(d.id))); return true;
+  }
+  if (!route.startsWith('/api/drafts')) return false;
+  if (!requireAdmin(req, res)) return true;
+  if (route === '/api/drafts' && req.method === 'GET') { json(res,200,db.drafts.slice().sort((a,b) => b.updatedAt.localeCompare(a.updatedAt))); return true; }
+  const match = route.match(/^\/api\/drafts\/([\w-]+)(\/publish)?$/);
+  if (!match) { json(res,404,{ error:'草稿不存在' }); return true; }
+  const id = match[1], previous = db.drafts.find(d => d.id === id);
+  if (req.method === 'PUT' && !match[2]) {
+    const input = await body(req, 2000000);
+    const fields = await writingFields(input, previous);
+    const postId = previous?.postId || (typeof input.postId === 'string' ? input.postId : undefined);
+    if (postId && !db.posts.some(p => p.id === postId)) throw new Error('原文章已被删除');
+    if (input.revision !== db.drafts.find(d=>d.id===id)?.revision) { json(res,409,{ error:'草稿已在其他窗口更新，请重新打开后编辑' }); return true; }
+    const draft = { ...fields, id, ...(postId ? {postId} : {}), revision:(previous?.revision || 0)+1, createdAt: previous?.createdAt || new Date().toISOString(), updatedAt:new Date().toISOString() };
+    db.drafts = db.drafts.filter(d => d.id !== id).concat(draft);
+    await save(); json(res,200,draft); return true;
+  }
+  if (!previous) { json(res,404,{ error:'草稿不存在' }); return true; }
+  if (req.method === 'POST' && match[2]) {
+    const input = await body(req);
+    if (input.revision !== previous.revision) { json(res,409,{error:'草稿版本已变化，请重新打开后发布'}); return true; }
+    if (!canPublish(previous)) throw new Error('请填写标题，以及正文、文档或关联链接');
+    let post = previous.postId ? db.posts.find(p => p.id === previous.postId) : undefined;
+    if (previous.postId && !post) throw new Error('原文章已被删除');
+    const {id: draftId, postId, revision, createdAt, updatedAt, ...fields} = previous;
+    if (post) { Object.assign(post, fields, {updatedAt:new Date().toISOString()}); if (fields.type !== 'study') delete post.section; }
+    else { post = {...fields, id:crypto.randomUUID(), createdAt:new Date().toISOString()}; db.posts.push(post); }
+    db.drafts = db.drafts.filter(d => d.id !== draftId); await save(); json(res,200,post); return true;
+  }
+  if (req.method === 'DELETE' && !match[2]) { db.drafts = db.drafts.filter(d => d.id !== id); await save(); json(res,200,{ok:true}); return true; }
+  json(res,405,{error:'请求方式不支持'}); return true;
 }
 
 async function storeImage(image) {
@@ -521,10 +647,11 @@ async function api(req, res, url) {
   if (route === '/api/topics') {
     if (req.method === 'GET') return json(res, 200, db.topics.slice().sort((a,b) => b.createdAt.localeCompare(a.createdAt)));
     if (req.method === 'POST') {
-      const input = await body(req);
+      const input = await body(req, 2000000);
+      const rich = await commentFields(input);
       const author = clean(input.author, 30), title = clean(input.title, 100), content = clean(input.content, 2000);
-      if (!author || !title || !content) return json(res, 400, { error: '请填写昵称、标题和内容' });
-      const topic = { id: crypto.randomUUID(), author, title, content, createdAt: new Date().toISOString(), replies: [] };
+      if (!author || !title || (!content && !canPublish({...rich,title,images:[],attachments:rich.attachments || []}))) return json(res, 400, { error: '请填写昵称、标题和内容' });
+      const topic = { id: crypto.randomUUID(), author, title, content, ...rich, createdAt: new Date().toISOString(), replies: [] };
       db.topics.push(topic); await save(); return json(res, 201, topic);
     }
   }
@@ -534,10 +661,11 @@ async function api(req, res, url) {
     const topic = db.topics.find(t => t.id === topicId);
     if (!topic) return json(res, 404, { error: '留言不存在' });
     if (req.method === 'PUT') {
-      const input = await body(req);
+      const input = await body(req, 2000000);
+      const rich = await commentFields(input);
       const author = clean(input.author, 30), title = clean(input.title, 100), content = clean(input.content, 2000);
-      if (!author || !title || !content) return json(res, 400, { error: '请填写昵称、标题和内容' });
-      Object.assign(topic, { author, title, content, updatedAt: new Date().toISOString() });
+      if (!author || !title || (!content && !canPublish({...rich,title,images:[],attachments:rich.attachments || []}))) return json(res, 400, { error: '请填写昵称、标题和内容' });
+      Object.assign(topic, { author, title, content, ...rich, updatedAt: new Date().toISOString() });
       await save(); return json(res, 200, topic);
     }
     db.topics = db.topics.filter(t => t.id !== topicId);
@@ -547,9 +675,10 @@ async function api(req, res, url) {
   if (replyId && req.method === 'POST') {
     const topic = db.topics.find(t => t.id === replyId);
     if (!topic) return json(res, 404, { error: '话题不存在' });
-    const input = await body(req), author = clean(input.author, 30), content = clean(input.content, 1000);
-    if (!author || !content) return json(res, 400, { error: '请填写昵称和回复' });
-    const reply = { id: crypto.randomUUID(), author, content, createdAt: new Date().toISOString() };
+    const input = await body(req, 2000000), author = clean(input.author, 30), content = clean(input.content, 1000);
+    const rich = await commentFields(input);
+    if (!author || (!content && !canPublish({...rich,title:'留言',images:[],attachments:rich.attachments || []}))) return json(res, 400, { error: '请填写昵称和回复' });
+    const reply = { id: crypto.randomUUID(), author, content, ...rich, createdAt: new Date().toISOString() };
     topic.replies.push(reply); await save(); return json(res, 201, reply);
   }
   return json(res, 404, { error: '页面不存在' });
@@ -560,7 +689,7 @@ http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
     if (routeVisitor(req, res, url)) return;
-    if (url.pathname.startsWith('/api/')) return await api(req, res, url);
+    if (url.pathname.startsWith('/api/')) { if (await writingApi(req, res, url.pathname)) return; return await api(req, res, url); }
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: '请求方式不支持' });
     if (url.pathname === '/admin/') { res.writeHead(302, { Location: '/admin' + url.search }); return res.end(); }
     if (['/study/', '/work/', '/friends/', '/articles/'].includes(url.pathname)) { res.writeHead(302, { Location: url.pathname.slice(0, -1) + url.search }); return res.end(); }

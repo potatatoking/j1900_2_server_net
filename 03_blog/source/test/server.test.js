@@ -216,7 +216,7 @@ test('administrator can change password with persistence and session revocation'
   const saved = await fs.readFile(authFile, 'utf8');
   assert.doesNotMatch(saved, /test-only-password|new-test-password/);
   assert.equal(JSON.parse(saved).algorithm, 'scrypt');
-  assert.equal((await fs.stat(authFile)).mode & 0o777, 0o600);
+  if (process.platform !== 'win32') assert.equal((await fs.stat(authFile)).mode & 0o777, 0o600);
   assert.doesNotMatch(JSON.stringify((await call('/api/profile')).data), /scrypt|new-test-password/);
   const stopped = new Promise(resolve => child.once('exit', resolve));
   child.kill(); await stopped;

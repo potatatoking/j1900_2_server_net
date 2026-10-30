@@ -6,7 +6,8 @@
   "scripts": {
     "start": "node server.js",
     "dev": "node --watch server.js",
-    "test": "node --test"
+    "test": "node --test",
+    "lint": "node scripts/lint.mjs"
   },
   "engines": { "node": ">=20" }
 }

@@ -108,8 +108,8 @@ test('article direct paths, home entry, fan navigation and editor expose the cor
   assert.match(run('home()'), /class="article-directory-link" href="#articles"/);
   assert.equal(run("fanPages.filter(p=>p.id==='articles').length"), 1);
   assert.equal(run('fanPages.length'), 7);
-  run("state.admin=true;postModal('article')");
-  assert.match(node.innerHTML, /发表文章|name="type" value="article"/);
+  run("state.admin=true; window.BlogWriter={open(options){ globalThis.openedWriter=options; }};postModal('article')");
+  assert.equal(run('openedWriter.type'), 'article');
   assert.doesNotMatch(node.innerHTML, /id="post-section"/);
 });
 
@@ -128,7 +128,7 @@ test('work footer opens a separate newest-first changelog without mixing updates
   assert.doesNotMatch(node.innerHTML, /<script>|<img src=x>|data-action="edit-post"|data-action="new-post"/);
   run('state.admin=true;blogUpdatesModal()');
   assert.match(node.innerHTML, /data-type="update"|data-action="edit-post"|data-action="delete-post"/);
-  run("postModal('update',state.posts.find(p=>p.id==='old-update'))");
-  assert.match(node.innerHTML, /编辑更新日志|name="type" value="update"|保留原来的发布日期/);
+  run("window.BlogWriter={open(options){globalThis.openedWriter=options;}};postModal('update',state.posts.find(p=>p.id==='old-update'))");
+  assert.equal(run('openedWriter.type'), 'update'); assert.equal(run('openedWriter.post.id'), 'old-update');
   context.location.hash='#study?item=post-old-update';assert.equal(run('route()'),'work');
 });
