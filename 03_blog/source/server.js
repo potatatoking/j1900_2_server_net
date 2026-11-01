@@ -246,7 +246,7 @@ async function writingApi(req, res, route) {
   if (!['/api/documents','/api/writing/images'].includes(route) && !route.startsWith('/api/documents/') && !route.startsWith('/api/drafts')) return false;
   if (!['GET','HEAD'].includes(req.method) && limited(req)) { json(res,429,{error:'操作太频繁，请稍后再试'}); return true; }
   if (route === '/api/writing/images' && req.method === 'POST') {
-    const input = await body(req, 3000000);
+    const input = await body(req, 7_000_000);
     json(res,201,{url:await storeImage(input.image)}); return true;
   }
   if (route === '/api/documents' && req.method === 'POST') {
@@ -313,7 +313,7 @@ async function storeImage(image) {
   const match = /^data:image\/(png|jpeg|webp);base64,([A-Za-z0-9+/]+={0,2})$/.exec(typeof image === 'string' ? image : '');
   if (!match) throw new Error('请选择 PNG、JPEG 或 WebP 图片');
   const bytes = Buffer.from(match[2], 'base64');
-  if (!bytes.length || bytes.length > 2_000_000) throw new Error('图片不能超过 2 MB');
+  if (!bytes.length || bytes.length > 5_000_000) throw new Error('图片不能超过 5 MB');
   const valid = match[1] === 'png' ? bytes.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10]))
     : match[1] === 'jpeg' ? bytes[0] === 0xff && bytes[1] === 0xd8 && bytes[2] === 0xff
     : bytes.toString('ascii', 0, 4) === 'RIFF' && bytes.toString('ascii', 8, 12) === 'WEBP';
@@ -397,7 +397,7 @@ async function api(req, res, url) {
       return json(res, 200, db.friends.filter(item => item.status === 'published'));
     }
     if (req.method === 'POST') {
-      const input = await body(req, 3_000_000), fields = await friendFields(input);
+      const input = await body(req, 7_000_000), fields = await friendFields(input);
       if (duplicateFriend(fields.url)) return json(res, 409, { error: '这个站点已收录或正在审核中，请勿重复提交' });
       if (Object.hasOwn(input, 'avatarImage')) fields.avatar = await storeImage(input.avatarImage);
       const friend = { ...fields, id: crypto.randomUUID(), status: isAdmin(req) ? 'published' : 'pending', createdAt: new Date().toISOString() };
@@ -412,7 +412,7 @@ async function api(req, res, url) {
     const friend = db.friends.find(item => item.id === friendId);
     if (!friend) return json(res, 404, { error: '友链不存在' });
     if (req.method === 'PUT') {
-      const input = await body(req, 3_000_000), fields = await friendFields(input);
+      const input = await body(req, 7_000_000), fields = await friendFields(input);
       if (!['pending', 'published'].includes(input.status)) return json(res, 400, { error: '请选择待审核或已发布' });
       if (duplicateFriend(fields.url, friendId)) return json(res, 409, { error: '这个站点已收录或正在审核中' });
       if (Object.hasOwn(input, 'avatarImage')) fields.avatar = await storeImage(input.avatarImage);
@@ -585,7 +585,7 @@ async function api(req, res, url) {
   }
   if (['/api/profile/avatar', '/api/images'].includes(route) && req.method === 'POST') {
     if (!requireAdmin(req, res)) return;
-    const input = await body(req, 3_000_000);
+    const input = await body(req, 7_000_000);
     const avatar = await storeImage(input.image);
     if (route === '/api/images') return json(res, 201, { url: avatar });
     db.profile.avatar = avatar;

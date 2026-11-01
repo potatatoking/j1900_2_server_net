@@ -51,6 +51,20 @@ test('post images upload, validate, persist and can be removed', async t => {
   const imageResponse = await fetch(`${base}${uploaded.data.url}`);
   assert.equal(imageResponse.headers.get('content-type'), 'image/png');
   assert.deepEqual(Buffer.from(await imageResponse.arrayBuffer()), Buffer.from(tinyPng, 'base64'));
+  // Exercise the binary limit through every upload route, including base64 request overhead.
+  const boundary = Buffer.alloc(5_000_000);
+  Buffer.from(tinyPng, 'base64').copy(boundary);
+  const image = 'data:image/png;base64,' + boundary.toString('base64');
+  const oversized = 'data:image/png;base64,' + Buffer.concat([boundary, Buffer.from([0])]).toString('base64');
+  for (const [route, status] of [['/api/images', 201], ['/api/profile/avatar', 200], ['/api/writing/images', 201]]) {
+    const accepted = await call(route, 'POST', { image }, cookie);
+    assert.equal(accepted.status, status, route);
+    const saved = await fetch(base + (accepted.data.url || accepted.data.avatar));
+    assert.deepEqual(Buffer.from(await saved.arrayBuffer()), boundary);
+    const rejected = await call(route, 'POST', { image: oversized }, cookie);
+    assert.equal(rejected.status, 400, route);
+    assert.equal(rejected.data.error, '图片不能超过 5 MB');
+  }
   const illustrated = await call('/api/posts', 'POST', { ...samplePost, images: [uploaded.data.url] }, cookie);
   assert.equal(illustrated.status, 201);
   assert.deepEqual(illustrated.data.images, [uploaded.data.url]);

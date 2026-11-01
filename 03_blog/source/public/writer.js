@@ -106,7 +106,7 @@
       submits.forEach(b => b.disabled = true);
       try {
         for (const file of selected) {
-          if (file.size > (image ? 2000000 : 10000000)) throw new Error(image ? '图片不能超过 2 MB' : '文档不能超过 10 MB');
+          if (file.size > (image ? 5000000 : 10000000)) throw new Error(image ? '图片不能超过 5 MB' : '文档不能超过 10 MB');
           if (!image && model.attachments.length >= 10) throw new Error('最多添加 10 个文档');
           const data = await dataUrl(file);
           if (image) { const value = await api('/api/writing/images','POST',{image:data}); if (form.isConnected) insert(`<p><img src="${escape(value.url)}" alt="${escape(file.name)}"></p><p><br></p>`); }

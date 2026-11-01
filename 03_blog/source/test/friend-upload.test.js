@@ -36,7 +36,7 @@ test('friend image uploads support visitors, moderation, edits and persisted loc
   };
   const png = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+/lQAAAABJRU5ErkJggg==', 'base64');
   // Add a valid ancillary PNG chunk so the request exceeds the old 20 KB JSON limit.
-  const text = Buffer.from('Comment\0' + 'friend-image'.repeat(2500));
+  const text = Buffer.from('Comment\0' + 'x'.repeat(5_000_000 - png.length - 12 - 8));
   const type = Buffer.from('tEXt');
   let crc = 0xffffffff;
   for (const byte of Buffer.concat([type, text])) {
@@ -53,7 +53,7 @@ test('friend image uploads support visitors, moderation, edits and persisted loc
   let application, cookie, localImage;
 
   await t.test('visitor images are stored with pending applications and are readable as images', async () => {
-    assert.ok(image.length > 20_000);
+    assert.equal(largePng.length, 5_000_000);
     application = await call('/api/friends', 'POST', { ...sample, avatarImage: image, status: 'published' });
     assert.equal(application.status, 201);
     assert.equal(application.data.status, 'pending');
@@ -70,7 +70,7 @@ test('friend image uploads support visitors, moderation, edits and persisted loc
   await t.test('invalid, oversized and duplicate applications do not write new files', async () => {
     const before = await uploads();
     assert.equal((await call('/api/friends', 'POST', { ...sample, avatarImage: image })).status, 409);
-    const oversized = Buffer.alloc(2_000_001); png.copy(oversized);
+    const oversized = Buffer.alloc(5_000_001); png.copy(oversized);
     for (const avatarImage of ['data:image/svg+xml;base64,PHN2Zy8+', 'data:image/png;base64,YWJj', image.replace('image/png', 'image/webp'), 'data:image/png;base64,' + oversized.toString('base64')]) {
       assert.equal((await call('/api/friends', 'POST', { ...sample, url: 'https://invalid.example/', avatarImage })).status, 400);
     }

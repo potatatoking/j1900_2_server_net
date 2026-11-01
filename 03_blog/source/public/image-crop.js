@@ -37,7 +37,7 @@ function cropImage(source, squareOnly = false) {
           const canvas = cropper.getCroppedCanvas({ maxWidth: 1600, maxHeight: 1600, imageSmoothingQuality: 'high' });
           if (!canvas?.width || !canvas.height) throw new Error('请选择有效的裁剪区域');
           const result = canvas.toDataURL('image/webp', 0.9);
-          if (result.length * 0.75 > 2_000_000) throw new Error('裁剪后的图片超过 2 MB，请缩小选区');
+          if ((result.split(',')[1].length * 3 / 4 - (result.endsWith('==') ? 2 : result.endsWith('=') ? 1 : 0)) > 5_000_000) throw new Error('裁剪后的图片超过 5 MB，请缩小选区');
           finish(result);
         } catch (error) { dialog.querySelector('.form-error').textContent = error.message; }
         return;

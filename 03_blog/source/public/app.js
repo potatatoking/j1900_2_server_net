@@ -292,7 +292,7 @@ function friendModal(friend = null) {
       <label for="friend-description">一句话介绍</label><textarea class="field" id="friend-description" name="description" required maxlength="240">${esc(friend?.description)}</textarea>
       <fieldset class="friend-image-source"><legend>友链图片（选填）</legend><label><input type="radio" name="avatarSource" value="url" ${!localImage ? 'checked' : ''}> 图片网址</label><label><input type="radio" name="avatarSource" value="upload" ${localImage ? 'checked' : ''}> 本地上传</label></fieldset>
       <div data-friend-source="url" ${localImage ? 'hidden' : ''}><label for="friend-avatar">图片网址</label><input class="field" id="friend-avatar" name="avatar" type="url" maxlength="1000" placeholder="https://example.com/avatar.png" value="${localImage ? '' : esc(friend?.avatar)}" ${localImage ? 'disabled' : ''}></div>
-      <div data-friend-source="upload" ${!localImage ? 'hidden' : ''}><label for="friend-avatar-file">选择图片</label><input class="field" id="friend-avatar-file" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="friend-image-help" ${!localImage ? 'disabled' : ''}><p class="friend-image-help" id="friend-image-help">PNG、JPEG 或 WebP，单张不超过 2 MB；提交时上传。</p></div>
+      <div data-friend-source="upload" ${!localImage ? 'hidden' : ''}><label for="friend-avatar-file">选择图片</label><input class="field" id="friend-avatar-file" type="file" accept="image/png,image/jpeg,image/webp" aria-describedby="friend-image-help" ${!localImage ? 'disabled' : ''}><p class="friend-image-help" id="friend-image-help">PNG、JPEG 或 WebP，单张不超过 5 MB；提交时上传。</p></div>
       <div class="friend-image-preview"><img alt="友链图片预览" data-friend-preview-image hidden><span data-friend-image-placeholder>未选择图片</span><button class="btn subtle" type="button" data-remove-friend-image hidden>移除图片</button></div>
       ${friend && state.admin ? `<label for="friend-status">展示状态</label><select class="field" id="friend-status" name="status"><option value="published" ${friend.status === 'published' ? 'selected' : ''}>已发布（审核通过）</option><option value="pending" ${friend.status === 'pending' ? 'selected' : ''}>待审核 / 下架</option></select>` : ''}
       <p class="form-error" role="alert"></p><button class="btn" type="submit">${friend ? '保存友链' : state.admin ? '发布友链' : '提交申请'}</button>
@@ -1014,7 +1014,7 @@ function profileModal() {
     ['phone', '电话', 'tel', 40], ['qq', '🐧 QQ', 'text', 30],
     ['wechat', '微信', 'text', 60], ['githubContact', 'GitHub'], ['contactNote', '联系备注', 'textarea', 300]
   ];
-  openModal(`<h2>编辑个人资料 🎀</h2><form id="profile-form"><label for="profile-avatar">上传头像（PNG、JPEG、WebP，最多 2 MB）</label><input class="field" id="profile-avatar" type="file" name="avatarFile" accept="image/png,image/jpeg,image/webp"><div class="avatar-preview">${p.avatar ? `<img src="${esc(p.avatar)}" alt="当前头像">` : '🌸'}</div><button type="button" class="quiet-button" data-crop-avatar ${p.avatar ? '' : 'hidden'}>裁剪头像</button>${fields.map(([key, label, type, max]) => key === 'hobbies' ? hobbyEditor(p) : key === 'educationStages' ? educationEditor(p) : key === 'githubContact' ? githubEditor(p) : `<label for="profile-${key}"${key === 'qq' ? ' aria-label="QQ 号码"' : ''}>${label}</label>${type === 'textarea' ? `<textarea class="field" id="profile-${key}" name="${key}" maxlength="${max}">${esc(p[key])}</textarea>` : `<input class="field" id="profile-${key}" type="${type}" name="${key}" value="${esc(p[key])}" maxlength="${max}">`}`).join('')}<button class="btn" type="submit">保存资料</button></form>`);
+  openModal(`<h2>编辑个人资料 🎀</h2><form id="profile-form"><label for="profile-avatar">上传头像（PNG、JPEG、WebP，最多 5 MB）</label><input class="field" id="profile-avatar" type="file" name="avatarFile" accept="image/png,image/jpeg,image/webp"><div class="avatar-preview">${p.avatar ? `<img src="${esc(p.avatar)}" alt="当前头像">` : '🌸'}</div><button type="button" class="quiet-button" data-crop-avatar ${p.avatar ? '' : 'hidden'}>裁剪头像</button>${fields.map(([key, label, type, max]) => key === 'hobbies' ? hobbyEditor(p) : key === 'educationStages' ? educationEditor(p) : key === 'githubContact' ? githubEditor(p) : `<label for="profile-${key}"${key === 'qq' ? ' aria-label="QQ 号码"' : ''}>${label}</label>${type === 'textarea' ? `<textarea class="field" id="profile-${key}" name="${key}" maxlength="${max}">${esc(p[key])}</textarea>` : `<input class="field" id="profile-${key}" type="${type}" name="${key}" value="${esc(p[key])}" maxlength="${max}">`}`).join('')}<button class="btn" type="submit">保存资料</button></form>`);
 }
 function postImageGallery(images = []) {
   return images.length ? `<div class="post-images ${images.length === 1 ? 'is-single' : 'is-multiple'}">${images.map((url, index) => `<a href="${esc(url)}" target="_blank" rel="noopener"><img src="${esc(url)}" alt="动态配图 ${index + 1}（点击查看原图）" loading="lazy" decoding="async"></a>`).join('')}</div>` : '';
@@ -1023,7 +1023,7 @@ function imageDraft(url) {
   return `<div class="image-draft" data-src="${esc(url)}"><img src="${esc(url)}" alt="待发布的配图"><button type="button" data-crop-image aria-label="裁剪图片" title="裁剪图片">✂</button><button type="button" data-remove-image aria-label="移除图片" title="移除图片">×</button></div>`;
 }
 function postImageEditor(images = []) {
-  return `<label for="post-images">图片（最多 9 张，每张不超过 2 MB）</label><input class="field" id="post-images" type="file" accept="image/png,image/jpeg,image/webp" multiple aria-describedby="post-image-error"><div class="image-drafts">${images.map(imageDraft).join('')}</div><p id="post-image-error" class="form-error" role="alert"></p>`;
+  return `<label for="post-images">图片（最多 9 张，每张不超过 5 MB）</label><input class="field" id="post-images" type="file" accept="image/png,image/jpeg,image/webp" multiple aria-describedby="post-image-error"><div class="image-drafts">${images.map(imageDraft).join('')}</div><p id="post-image-error" class="form-error" role="alert"></p>`;
 }
 document.addEventListener('click', event => {
   const remove = event.target.closest('[data-remove-image]');
@@ -1078,7 +1078,7 @@ document.addEventListener('click', async event => {
 });
 function imageData(file) {
   if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) throw new Error('请选择 PNG、JPEG 或 WebP 图片');
-  if (file.size > 2_000_000) throw new Error('图片不能超过 2 MB');
+  if (file.size > 5_000_000) throw new Error('图片不能超过 5 MB');
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.onload = () => resolve(reader.result);
