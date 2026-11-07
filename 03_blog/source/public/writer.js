@@ -62,7 +62,7 @@
       initial = {...initial,...saved};
     }
     const container = document.createElement('section'); container.className = 'writing-editor';
-    container.innerHTML = `<div class="writing-toolbar" role="toolbar" aria-label="文档格式"><button type="button" data-command="bold" aria-label="加粗"><b>粗体</b></button><button type="button" data-command="italic">斜体</button><button type="button" data-command="formatBlock" data-value="h2">标题</button><button type="button" data-command="formatBlock" data-value="p">正文</button><button type="button" data-command="insertUnorderedList">列表</button><button type="button" data-command="insertOrderedList">编号</button><button type="button" data-link>文字链接</button><button type="button" data-image>插图</button><button type="button" data-document>上传文档</button><button type="button" data-command="undo">撤销</button></div><div class="writing-page document-body" contenteditable="true" role="textbox" aria-multiline="true" aria-label="正文编辑区" spellcheck="false"></div><label>关联链接（可选）<input class="field writing-source" type="url" placeholder="https://…" value="${escape(initial.sourceUrl)}"></label><div class="writing-attachments"></div><input type="file" class="writing-image-file" accept="image/png,image/jpeg,image/webp" multiple hidden><input type="file" class="writing-document-file" accept=".pdf,.doc,.docx,.txt,.md,.odt" multiple hidden><small>正文可随时插图；文档支持 PDF、Word、TXT、Markdown、ODT，每个最多 10 MB。</small><p class="writing-status" role="status" aria-live="polite"></p><p class="writing-error" role="alert"></p>`;
+    container.innerHTML = `<div class="writing-toolbar" role="toolbar" aria-label="文档格式"><button type="button" data-command="bold" aria-label="加粗"><b>粗体</b></button><button type="button" data-command="italic">斜体</button><button type="button" data-command="formatBlock" data-value="h2">标题</button><button type="button" data-command="formatBlock" data-value="p">正文</button><button type="button" data-command="insertUnorderedList">列表</button><button type="button" data-command="insertOrderedList">编号</button><button type="button" data-link>文字链接</button><button type="button" data-image>插图</button><button type="button" data-document>上传文档</button><button type="button" data-command="undo">撤销</button></div><div class="writing-page document-body" contenteditable="true" role="textbox" aria-multiline="true" aria-label="正文编辑区" spellcheck="false"></div><label>关联链接（可选）<input class="field writing-source" type="url" placeholder="https://…" value="${escape(initial.sourceUrl)}"></label><div class="writing-attachments"></div><input type="file" class="writing-image-file" accept="image/png,image/jpeg,image/webp" multiple hidden><input type="file" class="writing-document-file" accept=".pdf,.doc,.docx,.txt,.md,.odt" multiple hidden><small>正文插图可裁剪，也可使用原图；文档支持 PDF、Word、TXT、Markdown、ODT，每个最多 10 MB。</small><p class="writing-status" role="status" aria-live="polite"></p><p class="writing-error" role="alert"></p>`;
     textarea.after(container); textarea.hidden = true; textarea.required = false;
     const page = container.querySelector('.writing-page'), source = container.querySelector('.writing-source');
     page.innerHTML = initial.document ? renderNodes(initial.document) : `<p>${escape(textarea.value).replace(/\n/g,'<br>')}</p>`;
@@ -101,7 +101,8 @@
     });
     async function upload(selected, image) {
       if (model.busy) return;
-      model.busy = true; error(''); status('正在上传，请稍候…');
+      model.busy = true; error(''); status('正在处理文件，请稍候…');
+      let changed = false;
       const submits = [...form.querySelectorAll('[type="submit"], [data-save-draft]')];
       submits.forEach(b => b.disabled = true);
       try {
@@ -109,11 +110,29 @@
           if (file.size > (image ? 5000000 : 10000000)) throw new Error(image ? '图片不能超过 5 MB' : '文档不能超过 10 MB');
           if (!image && model.attachments.length >= 10) throw new Error('最多添加 10 个文档');
           const data = await dataUrl(file);
-          if (image) { const value = await api('/api/writing/images','POST',{image:data}); if (form.isConnected) insert(`<p><img src="${escape(value.url)}" alt="${escape(file.name)}"></p><p><br></p>`); }
-          else { const value = await api('/api/documents','POST',{name:file.name,data:data.split(',')[1]}); files.set(value.id,value); model.attachments.push(value.id); attachmentList(); if (/\.(txt|md)$/i.test(file.name) && !page.innerText.trim() && !page.querySelector('img')) { const text = await file.text(); if (text.length > 100000) throw new Error('文档已作为附件上传，正文导入最多 10 万字'); page.innerHTML = `<p>${escape(text).replace(/\n/g,'<br>')}</p>`; } }
+          if (image) {
+            status('请选择裁剪范围，或使用原图。');
+            const cropped = await cropImage(data);
+            if (!form.isConnected) break;
+            if (!cropped) continue;
+            status('正在上传图片，请稍候…');
+            const value = await api('/api/writing/images','POST',{image:cropped});
+            if (form.isConnected) {
+              insert(`<p><img src="${escape(value.url)}" alt="${escape(file.name)}"></p><p><br></p>`);
+              changed = true;
+            }
+          }
+          else { const value = await api('/api/documents','POST',{name:file.name,data:data.split(',')[1]}); files.set(value.id,value); model.attachments.push(value.id); changed = true; attachmentList(); if (/\.(txt|md)$/i.test(file.name) && !page.innerText.trim() && !page.querySelector('img')) { const text = await file.text(); if (text.length > 100000) throw new Error('文档已作为附件上传，正文导入最多 10 万字'); page.innerHTML = `<p>${escape(text).replace(/\n/g,'<br>')}</p>`; } }
         }
       } catch (problem) { error(problem.message); }
-      finally { model.busy = false; submits.forEach(b => b.disabled = false); stash(); }
+      finally {
+        model.busy = false;
+        submits.forEach(b => b.disabled = false);
+        if (form.isConnected) {
+          if (changed || model.changed) stash();
+          else status('');
+        }
+      }
     }
     container.querySelector('.writing-image-file').addEventListener('change',e => { const list = [...e.target.files]; e.target.value=''; upload(list,true); });
     container.querySelector('.writing-document-file').addEventListener('change',e => { const list = [...e.target.files]; e.target.value=''; upload(list,false); });
