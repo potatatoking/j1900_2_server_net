@@ -657,7 +657,7 @@ function lifeArchiveView() {
 }
 function postsPage(type) {
   if (type !== 'life') return studyPage();
-  const action = state.admin ? '<button class="btn tiny" data-action="new-post" data-type="life">＋ 写一篇日记</button>' : '';
+  const action = state.admin ? writingActions('life', '＋ 写一篇日记') : '';
   const targetId = new URLSearchParams(location.hash.split('?')[1] || '').get('item');
   const target = lifeArchivePosts().find(post => `post-${post.id}` === targetId);
   if (target) { lifeArchiveState.year = dateKey(target.createdAt).slice(0, 4); lifeArchiveState.month = dateKey(target.createdAt).slice(0, 7); }
@@ -669,7 +669,7 @@ function articlesPage() {
   const selected = posts.find(post => `post-${post.id}` === targetId);
   const actions = post => state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑文章</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除文章</button></span>` : '';
   const content = selected ? `<article class="personal-article" id="post-${esc(selected.id)}"><a class="article-back" href="#articles">← 所有文章</a><header><div class="article-meta"><time datetime="${esc(selected.createdAt)}">${date(selected.createdAt)}</time><span>${esc(selected.tag || '随笔与想法')}</span></div><h2>${esc(selected.title)}</h2>${selected.updatedAt ? `<small>更新于 ${date(selected.updatedAt)}</small>` : ''}</header><div class="article-body">${writingRender(selected)}</div>${postImageGallery(selected.images)}<footer>${actions(selected)}<a class="article-back" href="#articles">回到文章列表 ↗</a></footer></article>` : targetId ? '<div class="article-empty"><h2>这篇文章暂时找不到了</h2><a class="article-back" href="#articles">返回文章列表 ↗</a></div>' : `<div class="article-list-heading"><span>慢慢写，慢慢想。</span><small>${posts.length} 篇文章</small></div><div class="article-list">${posts.map((post,index) => `<article class="article-list-item"><div class="article-list-index" aria-hidden="true">${String(index+1).padStart(2,'0')}</div><div class="article-list-copy"><div class="article-meta"><time datetime="${esc(post.createdAt)}">${date(post.createdAt)}</time><span>${esc(post.tag || '随笔与想法')}</span></div><h2><a href="#articles?item=${encodeURIComponent(`post-${post.id}`)}">${esc(post.title)}</a></h2><p>${esc(post.content.slice(0,150))}${post.content.length > 150 ? '…' : ''}</p><div class="article-list-footer"><a class="article-read" href="#articles?item=${encodeURIComponent(`post-${post.id}`)}">阅读全文 <span aria-hidden="true">↗</span></a>${actions(post)}</div></div></article>`).join('') || '<div class="article-empty"><span aria-hidden="true">✳</span><h2>给还没写下的想法，留一页空白。</h2><p>关于生活的思考、偶然的感悟，或是一段想认真说的话。</p></div>'}</div>`;
-  return `<div class="container page page-articles">${pageHead('PERSONAL ESSAYS','个人文章','写下自己的想法，也留下思考的过程。',state.admin ? '<button class="btn tiny" data-action="new-post" data-type="article">＋ 写一篇文章</button>' : '')}<section class="personal-writing" aria-label="个人文章">${content}</section>${bottomSearch()}</div>`;
+  return `<div class="container page page-articles">${pageHead('PERSONAL ESSAYS','个人文章','写下自己的想法，也留下思考的过程。',state.admin ? writingActions('article', '＋ 写一篇文章') : '')}<section class="personal-writing" aria-label="个人文章">${content}</section>${bottomSearch()}</div>`;
 }
 function studySection(post) {
   if (post.section === 'work' || post.section === 'learning') return post.section;
@@ -727,7 +727,7 @@ function studyLane(section, title, English, icon, caption) {
   const posts = state.posts.filter(post => post.type === 'study' && studySection(post) === section);
   const today = posts.filter(post => dateKey(post.createdAt) === localDay());
   const older = posts.filter(post => dateKey(post.createdAt) !== localDay());
-  return `<section class="study-lane study-lane-${section}" id="study-${section}" aria-labelledby="study-${section}-title"><div class="study-lane-head"><div class="study-lane-icon" aria-hidden="true">${icon}</div><div><span class="study-kicker">${English} / ${String(posts.length).padStart(2, '0')}</span><h2 id="study-${section}-title">${title}</h2><p>${caption}</p></div>${state.admin ? `<button class="btn tiny" data-action="new-post" data-type="study" data-section="${section}">＋ 写一篇</button>` : ''}</div>${typeof renderActivityPanel === 'function' ? renderActivityPanel(section === 'learning' ? 'luogu' : 'github') : ''}<div class="study-today"><div class="study-subhead"><span>今天的记录</span><time datetime="${localDay()}">${date(new Date())}</time></div>${today.length ? today.map((post, index) => studyPostCard(post, index)).join('') : '<div class="study-today-empty">今天还没有新记录，留一页给正在发生的故事。</div>'}</div><div class="study-archive" data-section="${section}">${studyCalendarView(section, older)}</div></section>`;
+  return `<section class="study-lane study-lane-${section}" id="study-${section}" aria-labelledby="study-${section}-title"><div class="study-lane-head"><div class="study-lane-icon" aria-hidden="true">${icon}</div><div><span class="study-kicker">${English} / ${String(posts.length).padStart(2, '0')}</span><h2 id="study-${section}-title">${title}</h2><p>${caption}</p></div>${state.admin ? writingActions('study', '＋ 写一篇', section) : ''}</div>${typeof renderActivityPanel === 'function' ? renderActivityPanel(section === 'learning' ? 'luogu' : 'github') : ''}<div class="study-today"><div class="study-subhead"><span>今天的记录</span><time datetime="${localDay()}">${date(new Date())}</time></div>${today.length ? today.map((post, index) => studyPostCard(post, index)).join('') : '<div class="study-today-empty">今天还没有新记录，留一页给正在发生的故事。</div>'}</div><div class="study-archive" data-section="${section}">${studyCalendarView(section, older)}</div></section>`;
 }
 function readingPlanCard() {
   const plan = state.readingPlan || {};
@@ -778,7 +778,7 @@ function blogUpdates() {
 }
 function blogUpdatesModal() {
   const updates = blogUpdates();
-  openModal(`<section class="blog-updates" aria-labelledby="blog-updates-title"><header class="blog-updates-heading"><div><span class="journal-kicker">CHANGELOG</span><h2 id="blog-updates-title">更新日志</h2><p>博客的新功能与修复记录 · 最近更新在前</p></div>${state.admin ? '<button type="button" class="quiet-button" data-action="new-post" data-type="update">＋ 写更新</button>' : ''}</header>${updates.length ? `<ol class="blog-updates-list">${updates.map(post => `<li><article id="post-${esc(post.id)}"><time datetime="${esc(post.createdAt)}">${date(post.createdAt)}</time>${post.tag ? `<span class="blog-update-tag">${esc(post.tag)}</span>` : ''}<h3>${esc(post.title)}</h3><div class="blog-update-content">${writingRender(post)}</div>${postImageGallery(post.images)}${state.admin ? `<div class="admin-actions"><button type="button" class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button type="button" class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></div>` : ''}</article></li>`).join('')}</ol>` : '<p class="blog-updates-empty">还没有更新记录。</p>'}</section>`);
+  openModal(`<section class="blog-updates" aria-labelledby="blog-updates-title"><header class="blog-updates-heading"><div><span class="journal-kicker">CHANGELOG</span><h2 id="blog-updates-title">更新日志</h2><p>博客的新功能与修复记录 · 最近更新在前</p></div>${state.admin ? writingActions('update', '＋ 写更新') : ''}</header>${updates.length ? `<ol class="blog-updates-list">${updates.map(post => `<li><article id="post-${esc(post.id)}"><time datetime="${esc(post.createdAt)}">${date(post.createdAt)}</time>${post.tag ? `<span class="blog-update-tag">${esc(post.tag)}</span>` : ''}<h3>${esc(post.title)}</h3><div class="blog-update-content">${writingRender(post)}</div>${postImageGallery(post.images)}${state.admin ? `<div class="admin-actions"><button type="button" class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button type="button" class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></div>` : ''}</article></li>`).join('')}</ol>` : '<p class="blog-updates-empty">还没有更新记录。</p>'}</section>`);
   modal.setAttribute('aria-labelledby', 'blog-updates-title');
 }
 function todaysQuote() {
@@ -981,6 +981,9 @@ function passwordModal() {
   document.querySelector('#current-password')?.focus();
 }
 function writingRender(value) { return value.document || value.sourceUrl || value.attachments?.length ? window.BlogWriter.render(value) : esc(value.content); }
+function writingActions(type, label, section = '') {
+  return `<div class="writing-actions"><button type="button" class="btn tiny" data-action="new-post" data-type="${type}" data-section="${section}">${label}</button><button type="button" class="quiet-button" data-action="open-drafts" data-type="${type}" data-section="${section}">草稿箱</button></div>`;
+}
 function writingContext() {
   return { openModal, toast, published: async post => {
     state.posts = state.posts.filter(item => item.id !== post.id); state.posts.unshift(post);
@@ -990,6 +993,7 @@ function writingContext() {
   }};
 }
 function postModal(type, post = null, section = 'learning') {
+  if (post?.type === 'study') section = studySection(post);
   return window.BlogWriter.open({type,post,section}, writingContext());
 }
 function readingPlanModal() {
@@ -1324,9 +1328,9 @@ document.addEventListener('click', async event => {
     if (action === 'delete-friend' && state.admin && confirm('确定删除这条友链吗？')) { await request(`/api/friends/${id}`, { method: 'DELETE' }); state.friends = state.friends.filter(item => item.id !== id); render(); toast('友链已删除'); }
     if (action === 'new-topic') newTopicModal(button.getBoundingClientRect());
     if (action === 'edit-mood' && state.admin) moodModal(moodDate || localDay());
-    if (action === 'open-drafts') window.BlogWriter.drafts(writingContext());
-    if (action === 'new-post') postModal(type, null, section);
-    if (action === 'edit-post') { const post = state.posts.find(post => post.id === id); if (post) postModal(post.type, post); }
+    if (action === 'open-drafts' && state.admin) await window.BlogWriter.drafts({type,section}, writingContext());
+    if (action === 'new-post' && state.admin) await postModal(type, null, section);
+    if (action === 'edit-post') { const post = state.posts.find(post => post.id === id); if (post) await postModal(post.type, post); }
     if (action === 'edit-topic') { const topic = state.topics.find(topic => topic.id === id); if (topic) topicModal(topic); }
     if (action === 'edit-profile') profileModal();
     if (action === 'edit-reading-plan' && state.admin) readingPlanModal();

@@ -58,7 +58,7 @@
     if (!textarea || form._writing) return form._writing;
     const saved = local.get(key);
     if (saved) {
-      for (const [name,value] of Object.entries(saved.fields || {})) { const field = form.elements.namedItem(name); if (field && typeof value === 'string') field.value = value; }
+      for (const [name,value] of Object.entries(saved.fields || {})) { const field = form.elements.namedItem(name); if (field && field.type !== 'hidden' && typeof value === 'string') field.value = value; }
       initial = {...initial,...saved};
     }
     const container = document.createElement('section'); container.className = 'writing-editor';
@@ -77,7 +77,7 @@
       for (const field of form.elements) if (field.name && !['password','file','hidden'].includes(field.type) && !/password/i.test(field.name)) fields[field.name] = field.value;
       textarea.value = page.innerText;
       fields.content = textarea.value;
-      const ok = local.set(key,{...collect(),fields,...(model.draftId ? {draftId:model.draftId} : {}),updatedAt:new Date().toISOString()});
+      const ok = local.set(model.key,{...collect(),fields,...(model.draftId ? {draftId:model.draftId} : {}),updatedAt:new Date().toISOString()});
       status(ok ? '已保存到当前浏览器' : '浏览器无法保存草稿，请手动保存或保持页面打开');
       model.changed = true; onChange();
     }
@@ -127,18 +127,50 @@
     page.addEventListener('drop',e => { e.preventDefault(); if (e.dataTransfer.files.length) { remember(); const list=[...e.dataTransfer.files]; upload(list,list.every(f=>f.type.startsWith('image/'))); } });
     return model;
   }
+  const draftLabels = {life:'生活日记', learning:'学习手记', work:'工作记录', article:'个人文章', update:'更新日志'};
+  const draftScope = ({type, section}) => type === 'study' ? section === 'work' ? 'work' : 'learning' : type;
+  function draftUrl(scope, id = '', suffix = '') {
+    return `/api/drafts${id ? '/' + encodeURIComponent(id) + suffix : ''}?scope=${encodeURIComponent(scope)}`;
+  }
+  function newDraftId() {
+    return Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('');
+  }
   async function open(options, context) {
     if (active && !await beforeClose()) return;
-    const {type,post,section='learning',draft:provided} = options;
+    const {type,post,draft:provided} = options;
+    const scope = draftScope(options);
+    if (!Object.hasOwn(draftLabels, scope)) return;
+    const section = scope === 'work' ? 'work' : 'learning';
+    const prefix = 'blog-writing:post:';
+    const pendingKey = prefix + 'pending:' + scope + ':' + (post?.id || 'new');
     let draft = provided;
-    if (post && !draft) {
-      try { draft = (await api('/api/drafts')).find(d => d.postId === post.id); } catch (e) { context.toast(e.message); return; }
+    if (!draft && !local.get(pendingKey)) {
+      const legacyKey = prefix + (post?.id || type + ':' + section);
+      const legacyKeys = [legacyKey];
+      if (!post && type === 'study') legacyKeys.push(prefix + type + ':' + (section === 'work' ? 'learning' : 'work'));
+      for (const candidate of legacyKeys) {
+        const legacy = local.get(candidate);
+        const legacySection = legacy?.fields?.section || (candidate === legacyKey ? section : '');
+        if (!legacy || (type === 'study' && legacySection !== section)) continue;
+        if (local.set(pendingKey, legacy)) local.remove(candidate);
+        break;
+      }
+    }
+    const pending = !draft && local.get(pendingKey);
+    if (!draft && (post || pending?.draftId)) {
+      const list = await api(draftUrl(scope));
+      draft = list.find(d => post ? d.postId === post.id : d.id === pending.draftId);
     }
     const value = draft || post || {type,section};
-    const key = `blog-writing:post:${draft?.id || post?.id || type+':'+section}`;
-    const recovered = local.get(key);
-    const id = draft?.id || recovered?.draftId || crypto.randomUUID();
-    context.openModal(`<section class="writer-heading"><span class="journal-kicker">MY WRITING DESK</span><h2>${post ? '编辑' : '写下'}${({article:'个人文章',life:'生活日记',study:'学习与工作记录',update:'更新日志'})[value.type]}</h2><p>慢慢写，草稿会自动保存。发布后访客才能看到。</p></section><form id="writer-form"><input type="hidden" name="type" value="${escape(value.type)}">${value.type === 'study' ? `<label>分类<select class="field" name="section"><option value="learning" ${value.section !== 'work' ? 'selected' : ''}>学习内容</option><option value="work" ${value.section === 'work' ? 'selected' : ''}>工作内容</option></select></label>`:''}<label>标题<input class="field" name="title" maxlength="100" value="${escape(value.title)}"></label><label>标签<input class="field" name="tag" maxlength="30" value="${escape(value.tag)}"></label><label>正文<textarea name="content" class="field">${escape(value.content)}</textarea></label><div class="writing-actions"><button type="button" class="quiet-button" data-save-draft>保存草稿</button><button type="button" class="quiet-button" data-open-drafts>草稿箱</button><button type="submit" class="btn">${post || draft?.postId ? '发布修改' : '发布'}</button></div></form>`);
+    const id = draft?.id || pending?.draftId || newDraftId();
+    const savedKey = prefix + id;
+    if (draft && pending && (!pending.draftId || pending.draftId === id)) {
+      if (!local.get(savedKey)) local.set(savedKey, pending);
+      if (local.get(savedKey)) local.remove(pendingKey);
+    }
+    const key = draft ? savedKey : pendingKey;
+    const recovered = draft || pending ? local.get(key) : null;
+    context.openModal(`<section class="writer-heading"><span class="journal-kicker">MY WRITING DESK</span><h2>${post || draft?.postId ? '编辑' : '写下'}${draftLabels[scope]}</h2><p>慢慢写，草稿会自动保存。发布后访客才能看到。</p></section><form id="writer-form"><input type="hidden" name="type" value="${type}">${type === 'study' ? `<input type="hidden" name="section" value="${section}">` : ''}<label>标题<input class="field" name="title" maxlength="100" value="${escape(value.title)}"></label><label>标签<input class="field" name="tag" maxlength="30" value="${escape(value.tag)}"></label><label>正文<textarea name="content" class="field">${escape(value.content)}</textarea></label><div class="writing-actions"><button type="button" class="quiet-button" data-save-draft>保存草稿</button><button type="button" class="quiet-button" data-open-drafts>草稿箱</button><button type="submit" class="btn">${post || draft?.postId ? '发布修改' : '发布'}</button></div></form>`);
     const form = document.querySelector('#writer-form');
     let timer, chain = Promise.resolve(), revision = draft?.revision, savedFingerprint = '', conflict = false;
     const collect = () => ({...Object.fromEntries(new FormData(form)), ...model.collect(), images:value.images || [], postId:draft?.postId || post?.id});
@@ -151,9 +183,17 @@
         if (fingerprint === savedFingerprint) return;
         model.status('正在保存到服务器…');
         try {
-          const result = await api(`/api/drafts/${id}`,'PUT',{...fields,revision});
+          const result = await api(draftUrl(scope, id),'PUT',{...fields,revision});
           revision = result.revision; savedFingerprint = fingerprint;
-          const stored = local.get(key); if (stored) local.set(key,{...stored,draftId:id});
+          if (model.key !== savedKey) {
+            const stored = local.get(model.key);
+            if (!stored || stored.draftId !== id) {
+              model.key = savedKey;
+            } else if (local.set(savedKey, stored)) {
+              local.remove(model.key);
+              model.key = savedKey;
+            }
+          }
           model.status('草稿已保存到服务器'); model.error('');
         } catch(e) { if (/其他窗口/.test(e.message)) conflict = true; model.error(e.message); throw e; }
       });
@@ -161,18 +201,16 @@
     };
     const model = enhance(form,value,key,()=> { clearTimeout(timer); timer=setTimeout(()=>save().catch(()=>{}),1200); });
     model.draftId = id;
-    const originalStash = model.stash;
-    model.stash = () => { originalStash(); const v=local.get(key); if(v)local.set(key,{...v,draftId:id}); };
     active = {form,model,save,context};
     form.querySelector('[data-save-draft]').onclick = () => save().then(()=>context.toast('草稿已保存')).catch(e=>model.error(e.message));
-    form.querySelector('[data-open-drafts]').onclick = () => drafts(context);
+    form.querySelector('[data-open-drafts]').onclick = () => drafts({type,section}, context);
     form.addEventListener('submit',async e => {
       e.preventDefault(); e.stopPropagation(); if(model.busy)return;
       const button=form.querySelector('[type="submit"]'); button.disabled=true;
       try {
         await save();
-        const result=await api(`/api/drafts/${id}/publish`,'POST',{revision});
-        model.completed=true; local.remove(key); forgetDraft(id,draft?.postId || post?.id); active=null;
+        const result=await api(draftUrl(scope, id, '/publish'),'POST',{revision});
+        model.completed=true; local.remove(model.key); forgetDraft(id,draft?.postId || post?.id); active=null;
         await context.published(result); context.toast('已发布，草稿已移出草稿箱');
       } catch(problem) { model.error(problem.message); button.disabled=false; }
     });
@@ -187,13 +225,15 @@
     try { if(model.changed)await save(); active=null;return true; }
     catch { model.error('服务器保存失败，内容仍保留在当前浏览器，请重试保存'); return false; }
   }
-  async function drafts(context) {
+  async function drafts(options, context) {
+    const scope = draftScope(options);
+    if (!Object.hasOwn(draftLabels, scope)) return;
     if (!await beforeClose()) return;
     try {
-      const list=await api('/api/drafts');
-      context.openModal(`<h2>草稿箱</h2><p>只有管理员可见，发布后自动移出。</p><div class="writing-draft-list">${list.map(d=>`<article><h3>${escape(d.title || '未命名草稿')}</h3><p>${escape(d.content.slice(0,80))}</p><small>${new Date(d.updatedAt).toLocaleString('zh-CN')}</small><div><button type="button" class="btn tiny" data-resume="${escape(d.id)}">继续编辑</button><button type="button" class="quiet-button" data-delete-draft="${escape(d.id)}">删除草稿</button></div></article>`).join('') || '<p>还没有草稿，开始写下第一段内容吧。</p>'}</div>`);
-      document.querySelectorAll('[data-resume]').forEach(b=>b.onclick=()=>{const draft=list.find(d=>d.id===b.dataset.resume);open({type:draft.type,draft},context);});
-      document.querySelectorAll('[data-delete-draft]').forEach(b=>b.onclick=async()=>{if(!confirm('确定删除这份草稿？'))return;try{await api(`/api/drafts/${b.dataset.deleteDraft}`,'DELETE');forgetDraft(b.dataset.deleteDraft);await drafts(context);}catch(e){context.toast(e.message);}});
+      const list=await api(draftUrl(scope));
+      context.openModal(`<h2>${draftLabels[scope]}草稿箱</h2><p>这里只显示本栏目的草稿，发布后自动移出。</p><div class="writing-draft-list">${list.map(d=>`<article><h3>${escape(d.title || '未命名草稿')}</h3><p>${escape(d.content.slice(0,80))}</p><small>${new Date(d.updatedAt).toLocaleString('zh-CN')}</small><div><button type="button" class="btn tiny" data-resume="${escape(d.id)}">继续编辑</button><button type="button" class="quiet-button" data-delete-draft="${escape(d.id)}">删除草稿</button></div></article>`).join('') || '<p>还没有草稿，开始写下第一段内容吧。</p>'}</div>`);
+      document.querySelectorAll('[data-resume]').forEach(b=>b.onclick=()=>{const draft=list.find(d=>d.id===b.dataset.resume);open({...options,draft},context).catch(e=>context.toast(e.message));});
+      document.querySelectorAll('[data-delete-draft]').forEach(b=>b.onclick=async()=>{if(!confirm('确定删除这份草稿？'))return;try{await api(draftUrl(scope, b.dataset.deleteDraft),'DELETE');forgetDraft(b.dataset.deleteDraft);await drafts(options, context);}catch(e){context.toast(e.message);}});
     } catch(e) {context.toast(e.message);}
   }
   function enhanceComments() {

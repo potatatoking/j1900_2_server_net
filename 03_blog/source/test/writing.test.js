@@ -60,6 +60,25 @@ test('draft privacy, conflict handling, safe documents, visitor rich replies and
   const reply=await call(`/api/topics/${topic.body.id}/replies`,'POST',{author:'Visitor',content:'',document:[{type:'img',src:image.body.url}],attachments:[docId]});
   assert.equal(reply.status,201);assert.equal(reply.body.attachments[0],docId);
   await call('/api/drafts/persist','PUT',{type:'life',title:'',content:'Unfinished'},cookie);
+  const scopes = {
+    learning: {type:'study', section:'learning'},
+    work: {type:'study', section:'work'},
+    article: {type:'article'},
+    update: {type:'update'},
+  };
+  for (const [scope, fields] of Object.entries(scopes)) {
+    assert.equal((await call(`/api/drafts/${scope}?scope=${scope}`,'PUT',{...fields,content:scope},cookie)).status,200);
+  }
+  for (const [scope, id] of [['life','persist'], ...Object.keys(scopes).map(scope => [scope,scope])]) {
+    const list = await call(`/api/drafts?scope=${scope}`,'GET',undefined,cookie);
+    assert.deepEqual(list.body.map(d => d.id), [id]);
+  }
+  assert.equal((await call('/api/drafts?scope=other','GET',undefined,cookie)).status,400);
+  assert.equal((await call('/api/drafts/work?scope=learning','DELETE',undefined,cookie)).status,404);
+  assert.equal((await call('/api/drafts/work/publish?scope=learning','POST',{revision:1},cookie)).status,404);
+  assert.equal((await call('/api/drafts/work?scope=work','PUT',{...scopes.learning,revision:1},cookie)).status,400);
+  assert.equal((await call('/api/drafts/misplaced?scope=learning','PUT',scopes.work,cookie)).status,400);
+
   await stop();await start();
   login=await call('/api/login','POST',{password:'writing-test-only'});cookie=login.cookie.split(';')[0];
   assert.equal((await call('/api/drafts','GET',undefined,cookie)).body.find(d=>d.id==='persist').content,'Unfinished');

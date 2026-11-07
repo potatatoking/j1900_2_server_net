@@ -242,7 +242,13 @@ async function commentFields(input) {
   if (value.content.length > 10000) throw new Error('留言正文最多 1 万字');
   return {content:value.content, document:value.document, attachments:value.attachments, sourceUrl:value.sourceUrl};
 }
-async function writingApi(req, res, route) {
+function draftScope(draft) {
+  if (draft.type !== 'study') return draft.type;
+  if (['learning', 'work'].includes(draft.section)) return draft.section;
+  return /工作|职场|实习|会议/.test(draft.tag || '') ? 'work' : 'learning';
+}
+async function writingApi(req, res, url) {
+  const route = url.pathname;
   if (!['/api/documents','/api/writing/images'].includes(route) && !route.startsWith('/api/documents/') && !route.startsWith('/api/drafts')) return false;
   if (!['GET','HEAD'].includes(req.method) && limited(req)) { json(res,429,{error:'操作太频繁，请稍后再试'}); return true; }
   if (route === '/api/writing/images' && req.method === 'POST') {
@@ -279,13 +285,27 @@ async function writingApi(req, res, route) {
   }
   if (!route.startsWith('/api/drafts')) return false;
   if (!requireAdmin(req, res)) return true;
-  if (route === '/api/drafts' && req.method === 'GET') { json(res,200,db.drafts.slice().sort((a,b) => b.updatedAt.localeCompare(a.updatedAt))); return true; }
+  const scope = url.searchParams.get('scope');
+  if (scope !== null && !['life', 'learning', 'work', 'article', 'update'].includes(scope)) {
+    json(res,400,{error:'草稿栏目无效'}); return true;
+  }
+  if (route === '/api/drafts' && req.method === 'GET') {
+    json(res,200,db.drafts.filter(d => scope === null || draftScope(d) === scope).sort((a,b) => b.updatedAt.localeCompare(a.updatedAt)));
+    return true;
+  }
   const match = route.match(/^\/api\/drafts\/([\w-]+)(\/publish)?$/);
   if (!match) { json(res,404,{ error:'草稿不存在' }); return true; }
   const id = match[1], previous = db.drafts.find(d => d.id === id);
+  if (scope !== null && previous && draftScope(previous) !== scope) {
+    json(res,404,{error:'本栏目没有这份草稿'}); return true;
+  }
   if (req.method === 'PUT' && !match[2]) {
     const input = await body(req, 2000000);
     const fields = await writingFields(input, previous);
+    const expectedScope = previous ? draftScope(previous) : scope;
+    if (expectedScope !== null && draftScope(fields) !== expectedScope) {
+      json(res,400,{error:'请在草稿所属栏目编辑'}); return true;
+    }
     const postId = previous?.postId || (typeof input.postId === 'string' ? input.postId : undefined);
     if (postId && !db.posts.some(p => p.id === postId)) throw new Error('原文章已被删除');
     if (input.revision !== db.drafts.find(d=>d.id===id)?.revision) { json(res,409,{ error:'草稿已在其他窗口更新，请重新打开后编辑' }); return true; }
@@ -296,7 +316,9 @@ async function writingApi(req, res, route) {
   if (!previous) { json(res,404,{ error:'草稿不存在' }); return true; }
   if (req.method === 'POST' && match[2]) {
     const input = await body(req);
-    if (input.revision !== previous.revision) { json(res,409,{error:'草稿版本已变化，请重新打开后发布'}); return true; }
+    if (input.revision !== previous.revision || previous !== db.drafts.find(d => d.id === id)) {
+      json(res,409,{error:'草稿版本已变化，请重新打开后发布'}); return true;
+    }
     if (!canPublish(previous)) throw new Error('请填写标题，以及正文、文档或关联链接');
     let post = previous.postId ? db.posts.find(p => p.id === previous.postId) : undefined;
     if (previous.postId && !post) throw new Error('原文章已被删除');
@@ -689,7 +711,7 @@ http.createServer(async (req, res) => {
   try {
     const url = new URL(req.url, `http://${req.headers.host || 'localhost'}`);
     if (routeVisitor(req, res, url)) return;
-    if (url.pathname.startsWith('/api/')) { if (await writingApi(req, res, url.pathname)) return; return await api(req, res, url); }
+    if (url.pathname.startsWith('/api/')) { if (await writingApi(req, res, url)) return; return await api(req, res, url); }
     if (req.method !== 'GET' && req.method !== 'HEAD') return json(res, 405, { error: '请求方式不支持' });
     if (url.pathname === '/admin/') { res.writeHead(302, { Location: '/admin' + url.search }); return res.end(); }
     if (['/study/', '/work/', '/friends/', '/articles/'].includes(url.pathname)) { res.writeHead(302, { Location: url.pathname.slice(0, -1) + url.search }); return res.end(); }
