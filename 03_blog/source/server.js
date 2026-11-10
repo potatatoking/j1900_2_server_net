@@ -105,7 +105,7 @@ if (!db.profile.contactNote && /^备注来意/.test(String(db.profile.education 
 }
 const educationStageKeys = ['educationPrimary', 'educationMiddle', 'educationHigh', 'educationBachelor', 'educationMaster', 'educationDoctor', 'educationPostdoc'];
 for (const key of educationStageKeys) db.profile[`${key}Url`] ??= '';
-const moodKeys = new Set(['sunny', 'happy', 'calm', 'hopeful', 'quiet', 'growing', 'busy', 'tired', 'rainy']);
+const moodKeys = new Set(['sunny', 'happy', 'calm', 'hopeful', 'quiet', 'growing', 'busy', 'tired', 'rainy', 'worried', 'scared']);
 let writeQueue = Promise.resolve();
 function save() {
   writeQueue = writeQueue.then(async () => {

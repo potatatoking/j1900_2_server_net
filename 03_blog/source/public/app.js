@@ -357,7 +357,9 @@ const homeMoods = [
   ['growing', '✿', '充电', '慢慢来，每一点成长都算数。'],
   ['busy', '↗', '忙碌', '认真走过的每一步，都值得记下。'],
   ['tired', '☾', '疲惫', '今天辛苦了，记得留一点时间休息。'],
-  ['rainy', '☂', '低落', '没关系，雨天也会慢慢放晴。']
+  ['rainy', '☂', '低落', '没关系，雨天也会慢慢放晴。'],
+  ['worried', '☁', '担忧', '心里有牵挂，可以先把担心写下来。'],
+  ['scared', '🌫️', '害怕', '害怕的时候，先停一停，给自己一点时间。']
 ];
 const moodInfo = key => homeMoods.find(item => item[0] === key);
 const localDay = () => dateKey(new Date());
