@@ -79,3 +79,38 @@
  .day-editor-footer{padding-top:18px}.day-editor-footer .btn{min-height:46px}
 }
 @media(prefers-reduced-motion:reduce){.day-calendar-nav>button,.day-calendar-grid .day-calendar-date{transition:none}}
+
+
+/* The date control inside the writing form. */
+.writer-date{--day-accent:#80648d;--day-muted:#887a87;position:relative;margin:20px 0 24px;color:#655060}
+.writer-date-card{display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:center;gap:16px;padding:15px 18px;border:1px solid #e0d2de;border-radius:14px;background:#f4edf3}
+.writer-date-stamp{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:64px;border:1px solid #decbd5;border-radius:4px 4px 10px 4px;background:#fcf7fa;box-shadow:2px 2px 0 #e9dce5;color:#a47c93}
+.writer-date-stamp::before,.writer-date-stamp::after{content:'';position:absolute;top:-4px;width:3px;height:8px;border-radius:2px;background:#b99cad}
+.writer-date-stamp::before{left:12px}.writer-date-stamp::after{right:12px}
+.writer-date-stamp>span{font-size:9px;line-height:1.6}.writer-date-stamp>strong{font:500 29px/1.1 var(--font-serif)}
+.writer-date-copy{display:flex;flex-direction:column;gap:3px;min-width:0}
+.writer-date-copy>span{font-size:10px;letter-spacing:.08em;color:#a18b9c}
+.writer-date-copy>strong{font:500 19px/1.5 var(--font-serif);color:#74566d;overflow-wrap:anywhere}
+.writer-date-copy>small{font-size:10px;color:#a18b9c;line-height:1.6}
+.writer-date-toggle{display:flex;align-items:center;gap:9px;padding:10px 13px;border:1px solid #d5c1d5;border-radius:9px;background:#fcf8fc;color:#876a91;font:11px var(--font-sans);white-space:nowrap;cursor:pointer}
+.writer-date-toggle>span{font-size:16px;line-height:1;transition:transform .15s}
+.writer-date-toggle[aria-expanded="true"]>span{transform:rotate(180deg)}
+.writer-date-toggle:hover{background:#ece1ee}
+.writer-date-help{margin:8px 2px 0;font-size:10px;line-height:1.6;color:#a28b99}
+.writer-date-picker{position:absolute;top:calc(100% + 5px);right:0;z-index:5;width:min(340px,100%);max-height:min(570px,70dvh);overflow-y:auto;overscroll-behavior:contain;padding:17px 18px 15px;border:1px solid #d8c9dc;border-radius:16px;background:#f9f4fa;box-shadow:0 12px 36px #58415f24;box-sizing:border-box}
+.writer-date-picker[hidden]{display:none}
+.writer-date-picker-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:15px;font-size:10px;color:#9b829e}
+.writer-date-picker-top>button{display:grid;place-items:center;width:26px;height:26px;padding:0;border:0;border-radius:50%;background:#eee5f0;color:#a58aaa;font:20px/1 var(--font-sans);cursor:pointer}
+.writer-date-picker .day-calendar-nav{margin-bottom:11px}
+.writer-date-picker .day-calendar-grid .day-calendar-date{height:36px}
+.writer-date-shortcuts{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #e2d6e5;padding:12px 0 13px;font-size:9px;color:#aa95ac}
+.writer-date-shortcuts>button{padding:4px 0;border:0;background:none;color:#8d6b98;font:11px var(--font-sans);cursor:pointer}
+.writer-date-done{display:block;width:100%;margin-top:12px;padding:10px;border:1px solid #d5c3dd;border-radius:9px;background:#ece1f0;color:#7a5c87;font:11px var(--font-sans);cursor:pointer}
+.writer-date button:focus-visible,.writer-date input:focus-visible{outline:2px solid #8d6b98;outline-offset:3px}
+@media(max-width:600px){
+ .writer-date-card{grid-template-columns:48px minmax(0,1fr) auto;padding:13px 12px;gap:10px}
+ .writer-date-stamp{min-height:60px}.writer-date-copy>strong{font-size:16px}.writer-date-copy>span,.writer-date-copy>small{font-size:9px}
+ .writer-date-toggle{font-size:10px;gap:5px;padding:9px 8px}.writer-date-help{font-size:9px}
+ .writer-date-picker{padding:16px;border-radius:14px}.writer-date-picker .day-calendar-grid .day-calendar-date{height:35px}
+}
+@media(prefers-reduced-motion:reduce){.writer-date-toggle>span{transition:none}}

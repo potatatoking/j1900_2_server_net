@@ -156,6 +156,75 @@
     const day = new Date(value);
     return `${String(day.getFullYear()).padStart(4, '0')}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
   }
+  function enhanceDate(form, fallback) {
+    const root = form.querySelector('.writer-date');
+    const field = form.elements.namedItem('date');
+    const toggle = root.querySelector('[data-date-toggle]');
+    const panel = root.querySelector('.writer-date-picker');
+    const calendar = root.querySelector('[data-date-calendar]');
+    if (!field.value || !field.checkValidity()) field.value = fallback;
+    let month = field.value.slice(0, 7);
+    const valid = () => field.value && field.checkValidity();
+    function summary() {
+      if (!valid()) return;
+      const day = field.value;
+      root.querySelector('[data-date-number]').textContent = day.slice(8);
+      root.querySelector('[data-date-month]').textContent = `${Number(day.slice(5, 7))} 月`;
+      root.querySelector('[data-date-label]').textContent = `${day.slice(0, 4)} 年 ${Number(day.slice(5, 7))} 月 ${Number(day.slice(8))} 日`;
+      root.querySelector('[data-date-weekday]').textContent = new Intl.DateTimeFormat('zh-CN', {weekday:'long'}).format(new Date(`${day}T12:00:00`));
+    }
+    function render() {
+      const first = new Date(`${month}-01T12:00:00`);
+      const last = new Date(first); last.setMonth(last.getMonth() + 1, 0);
+      const offset = (first.getDay() + 6) % 7;
+      const serial = (Number(month.slice(0, 4)) - 1) * 12 + Number(month.slice(5)) - 1;
+      const adjacent = delta => {
+        const value = serial + delta;
+        return value < 0 || value >= 9999 * 12 ? '' : `${String(Math.floor(value / 12) + 1).padStart(4, '0')}-${String(value % 12 + 1).padStart(2, '0')}`;
+      };
+      const cells = Array.from({length:offset}, () => '<span aria-hidden="true"></span>');
+      for (let number = 1; number <= last.getDate(); number++) {
+        const key = `${month}-${String(number).padStart(2, '0')}`;
+        cells.push(`<button type="button" class="day-calendar-date" data-date-choice="${key}" aria-label="${key}" aria-pressed="${key === field.value}"${key === calendarDate(new Date()) ? ' aria-current="date"' : ''}>${number}</button>`);
+      }
+      calendar.innerHTML = `<div class="day-calendar-nav"><button type="button" data-date-shift="${adjacent(-1)}" aria-label="上个月" ${adjacent(-1) ? '' : 'disabled'}>‹</button><h3 aria-live="polite">${month.slice(0, 4)}<span>年</span> ${Number(month.slice(5))}<span>月</span></h3><button type="button" data-date-shift="${adjacent(1)}" aria-label="下个月" ${adjacent(1) ? '' : 'disabled'}>›</button></div><div class="day-calendar-week" aria-hidden="true">${['一','二','三','四','五','六','日'].map(day=>`<span>${day}</span>`).join('')}</div><div class="day-calendar-grid" role="group" aria-label="${month} 月历">${cells.join('')}</div>`;
+    }
+    function show(open, focus = true) {
+      if (!open && !valid()) { field.reportValidity(); return; }
+      panel.hidden = !open;
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) {
+        month = field.value.slice(0, 7); render();
+        panel.querySelector('.day-calendar-date[aria-pressed="true"]')?.focus({preventScroll:true});
+      } else if (focus) toggle.focus({preventScroll:true});
+    }
+    function choose(day) {
+      field.value = day;
+      field.dispatchEvent(new Event('input', {bubbles:true}));
+      field.dispatchEvent(new Event('change', {bubbles:true}));
+      show(false);
+    }
+    toggle.addEventListener('click', () => show(panel.hidden));
+    field.addEventListener('input', () => { if (valid()) { summary(); month = field.value.slice(0, 7); render(); } });
+    field.addEventListener('change', () => { if (valid()) { summary(); month = field.value.slice(0, 7); render(); } });
+    root.addEventListener('click', event => {
+      const button = event.target.closest('[data-date-choice], [data-date-shift], [data-date-today], [data-date-done]');
+      if (!button || button.disabled) return;
+      if (button.hasAttribute('data-date-shift')) {
+        month = button.dataset.dateShift; render();
+        const next = calendar.querySelector(`[aria-label="${button.getAttribute('aria-label')}"]:not(:disabled)`) || calendar.querySelector('.day-calendar-date');
+        next?.focus({preventScroll:true});
+      } else if (button.dataset.dateChoice) choose(button.dataset.dateChoice);
+      else if (button.hasAttribute('data-date-today')) choose(calendarDate(new Date()));
+      else show(false);
+    });
+    form.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !panel.hidden) { event.preventDefault(); event.stopPropagation(); show(false); }
+    });
+    form.addEventListener('click', event => { if (!panel.hidden && !event.composedPath().includes(root)) show(false, false); });
+    field.addEventListener('invalid', () => { panel.hidden = false; toggle.setAttribute('aria-expanded','true'); });
+    summary();
+  }
   function newDraftId() {
     return Array.from(crypto.getRandomValues(new Uint8Array(16)), byte => byte.toString(16).padStart(2, '0')).join('');
   }
@@ -202,7 +271,7 @@
     }
     const key = draft ? savedKey : pendingKey;
     const recovered = draft || pending ? local.get(key) : null;
-    context.openModal(`<section class="writer-heading"><span class="journal-kicker">MY WRITING DESK</span><h2>${post || draft?.postId ? '编辑' : '写下'}${draftLabels[scope]}</h2><p>慢慢写，草稿会自动保存。发布后访客才能看到。</p></section><form id="writer-form"><input type="hidden" name="type" value="${type}">${type === 'study' ? `<input type="hidden" name="section" value="${section}">` : ''}<label>记录日期<input class="field" type="date" name="date" min="0001-01-01" max="9999-12-31" required value="${escape(selectedDate)}"></label><small>内容将归入所选日期，实际创建时间会保留。</small><label>标题<input class="field" name="title" maxlength="100" value="${escape(value.title)}"></label><label>标签<input class="field" name="tag" maxlength="30" value="${escape(value.tag)}"></label><label>正文<textarea name="content" class="field">${escape(value.content)}</textarea></label><div class="writing-actions"><button type="button" class="quiet-button" data-save-draft>保存草稿</button><button type="button" class="quiet-button" data-open-drafts>草稿箱</button><button type="submit" class="btn">${post || draft?.postId ? '发布修改' : '发布'}</button></div></form>`);
+    context.openModal(`<section class="writer-heading"><span class="journal-kicker">MY WRITING DESK</span><h2>${post || draft?.postId ? '编辑' : '写下'}${draftLabels[scope]}</h2><p>慢慢写，草稿会自动保存。发布后访客才能看到。</p></section><form id="writer-form"><input type="hidden" name="type" value="${type}">${type === 'study' ? `<input type="hidden" name="section" value="${section}">` : ''}<section class="writer-date"><div class="writer-date-card"><div class="writer-date-stamp" aria-hidden="true"><span data-date-month></span><strong data-date-number></strong></div><div class="writer-date-copy"><span>记录日期</span><strong data-date-label></strong><small data-date-weekday></small></div><button type="button" class="writer-date-toggle" data-date-toggle aria-expanded="false" aria-controls="writer-date-picker">修改日期 <span aria-hidden="true">⌄</span></button></div><p class="writer-date-help">内容将归入这一天，实际创建时间会保留。</p><div class="writer-date-picker" id="writer-date-picker" role="group" aria-label="修改记录日期" hidden><div class="writer-date-picker-top"><span>为这篇内容选择日期</span><button type="button" data-date-done aria-label="收起日期选择">×</button></div><div data-date-calendar></div><div class="writer-date-shortcuts"><button type="button" data-date-today>设为今天 ↗</button><span>选中日期后自动收起</span></div><label class="day-picker-jump" for="writer-record-date">快速跳转<input class="field" type="date" name="date" id="writer-record-date" min="0001-01-01" max="9999-12-31" required value="${escape(selectedDate)}"></label><button type="button" class="writer-date-done" data-date-done>完成日期选择</button></div></section><label>标题<input class="field" name="title" maxlength="100" value="${escape(value.title)}"></label><label>标签<input class="field" name="tag" maxlength="30" value="${escape(value.tag)}"></label><label>正文<textarea name="content" class="field">${escape(value.content)}</textarea></label><div class="writing-actions"><button type="button" class="quiet-button" data-save-draft>保存草稿</button><button type="button" class="quiet-button" data-open-drafts>草稿箱</button><button type="submit" class="btn">${post || draft?.postId ? '发布修改' : '发布'}</button></div></form>`);
     const form = document.querySelector('#writer-form');
     let timer, chain = Promise.resolve(), revision = draft?.revision, savedFingerprint = '', conflict = false;
     const collect = () => ({...Object.fromEntries(new FormData(form)), ...model.collect(), images:value.images || [], postId:draft?.postId || post?.id});
@@ -233,6 +302,7 @@
     };
     const model = enhance(form,value,key,()=> { clearTimeout(timer); timer=setTimeout(()=>save().catch(()=>{}),1200); });
     model.draftId = id;
+    enhanceDate(form, selectedDate);
     active = {form,model,save,context};
     form.querySelector('[data-save-draft]').onclick = () => save().then(()=>context.toast('草稿已保存')).catch(e=>model.error(e.message));
     form.querySelector('[data-open-drafts]').onclick = () => drafts({type,section}, context);
