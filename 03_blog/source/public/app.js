@@ -994,12 +994,72 @@ function writingRender(value) { return value.document || value.sourceUrl || valu
 function writingActions(type, label, section = '') {
   return `<div class="writing-actions"><button type="button" class="btn tiny" data-action="new-post" data-type="${type}" data-section="${section}">${label}</button><button type="button" class="quiet-button" data-action="edit-day" data-type="${type}" data-section="${section}">按日期编辑</button><button type="button" class="quiet-button" data-action="open-drafts" data-type="${type}" data-section="${section}">草稿箱</button></div>`;
 }
-function dayEditor(type, section = 'learning', day = localDay()) {
+function dayEditor(type, section = 'learning', day = localDay(), month = day.slice(0, 7)) {
   if (!state.admin || !['life', 'study', 'article', 'update'].includes(type)) return;
-  const posts = state.posts.filter(post => post.type === type && (type !== 'study' || studySection(post) === section) && postDay(post) === day).sort(postOrder);
-  openModal(`<h2>按日期编辑</h2><label>选择日期<input class="field" id="edit-day-date" type="date" min="0001-01-01" max="9999-12-31" required value="${esc(day)}"></label><p>选择要修改的内容，也可以为这一天补写记录。</p><div class="writing-draft-list">${posts.map(post => `<article><h3>${esc(post.title)}</h3><p>${esc(post.content.slice(0, 80))}</p><button type="button" class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑这篇</button></article>`).join('') || '<p>这一天还没有记录。</p>'}</div><button type="button" class="btn" data-action="new-post" data-type="${type}" data-section="${esc(section)}" data-date="${esc(day)}">为这一天补写</button>`);
+  const scopePosts = state.posts.filter(post => post.type === type && (type !== 'study' || studySection(post) === section)).sort(postOrder);
+  const posts = scopePosts.filter(post => postDay(post) === day);
+  const counts = new Map();
+  for (const post of scopePosts) counts.set(postDay(post), (counts.get(postDay(post)) || 0) + 1);
+  const label = type === 'study' ? section === 'work' ? '工作记录' : '学习手记' : {life:'生活日记',article:'个人文章',update:'更新日志'}[type];
+  const first = new Date(`${month}-01T12:00:00`);
+  const last = new Date(first); last.setMonth(last.getMonth() + 1, 0);
+  const offset = (first.getDay() + 6) % 7;
+  const monthNumber = Number(month.slice(5));
+  const serial = (Number(month.slice(0, 4)) - 1) * 12 + monthNumber - 1;
+  const adjacent = delta => {
+    const value = serial + delta;
+    return value < 0 || value >= 9999 * 12 ? '' : `${String(Math.floor(value / 12) + 1).padStart(4, '0')}-${String(value % 12 + 1).padStart(2, '0')}`;
+  };
+  const cells = Array.from({length:offset}, () => '<span aria-hidden="true"></span>');
+  for (let number = 1; number <= last.getDate(); number++) {
+    const key = `${month}-${String(number).padStart(2, '0')}`;
+    const count = counts.get(key) || 0;
+    cells.push(`<button type="button" class="day-calendar-date${count ? ' has-records' : ''}" data-day-select="${key}" aria-label="${key}${count ? `，${count}篇记录` : '，暂无记录'}" aria-pressed="${day === key}"${key === localDay() ? ' aria-current="date"' : ''}><span>${number}</span>${count ? '<i aria-hidden="true"></i>' : ''}</button>`);
+  }
+  const selected = new Date(`${day}T12:00:00`);
+  const weekday = new Intl.DateTimeFormat('zh-CN', {weekday:'long'}).format(selected);
+  const recent = [...counts.keys()].slice(0, 3);
+  openModal(`<section class="day-editor" id="day-editor" aria-labelledby="day-editor-title">
+    <header class="day-editor-heading"><span class="journal-kicker">A DAY TO RETURN TO</span><h2 id="day-editor-title">按日期编辑<span aria-hidden="true">✳</span></h2><p>翻回某一天，继续写下那时的故事。</p></header>
+    <div class="day-editor-layout">
+      <aside class="day-picker-panel" aria-label="选择记录日期">
+        <div class="day-picker-top"><span>${label}</span><button type="button" data-day-today>回到今天 ↗</button></div>
+        <div class="day-calendar-nav"><button type="button" data-day-month="${adjacent(-1)}" aria-label="上个月" ${adjacent(-1) ? '' : 'disabled'}>‹</button><h3 aria-live="polite">${month.slice(0, 4)}<span>年</span> ${monthNumber}<span>月</span></h3><button type="button" data-day-month="${adjacent(1)}" aria-label="下个月" ${adjacent(1) ? '' : 'disabled'}>›</button></div>
+        <div class="day-calendar-week" aria-hidden="true">${['一','二','三','四','五','六','日'].map(value=>`<span>${value}</span>`).join('')}</div>
+        <div class="day-calendar-grid" role="group" aria-label="${month} 月历">${cells.join('')}</div>
+        <div class="day-calendar-legend"><span><i aria-hidden="true"></i> 有记录</span><span>点击日期，翻开那一页</span></div>
+        <label class="day-picker-jump" for="edit-day-date">快速跳转<input class="field" id="edit-day-date" type="date" min="0001-01-01" max="9999-12-31" required value="${esc(day)}"></label>
+        ${recent.length ? `<div class="day-picker-recent"><span>最近有记录</span><div>${recent.map(key=>`<button type="button" data-day-select="${key}" aria-pressed="${key === day}">${key}</button>`).join('')}</div></div>` : ''}
+      </aside>
+      <section class="day-records" aria-labelledby="day-records-title">
+        <header class="day-records-heading"><div class="day-date-stamp" aria-hidden="true"><span>${Number(day.slice(5, 7))} 月</span><strong>${day.slice(8)}</strong></div><div><span class="journal-kicker">THE SELECTED DAY</span><h3 id="day-records-title"><time datetime="${esc(day)}">${day.slice(0, 4)} 年 ${Number(day.slice(5, 7))} 月 ${Number(day.slice(8))} 日</time></h3><p>${weekday}<span>·</span>${label}</p></div></header>
+        <div class="day-records-label"><span>这一天的内容</span><span class="day-records-count" role="status">${posts.length} 篇记录</span></div>
+        <div class="day-records-list">${posts.length ? posts.map((post,index)=>`<article class="day-record-card"><div class="day-record-meta"><span>${String(index+1).padStart(2,'0')} / ${esc(post.tag || label)}</span><span aria-hidden="true">✧</span></div><h4>${esc(post.title)}</h4><p>${esc(post.content.slice(0, 100) || '图片、文档与关联链接')}</p><button type="button" data-action="edit-post" data-id="${esc(post.id)}">编辑这篇 <span aria-hidden="true">↗</span></button></article>`).join('') : `<div class="day-records-empty"><svg viewBox="0 0 100 84" fill="none" aria-hidden="true"><path d="M23 15h44l12 12v43H23z"/><path d="M67 15v14h12M34 38h31M34 48h31M34 58h18"/><path d="m15 29-5 5 5 5M84 49l5 5-5 5"/><circle cx="79" cy="11" r="3"/></svg><h4>给这一天留一页空白</h4><p>写下发生的小事，<br>或补上当时的想法。</p></div>`}</div>
+        <footer class="day-editor-footer"><button type="button" class="btn" data-action="new-post" data-type="${type}" data-section="${esc(section)}" data-date="${esc(day)}"><span aria-hidden="true">＋</span> 为这一天补写</button><p>草稿会自动保存，可以慢慢写。</p></footer>
+      </section>
+    </div>
+  </section>`);
+  modal.setAttribute('aria-labelledby', 'day-editor-title');
   const picker = document.querySelector('#edit-day-date');
-  picker.addEventListener('change', () => { if (picker.value && picker.checkValidity()) dayEditor(type, section, picker.value); });
+  picker.addEventListener('change', () => {
+    if (picker.value && picker.checkValidity()) {
+      dayEditor(type, section, picker.value);
+      document.querySelector('#edit-day-date')?.focus({preventScroll:true});
+    }
+  });
+  document.querySelector('#day-editor').addEventListener('click', event => {
+    const button = event.target.closest('[data-day-select], [data-day-month], [data-day-today]');
+    if (!button || button.disabled) return;
+    if (button.hasAttribute('data-day-month')) {
+      dayEditor(type, section, day, button.dataset.dayMonth);
+      const focus = document.querySelector(`[data-day-month][aria-label="${button.getAttribute('aria-label')}"]:not(:disabled)`) || document.querySelector('.day-calendar-date');
+      focus?.focus({preventScroll:true});
+    } else {
+      const chosen = button.dataset.daySelect || localDay();
+      dayEditor(type, section, chosen);
+      document.querySelector('.day-calendar-date[aria-pressed="true"]')?.focus({preventScroll:true});
+    }
+  });
 }
 function writingContext() {
   return { openModal, toast, getPost: id => state.posts.find(post => post.id === id), published: async post => {

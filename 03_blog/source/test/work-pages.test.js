@@ -179,3 +179,27 @@ test('backfill actions forward their date to the writer and previews use record 
   assert.match(calendar,/data-study-day="0004-02-29"/);
   assert.equal((calendar.match(/study-calendar-blank/g)||[]).length,6);
 });
+
+
+test('the date editor navigates months without changing the selection, then selects leap days within its section', async () => {
+  const {run,node}=await setup();
+  const listeners={};node.addEventListener=(type,listener)=>{listeners[type]=listener;};
+  run(`state.admin=true;state.posts=[
+    {id:'leap',type:'study',section:'learning',title:'闰日学习',content:'学习正文',date:'2024-02-29',createdAt:'2026-11-23T00:00:00Z'},
+    {id:'private-work',type:'study',section:'work',title:'同日工作',content:'工作正文',date:'2024-02-29',createdAt:'2026-11-23T00:00:00Z'}
+  ];dayEditor('study','learning','2024-01-31');`);
+  const monthButton={disabled:false,dataset:{dayMonth:'2024-02'},hasAttribute:name=>name==='data-day-month',getAttribute:()=> '下个月'};
+  listeners.click({target:{closest:()=>monthButton}});
+  assert.match(node.innerHTML,/aria-label="2024-02 月历"/);
+  assert.match(node.innerHTML,/data-date="2024-01-31"/);
+  assert.match(node.innerHTML,/aria-label="2024-02-29，1篇记录"/);
+  const dayButton={disabled:false,dataset:{daySelect:'2024-02-29'},hasAttribute:()=>false};
+  listeners.click({target:{closest:()=>dayButton}});
+  assert.match(node.innerHTML,/data-date="2024-02-29"/);
+  assert.match(node.innerHTML,/data-action="edit-post" data-id="leap"/);
+  assert.doesNotMatch(node.innerHTML,/同日工作|data-id="private-work"/);
+  run("dayEditor('study','learning','0001-01-01')");
+  assert.match(node.innerHTML,/data-day-month="" aria-label="上个月" disabled/);
+  run("dayEditor('study','learning','9999-12-31')");
+  assert.match(node.innerHTML,/data-day-month="" aria-label="下个月" disabled/);
+});
