@@ -21,9 +21,15 @@ const previewData = {
 };
 const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[char]);
 const date = value => new Intl.DateTimeFormat('zh-CN', { year: 'numeric', month: 'long', day: 'numeric' }).format(new Date(value));
-const dateKey = value => new Date(value).toLocaleDateString('sv-SE');
+const dateKey = value => {
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return value;
+  const day = new Date(value);
+  return `${String(day.getFullYear()).padStart(4, '0')}-${String(day.getMonth() + 1).padStart(2, '0')}-${String(day.getDate()).padStart(2, '0')}`;
+};
+const postDay = post => dateKey(post.date || post.createdAt);
+const postOrder = (a, b) => postDay(b).localeCompare(postDay(a)) || b.createdAt.localeCompare(a.createdAt);
 function searchItems() {
-  const items = state.posts.map(post => ({ page: postPage(post), id: `post-${post.id}`, category: post.type === 'update' ? '更新日志' : post.type === 'article' ? '个人文章' : post.type === 'life' ? '生活日记' : studySection(post) === 'work' ? '工作记录' : '学习手记', title: post.title, detail: post.content, words: [post.title, post.content, post.tag, date(post.createdAt)].join(' ') }));
+  const items = state.posts.map(post => ({ page: postPage(post), id: `post-${post.id}`, category: post.type === 'update' ? '更新日志' : post.type === 'article' ? '个人文章' : post.type === 'life' ? '生活日记' : studySection(post) === 'work' ? '工作记录' : '学习手记', title: post.title, detail: post.content, words: [post.title, post.content, post.tag, postDay(post), date(`${postDay(post)}T12:00:00`)].join(' ') }));
   if (state.readingPlan?.book) {
     const plan = state.readingPlan;
     items.push({ page: 'study', id: 'reading-plan', category: '阅读计划', title: plan.book, detail: plan.goal || plan.note, words: [plan.book, plan.author, plan.goal, plan.note].join(' ') });
@@ -376,7 +382,7 @@ function home() {
   const artwork = homeArtworks[homeInteraction.artwork];
   const latestMood = state.moods.find(entry => entry.date === localDay());
   const mood = moodInfo(latestMood?.mood);
-  const latest = state.posts.slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt)).slice(0, 3);
+  const latest = state.posts.slice().sort(postOrder).slice(0, 3);
   const chapters = [
     ['life', 'LIFE JOURNAL', '生活日记', '收藏平凡日子的闪光', '01'],
     ['study', 'LEARNING NOTES', '学习手记', '记录一点一点的成长', '02'],
@@ -408,7 +414,7 @@ function home() {
       <nav class="chapter-grid" aria-label="博客分类">${[chapters.slice(0, 2), chapters.slice(2, 4), chapters.slice(4)].map((book, bookIndex) => `<div class="chapter-book" role="group" aria-label="${['日常与成长', '工作与关于我', '相遇与交流'][bookIndex]}">${book.map(([page, en, title, caption, number]) => `<a class="chapter-link chapter-${page}" href="#${page}"><div class="chapter-meta"><span>${number} / ${en}</span><span class="chapter-arrow" aria-hidden="true">↗</span></div><h3>${title}</h3><p>${caption}</p><span class="chapter-count">${['life', 'study', 'work'].includes(page) ? `${state.posts.filter(post => postPage(post) === page).length} 篇记录` : page === 'talk' ? `${state.topics.length} 条留言` : '很高兴认识你'}</span><span class="book-page-number" aria-hidden="true">— ${number} —</span></a>`).join('')}</div>`).join('')}</nav><a class="article-directory-link" href="#articles"><span><small>PERSONAL ESSAYS / ${state.posts.filter(post => post.type === 'article').length} 篇文章</small><strong>个人文章</strong><em>把想法写下来，留给以后的自己。</em></span><span aria-hidden="true">↗</span></a>
     </section>
     <section class="journal-latest" aria-labelledby="latest-title"><div class="journal-section-label"><h2 id="latest-title">最近碎片</h2><span>持续收集生活中的微光</span></div>
-      <div class="journal-latest-grid"><div class="journal-entries">${latest.length ? latest.map((post, index) => `<a class="journal-entry" href="#${postPage(post)}?item=${encodeURIComponent(`post-${post.id}`)}"><span class="journal-entry-index">0${index + 1}</span><div><span class="journal-entry-category">${post.type === 'article' ? '个人文章' : post.type === 'life' ? '生活日记' : postPage(post) === 'work' ? '工作记录' : '学习手记'} · ${date(post.createdAt)}</span><h3>${esc(post.title)}</h3><p>${esc(post.content.slice(0, 76))}${post.content.length > 76 ? '…' : ''}</p></div><span aria-hidden="true">↗</span></a>`).join('') : '<p class="journal-empty">新的一页，等一个想记录的瞬间。</p>'}</div>
+      <div class="journal-latest-grid"><div class="journal-entries">${latest.length ? latest.map((post, index) => `<a class="journal-entry" href="#${postPage(post)}?item=${encodeURIComponent(`post-${post.id}`)}"><span class="journal-entry-index">0${index + 1}</span><div><span class="journal-entry-category">${post.type === 'article' ? '个人文章' : post.type === 'life' ? '生活日记' : postPage(post) === 'work' ? '工作记录' : '学习手记'} · ${date(`${postDay(post)}T12:00:00`)}</span><h3>${esc(post.title)}</h3><p>${esc(post.content.slice(0, 76))}${post.content.length > 76 ? '…' : ''}</p></div><span aria-hidden="true">↗</span></a>`).join('') : '<p class="journal-empty">新的一页，等一个想记录的瞬间。</p>'}</div>
       <aside class="journal-letter"><span class="journal-kicker">A NOTE TO YOU</span><span class="letter-star" aria-hidden="true">✳</span><h3>你好呀，<br>我是${esc(state.profile.name)}。</h3><p>${esc(state.profile.bio)}</p><a href="#about">关于我的更多故事 ↗</a></aside></div>
     </section>
     <section class="journal-search" aria-label="搜索手帐">${searchPanel()}</section>
@@ -454,7 +460,7 @@ function syncFanNavigation() {
 }
 function fanPreviewContent(page) {
   let snippets;
-  if (['life', 'study', 'work', 'articles'].includes(page.id)) snippets = state.posts.filter(post => postPage(post) === page.id).slice(0, 2).map(post => ({ title: post.title, text: post.content.slice(0, 100) }));
+  if (['life', 'study', 'work', 'articles'].includes(page.id)) snippets = state.posts.filter(post => postPage(post) === page.id).sort(postOrder).slice(0, 2).map(post => ({ title: post.title, text: post.content.slice(0, 100) }));
   else if (page.id === 'talk') snippets = state.topics.slice(0, 2).map(topic => ({ title: topic.title, text: topic.content.slice(0, 100) }));
   else if (page.id === 'about') snippets = [{ title: state.profile?.name || '土豆', text: state.profile?.bio || state.profile?.intro || '' }];
   else snippets = [{ title: '个人记事簿', text: '生活、学习与小小心事。' }];
@@ -635,42 +641,42 @@ if (fanRoot) {
 function pageHead(eyebrow, title, desc, action = '') { return `<div class="page-head"><div class="page-head-copy"><a class="back-to-directory" href="#home?item=home-chapters">← 返回目录</a><div class="eyebrow">${eyebrow}</div><h1>${title}</h1><p>${desc}</p>${action ? `<div class="page-head-action">${action}</div>` : ''}</div>${['talk', 'study', 'work', 'articles'].includes(route()) ? '' : '<img class="page-head-art" src="./assets/rin-saber-chibi.png" alt="" aria-hidden="true">'}</div>`; }
 const lifeArchiveState = { year: '', month: '' };
 function lifeArchivePosts() {
-  return state.posts.filter(post => post.type === 'life').sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+  return state.posts.filter(post => post.type === 'life').sort(postOrder);
 }
 function lifePostCard(post) {
   return `<article id="post-${esc(post.id)}" class="post-card life-entry"><div class="post-top"><span class="tag">${esc(post.tag || '日常碎片')}</span><span class="life-entry-star" aria-hidden="true">✳</span></div><h2>${esc(post.title)}</h2><div>${writingRender(post)}</div>${postImageGallery(post.images)}<div class="post-foot"><span>${post.updatedAt ? `✎ 编辑于 ${date(post.updatedAt)}` : '写给今天的自己'}</span>${state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></span>` : '<span aria-hidden="true">↗</span>'}</div></article>`;
 }
 function lifeArchiveView() {
   const posts = lifeArchivePosts();
-  const years = [...new Set(posts.map(post => dateKey(post.createdAt).slice(0, 4)))];
+  const years = [...new Set(posts.map(post => postDay(post).slice(0, 4)))];
   if (lifeArchiveState.year && !years.includes(lifeArchiveState.year)) { lifeArchiveState.year = ''; lifeArchiveState.month = ''; }
-  const yearPosts = posts.filter(post => !lifeArchiveState.year || dateKey(post.createdAt).startsWith(lifeArchiveState.year));
-  const months = [...new Set(yearPosts.map(post => dateKey(post.createdAt).slice(0, 7)))];
+  const yearPosts = posts.filter(post => !lifeArchiveState.year || postDay(post).startsWith(lifeArchiveState.year));
+  const months = [...new Set(yearPosts.map(post => postDay(post).slice(0, 7)))];
   if (!months.includes(lifeArchiveState.month)) lifeArchiveState.month = '';
-  const visible = yearPosts.filter(post => !lifeArchiveState.month || dateKey(post.createdAt).startsWith(lifeArchiveState.month));
+  const visible = yearPosts.filter(post => !lifeArchiveState.month || postDay(post).startsWith(lifeArchiveState.month));
   const groups = new Map();
   for (const post of visible) {
-    const key = dateKey(post.createdAt);
+    const key = postDay(post);
     if (!groups.has(key)) groups.set(key, []);
     groups.get(key).push(post);
   }
   const monthLabel = key => `${key.slice(0, 4)} / ${Number(key.slice(5))}月`;
-  return `<div class="life-archive-layout"><aside class="life-archive-index"><span class="journal-kicker">THE DAYS WE KEEP</span><h2>日子有迹<span aria-hidden="true">✿</span></h2><p>沿着时间，翻回某一天。</p><nav class="life-year-nav" aria-label="按年份筛选"><button type="button" data-life-year="" aria-pressed="${!lifeArchiveState.year}">全部年份 <small>${posts.length}</small></button>${years.map(year => `<button type="button" data-life-year="${year}" aria-pressed="${lifeArchiveState.year === year}">${year} 年 <small>${posts.filter(post => dateKey(post.createdAt).startsWith(year)).length}</small></button>`).join('')}</nav><div class="life-archive-note"><span aria-hidden="true">✳</span><p>把普通的日子<br>过成值得收藏的诗。</p><small>little things, lovely days</small></div></aside><section class="life-archive-main" aria-label="按日期归档的生活日记"><nav class="life-month-nav" aria-label="按月份筛选"><button type="button" data-life-month="" aria-pressed="${!lifeArchiveState.month}">全部月份</button>${months.map(month => `<button type="button" data-life-month="${month}" aria-pressed="${lifeArchiveState.month === month}">${monthLabel(month)} <small>${yearPosts.filter(post => dateKey(post.createdAt).startsWith(month)).length}</small></button>`).join('')}</nav><div class="life-archive-summary" role="status"><span>${lifeArchiveState.month ? monthLabel(lifeArchiveState.month) : lifeArchiveState.year ? `${lifeArchiveState.year} 年的日常` : '所有值得记住的日子'}</span><small>${visible.length} 篇日记 · ${groups.size} 个日子</small></div><div class="life-timeline">${[...groups].map(([day, entries]) => `<section class="life-day"><div class="life-date"><time datetime="${day}"><strong>${day.slice(8)}</strong><span>${day.slice(0, 4)} / ${day.slice(5, 7)}</span><small>${new Intl.DateTimeFormat('zh-CN', { weekday: 'long' }).format(new Date(`${day}T12:00:00`))}</small></time></div><div class="life-day-entries">${entries.map(lifePostCard).join('')}</div></section>`).join('') || '<p class="life-empty">还没有写下日记，留一点空白给即将发生的美好。✿</p>'}</div></section></div>`;
+  return `<div class="life-archive-layout"><aside class="life-archive-index"><span class="journal-kicker">THE DAYS WE KEEP</span><h2>日子有迹<span aria-hidden="true">✿</span></h2><p>沿着时间，翻回某一天。</p><nav class="life-year-nav" aria-label="按年份筛选"><button type="button" data-life-year="" aria-pressed="${!lifeArchiveState.year}">全部年份 <small>${posts.length}</small></button>${years.map(year => `<button type="button" data-life-year="${year}" aria-pressed="${lifeArchiveState.year === year}">${year} 年 <small>${posts.filter(post => postDay(post).startsWith(year)).length}</small></button>`).join('')}</nav><div class="life-archive-note"><span aria-hidden="true">✳</span><p>把普通的日子<br>过成值得收藏的诗。</p><small>little things, lovely days</small></div></aside><section class="life-archive-main" aria-label="按日期归档的生活日记"><nav class="life-month-nav" aria-label="按月份筛选"><button type="button" data-life-month="" aria-pressed="${!lifeArchiveState.month}">全部月份</button>${months.map(month => `<button type="button" data-life-month="${month}" aria-pressed="${lifeArchiveState.month === month}">${monthLabel(month)} <small>${yearPosts.filter(post => postDay(post).startsWith(month)).length}</small></button>`).join('')}</nav><div class="life-archive-summary" role="status"><span>${lifeArchiveState.month ? monthLabel(lifeArchiveState.month) : lifeArchiveState.year ? `${lifeArchiveState.year} 年的日常` : '所有值得记住的日子'}</span><small>${visible.length} 篇日记 · ${groups.size} 个日子</small></div><div class="life-timeline">${[...groups].map(([day, entries]) => `<section class="life-day"><div class="life-date"><time datetime="${day}"><strong>${day.slice(8)}</strong><span>${day.slice(0, 4)} / ${day.slice(5, 7)}</span><small>${new Intl.DateTimeFormat('zh-CN', { weekday: 'long' }).format(new Date(`${day}T12:00:00`))}</small></time></div><div class="life-day-entries">${entries.map(lifePostCard).join('')}</div></section>`).join('') || '<p class="life-empty">还没有写下日记，留一点空白给即将发生的美好。✿</p>'}</div></section></div>`;
 }
 function postsPage(type) {
   if (type !== 'life') return studyPage();
   const action = state.admin ? writingActions('life', '＋ 写一篇日记') : '';
   const targetId = new URLSearchParams(location.hash.split('?')[1] || '').get('item');
   const target = lifeArchivePosts().find(post => `post-${post.id}` === targetId);
-  if (target) { lifeArchiveState.year = dateKey(target.createdAt).slice(0, 4); lifeArchiveState.month = dateKey(target.createdAt).slice(0, 7); }
+  if (target) { lifeArchiveState.year = postDay(target).slice(0, 4); lifeArchiveState.month = postDay(target).slice(0, 7); }
   return `<div class="container page page-life">${pageHead('MY LITTLE DAYS', '生活日记 🌷', '把日常里的甜和暖，都悄悄收藏起来。', action)}<div id="life-archive">${lifeArchiveView()}</div>${bottomSearch()}</div>`;
 }
 function articlesPage() {
-  const posts = state.posts.filter(post => post.type === 'article').slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt));
+  const posts = state.posts.filter(post => post.type === 'article').slice().sort(postOrder);
   const targetId = new URLSearchParams(location.hash.split('?')[1] || '').get('item');
   const selected = posts.find(post => `post-${post.id}` === targetId);
   const actions = post => state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑文章</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除文章</button></span>` : '';
-  const content = selected ? `<article class="personal-article" id="post-${esc(selected.id)}"><a class="article-back" href="#articles">← 所有文章</a><header><div class="article-meta"><time datetime="${esc(selected.createdAt)}">${date(selected.createdAt)}</time><span>${esc(selected.tag || '随笔与想法')}</span></div><h2>${esc(selected.title)}</h2>${selected.updatedAt ? `<small>更新于 ${date(selected.updatedAt)}</small>` : ''}</header><div class="article-body">${writingRender(selected)}</div>${postImageGallery(selected.images)}<footer>${actions(selected)}<a class="article-back" href="#articles">回到文章列表 ↗</a></footer></article>` : targetId ? '<div class="article-empty"><h2>这篇文章暂时找不到了</h2><a class="article-back" href="#articles">返回文章列表 ↗</a></div>' : `<div class="article-list-heading"><span>慢慢写，慢慢想。</span><small>${posts.length} 篇文章</small></div><div class="article-list">${posts.map((post,index) => `<article class="article-list-item"><div class="article-list-index" aria-hidden="true">${String(index+1).padStart(2,'0')}</div><div class="article-list-copy"><div class="article-meta"><time datetime="${esc(post.createdAt)}">${date(post.createdAt)}</time><span>${esc(post.tag || '随笔与想法')}</span></div><h2><a href="#articles?item=${encodeURIComponent(`post-${post.id}`)}">${esc(post.title)}</a></h2><p>${esc(post.content.slice(0,150))}${post.content.length > 150 ? '…' : ''}</p><div class="article-list-footer"><a class="article-read" href="#articles?item=${encodeURIComponent(`post-${post.id}`)}">阅读全文 <span aria-hidden="true">↗</span></a>${actions(post)}</div></div></article>`).join('') || '<div class="article-empty"><span aria-hidden="true">✳</span><h2>给还没写下的想法，留一页空白。</h2><p>关于生活的思考、偶然的感悟，或是一段想认真说的话。</p></div>'}</div>`;
+  const content = selected ? `<article class="personal-article" id="post-${esc(selected.id)}"><a class="article-back" href="#articles">← 所有文章</a><header><div class="article-meta"><time datetime="${esc(postDay(selected))}">${date(`${postDay(selected)}T12:00:00`)}</time><span>${esc(selected.tag || '随笔与想法')}</span></div><h2>${esc(selected.title)}</h2>${selected.updatedAt ? `<small>更新于 ${date(selected.updatedAt)}</small>` : ''}</header><div class="article-body">${writingRender(selected)}</div>${postImageGallery(selected.images)}<footer>${actions(selected)}<a class="article-back" href="#articles">回到文章列表 ↗</a></footer></article>` : targetId ? '<div class="article-empty"><h2>这篇文章暂时找不到了</h2><a class="article-back" href="#articles">返回文章列表 ↗</a></div>' : `<div class="article-list-heading"><span>慢慢写，慢慢想。</span><small>${posts.length} 篇文章</small></div><div class="article-list">${posts.map((post,index) => `<article class="article-list-item"><div class="article-list-index" aria-hidden="true">${String(index+1).padStart(2,'0')}</div><div class="article-list-copy"><div class="article-meta"><time datetime="${esc(postDay(post))}">${date(`${postDay(post)}T12:00:00`)}</time><span>${esc(post.tag || '随笔与想法')}</span></div><h2><a href="#articles?item=${encodeURIComponent(`post-${post.id}`)}">${esc(post.title)}</a></h2><p>${esc(post.content.slice(0,150))}${post.content.length > 150 ? '…' : ''}</p><div class="article-list-footer"><a class="article-read" href="#articles?item=${encodeURIComponent(`post-${post.id}`)}">阅读全文 <span aria-hidden="true">↗</span></a>${actions(post)}</div></div></article>`).join('') || '<div class="article-empty"><span aria-hidden="true">✳</span><h2>给还没写下的想法，留一页空白。</h2><p>关于生活的思考、偶然的感悟，或是一段想认真说的话。</p></div>'}</div>`;
   return `<div class="container page page-articles">${pageHead('PERSONAL ESSAYS','个人文章','写下自己的想法，也留下思考的过程。',state.admin ? writingActions('article', '＋ 写一篇文章') : '')}<section class="personal-writing" aria-label="个人文章">${content}</section>${bottomSearch()}</div>`;
 }
 function studySection(post) {
@@ -678,30 +684,32 @@ function studySection(post) {
   return /工作|职场|实习|会议/.test(post.tag || '') ? 'work' : 'learning';
 }
 function studyPostCard(post, index) {
-  return `<article id="post-${esc(post.id)}" class="post-card paper-card"><div class="post-top"><div class="post-label"><span class="post-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span><span class="tag">${esc(post.tag || (studySection(post) === 'work' ? '工作记录' : '学习笔记'))}</span></div><time class="date" datetime="${esc(post.createdAt)}">${date(post.createdAt)}</time></div><h2>${esc(post.title)}</h2><div>${writingRender(post)}</div>${postImageGallery(post.images)}<div class="post-foot"><span>${post.updatedAt ? `✎ 编辑于 ${date(post.updatedAt)}` : '🥔 写给今天的自己'}</span>${state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></span>` : '<span>✦</span>'}</div></article>`;
+  return `<article id="post-${esc(post.id)}" class="post-card paper-card"><div class="post-top"><div class="post-label"><span class="post-number" aria-hidden="true">${String(index + 1).padStart(2, '0')}</span><span class="tag">${esc(post.tag || (studySection(post) === 'work' ? '工作记录' : '学习笔记'))}</span></div><time class="date" datetime="${esc(postDay(post))}">${date(`${postDay(post)}T12:00:00`)}</time></div><h2>${esc(post.title)}</h2><div>${writingRender(post)}</div>${postImageGallery(post.images)}<div class="post-foot"><span>${post.updatedAt ? `✎ 编辑于 ${date(post.updatedAt)}` : '🥔 写给今天的自己'}</span>${state.admin ? `<span class="admin-actions"><button class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></span>` : '<span>✦</span>'}</div></article>`;
 }
 const studyCalendarState = { learning: { month: '', day: '' }, work: { month: '', day: '' } };
 function archivedStudyPosts(section) {
-  return state.posts.filter(post => post.type === 'study' && studySection(post) === section && dateKey(post.createdAt) !== localDay());
+  return state.posts.filter(post => post.type === 'study' && studySection(post) === section && postDay(post) !== localDay());
 }
 function studyCalendarView(section, older) {
-  const months = [...new Set(older.map(post => dateKey(post.createdAt).slice(0, 7)))].sort((a, b) => b.localeCompare(a));
-  if (!months.length) return '<div class="study-archive-empty">过去的记录会收藏在这里。</div>';
+  const months = [...new Set(older.map(post => postDay(post).slice(0, 7)))].sort((a, b) => b.localeCompare(a));
+  if (!months.length) return '<div class="study-archive-empty">按日期收藏的记录会显示在这里。</div>';
   const selection = studyCalendarState[section];
   if (!months.includes(selection.month)) { selection.month = months[0]; selection.day = ''; }
   const month = selection.month;
   const [year, number] = month.split('-').map(Number);
   const dayPosts = new Map();
   for (const post of older) {
-    const key = dateKey(post.createdAt);
+    const key = postDay(post);
     if (key.startsWith(month)) {
       if (!dayPosts.has(key)) dayPosts.set(key, []);
       dayPosts.get(key).push(post);
     }
   }
   if (!dayPosts.has(selection.day)) selection.day = '';
-  const offset = (new Date(year, number - 1, 1).getDay() + 6) % 7;
-  const days = new Date(year, number, 0).getDate();
+  const first = new Date(`${month}-01T12:00:00`);
+  const last = new Date(first); last.setMonth(last.getMonth() + 1, 0);
+  const offset = (first.getDay() + 6) % 7;
+  const days = last.getDate();
   const cells = Array.from({ length: offset }, () => '<span class="study-calendar-blank" aria-hidden="true"></span>');
   for (let day = 1; day <= days; day++) {
     const key = `${month}-${String(day).padStart(2, '0')}`;
@@ -712,7 +720,7 @@ function studyCalendarView(section, older) {
   }
   const index = months.indexOf(month);
   const selected = dayPosts.get(selection.day) || [];
-  return `<div class="study-archive-heading"><strong>往日归档</strong><small>${older.length} 篇记录 · 点亮的日期可打开</small></div><div class="study-calendar-layout"><div class="study-calendar"><div class="study-calendar-nav"><button type="button" data-study-month="previous" aria-label="较早的归档月份" ${index === months.length - 1 ? 'disabled' : ''}>‹</button><strong tabindex="-1">${year} 年 ${number} 月</strong><button type="button" data-study-month="next" aria-label="较新的归档月份" ${index === 0 ? 'disabled' : ''}>›</button></div><div class="study-calendar-weekdays" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div class="study-calendar-grid">${cells.join('')}</div></div>${selected.length ? `<div class="study-day-content" aria-live="polite"><div class="study-day-title"><span>${date(new Date(`${selection.day}T12:00:00`))}</span><small>${selected.length} 篇记录</small></div><div class="study-day-posts">${selected.map((post, index) => studyPostCard(post, index)).join('')}</div></div>` : ''}</div>`;
+  return `<div class="study-archive-heading"><strong>日期归档</strong><small>${older.length} 篇记录 · 点亮的日期可打开</small></div><div class="study-calendar-layout"><div class="study-calendar"><div class="study-calendar-nav"><button type="button" data-study-month="previous" aria-label="较早的归档月份" ${index === months.length - 1 ? 'disabled' : ''}>‹</button><strong tabindex="-1">${year} 年 ${number} 月</strong><button type="button" data-study-month="next" aria-label="较新的归档月份" ${index === 0 ? 'disabled' : ''}>›</button></div><div class="study-calendar-weekdays" aria-hidden="true"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div><div class="study-calendar-grid">${cells.join('')}</div></div>${selected.length ? `<div class="study-day-content" aria-live="polite"><div class="study-day-title"><span>${date(new Date(`${selection.day}T12:00:00`))}</span><small>${selected.length} 篇记录</small></div><div class="study-day-posts">${selected.map((post, index) => studyPostCard(post, index)).join('')}</div></div>` : ''}</div>`;
 }
 function openStudyArchivedPost(id) {
   const post = state.posts.find(item => `post-${item.id}` === id && ['study', 'article'].includes(item.type));
@@ -720,15 +728,15 @@ function openStudyArchivedPost(id) {
   const section = studySection(post);
   const archive = document.querySelector(`.study-lane-${section} .study-archive`);
   if (!archive) return null;
-  const day = dateKey(post.createdAt);
+  const day = postDay(post);
   studyCalendarState[section] = { month: day.slice(0, 7), day };
   updateContent(archive, () => { archive.innerHTML = studyCalendarView(section, archivedStudyPosts(section)); });
   return document.getElementById(id);
 }
 function studyLane(section, title, English, icon, caption) {
   const posts = state.posts.filter(post => post.type === 'study' && studySection(post) === section);
-  const today = posts.filter(post => dateKey(post.createdAt) === localDay());
-  const older = posts.filter(post => dateKey(post.createdAt) !== localDay());
+  const today = posts.filter(post => postDay(post) === localDay());
+  const older = posts.filter(post => postDay(post) !== localDay());
   return `<section class="study-lane study-lane-${section}" id="study-${section}" aria-labelledby="study-${section}-title"><div class="study-lane-head"><div class="study-lane-icon" aria-hidden="true">${icon}</div><div><span class="study-kicker">${English} / ${String(posts.length).padStart(2, '0')}</span><h2 id="study-${section}-title">${title}</h2><p>${caption}</p></div>${state.admin ? writingActions('study', '＋ 写一篇', section) : ''}</div>${typeof renderActivityPanel === 'function' ? renderActivityPanel(section === 'learning' ? 'luogu' : 'github') : ''}<div class="study-today"><div class="study-subhead"><span>今天的记录</span><time datetime="${localDay()}">${date(new Date())}</time></div>${today.length ? today.map((post, index) => studyPostCard(post, index)).join('') : '<div class="study-today-empty">今天还没有新记录，留一页给正在发生的故事。</div>'}</div><div class="study-archive" data-section="${section}">${studyCalendarView(section, older)}</div></section>`;
 }
 function readingPlanCard() {
@@ -776,11 +784,11 @@ function workPage() {
   return `<div class="container page page-work">${pageHead('WORK JOURNAL', '工作记录 📎', '让正在做的事，一点点有了形状。')}${growthPageNav('work')}${typeof renderProjects === 'function' ? renderProjects() : ''}${studyLane('work', '工作内容', 'WORK', '📎', '把每个认真完成的瞬间，留在这里。')}${bottomSearch()}<footer class="work-updates-footer"><button type="button" class="work-updates-link" data-action="show-updates" aria-haspopup="dialog">更新日志</button><hr></footer></div>`;
 }
 function blogUpdates() {
-  return state.posts.filter(post => post.type === 'update').slice().sort((a, b) => b.createdAt.localeCompare(a.createdAt) || String(a.id).localeCompare(String(b.id)));
+  return state.posts.filter(post => post.type === 'update').slice().sort((a, b) => postOrder(a, b) || String(a.id).localeCompare(String(b.id)));
 }
 function blogUpdatesModal() {
   const updates = blogUpdates();
-  openModal(`<section class="blog-updates" aria-labelledby="blog-updates-title"><header class="blog-updates-heading"><div><span class="journal-kicker">CHANGELOG</span><h2 id="blog-updates-title">更新日志</h2><p>博客的新功能与修复记录 · 最近更新在前</p></div>${state.admin ? writingActions('update', '＋ 写更新') : ''}</header>${updates.length ? `<ol class="blog-updates-list">${updates.map(post => `<li><article id="post-${esc(post.id)}"><time datetime="${esc(post.createdAt)}">${date(post.createdAt)}</time>${post.tag ? `<span class="blog-update-tag">${esc(post.tag)}</span>` : ''}<h3>${esc(post.title)}</h3><div class="blog-update-content">${writingRender(post)}</div>${postImageGallery(post.images)}${state.admin ? `<div class="admin-actions"><button type="button" class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button type="button" class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></div>` : ''}</article></li>`).join('')}</ol>` : '<p class="blog-updates-empty">还没有更新记录。</p>'}</section>`);
+  openModal(`<section class="blog-updates" aria-labelledby="blog-updates-title"><header class="blog-updates-heading"><div><span class="journal-kicker">CHANGELOG</span><h2 id="blog-updates-title">更新日志</h2><p>博客的新功能与修复记录 · 最近更新在前</p></div>${state.admin ? writingActions('update', '＋ 写更新') : ''}</header>${updates.length ? `<ol class="blog-updates-list">${updates.map(post => `<li><article id="post-${esc(post.id)}"><time datetime="${esc(postDay(post))}">${date(`${postDay(post)}T12:00:00`)}</time>${post.tag ? `<span class="blog-update-tag">${esc(post.tag)}</span>` : ''}<h3>${esc(post.title)}</h3><div class="blog-update-content">${writingRender(post)}</div>${postImageGallery(post.images)}${state.admin ? `<div class="admin-actions"><button type="button" class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑</button><button type="button" class="quiet-button" data-action="delete-post" data-id="${esc(post.id)}">删除</button></div>` : ''}</article></li>`).join('')}</ol>` : '<p class="blog-updates-empty">还没有更新记录。</p>'}</section>`);
   modal.setAttribute('aria-labelledby', 'blog-updates-title');
 }
 function todaysQuote() {
@@ -984,19 +992,26 @@ function passwordModal() {
 }
 function writingRender(value) { return value.document || value.sourceUrl || value.attachments?.length ? window.BlogWriter.render(value) : esc(value.content); }
 function writingActions(type, label, section = '') {
-  return `<div class="writing-actions"><button type="button" class="btn tiny" data-action="new-post" data-type="${type}" data-section="${section}">${label}</button><button type="button" class="quiet-button" data-action="open-drafts" data-type="${type}" data-section="${section}">草稿箱</button></div>`;
+  return `<div class="writing-actions"><button type="button" class="btn tiny" data-action="new-post" data-type="${type}" data-section="${section}">${label}</button><button type="button" class="quiet-button" data-action="edit-day" data-type="${type}" data-section="${section}">按日期编辑</button><button type="button" class="quiet-button" data-action="open-drafts" data-type="${type}" data-section="${section}">草稿箱</button></div>`;
+}
+function dayEditor(type, section = 'learning', day = localDay()) {
+  if (!state.admin || !['life', 'study', 'article', 'update'].includes(type)) return;
+  const posts = state.posts.filter(post => post.type === type && (type !== 'study' || studySection(post) === section) && postDay(post) === day).sort(postOrder);
+  openModal(`<h2>按日期编辑</h2><label>选择日期<input class="field" id="edit-day-date" type="date" min="0001-01-01" max="9999-12-31" required value="${esc(day)}"></label><p>选择要修改的内容，也可以为这一天补写记录。</p><div class="writing-draft-list">${posts.map(post => `<article><h3>${esc(post.title)}</h3><p>${esc(post.content.slice(0, 80))}</p><button type="button" class="quiet-button" data-action="edit-post" data-id="${esc(post.id)}">编辑这篇</button></article>`).join('') || '<p>这一天还没有记录。</p>'}</div><button type="button" class="btn" data-action="new-post" data-type="${type}" data-section="${esc(section)}" data-date="${esc(day)}">为这一天补写</button>`);
+  const picker = document.querySelector('#edit-day-date');
+  picker.addEventListener('change', () => { if (picker.value && picker.checkValidity()) dayEditor(type, section, picker.value); });
 }
 function writingContext() {
-  return { openModal, toast, published: async post => {
+  return { openModal, toast, getPost: id => state.posts.find(post => post.id === id), published: async post => {
     state.posts = state.posts.filter(item => item.id !== post.id); state.posts.unshift(post);
     await requestModalClose(); render();
     if (post.type === 'update') blogUpdatesModal();
     else location.hash = `${postPage(post)}?item=${encodeURIComponent(`post-${post.id}`)}`;
   }};
 }
-function postModal(type, post = null, section = 'learning') {
+function postModal(type, post = null, section = 'learning', day) {
   if (post?.type === 'study') section = studySection(post);
-  return window.BlogWriter.open({type,post,section}, writingContext());
+  return window.BlogWriter.open({type,post,section,date:day}, writingContext());
 }
 function readingPlanModal() {
   const plan = state.readingPlan || {};
@@ -1227,7 +1242,7 @@ app.addEventListener('click', event => {
     const selection = studyCalendarState[section];
     if (calendarButton.dataset.studyDay) selection.day = calendarButton.dataset.studyDay;
     else {
-      const months = [...new Set(archivedStudyPosts(section).map(post => dateKey(post.createdAt).slice(0, 7)))].sort((a, b) => b.localeCompare(a));
+      const months = [...new Set(archivedStudyPosts(section).map(post => postDay(post).slice(0, 7)))].sort((a, b) => b.localeCompare(a));
       const step = calendarButton.dataset.studyMonth === 'previous' ? 1 : -1;
       selection.month = months[months.indexOf(selection.month) + step] || selection.month;
       selection.day = '';
@@ -1331,7 +1346,8 @@ document.addEventListener('click', async event => {
     if (action === 'new-topic') newTopicModal(button.getBoundingClientRect());
     if (action === 'edit-mood' && state.admin) moodModal(moodDate || localDay());
     if (action === 'open-drafts' && state.admin) await window.BlogWriter.drafts({type,section}, writingContext());
-    if (action === 'new-post' && state.admin) await postModal(type, null, section);
+    if (action === 'edit-day' && state.admin) dayEditor(type, section);
+    if (action === 'new-post' && state.admin) await postModal(type, null, section, moodDate);
     if (action === 'edit-post') { const post = state.posts.find(post => post.id === id); if (post) await postModal(post.type, post); }
     if (action === 'edit-topic') { const topic = state.topics.find(topic => topic.id === id); if (topic) topicModal(topic); }
     if (action === 'edit-profile') profileModal();

@@ -186,6 +186,14 @@ function requireAdmin(req, res) {
 }
 
 
+function recordDate(value) {
+  if (value === undefined) return {};
+  if (typeof value !== 'string' || !/^(?!0000)\d{4}-\d{2}-\d{2}$/.test(value)) throw new Error('请选择有效的记录日期');
+  const parsed = new Date(`${value}T12:00:00Z`);
+  if (!Number.isFinite(parsed.getTime()) || parsed.toISOString().slice(0, 10) !== value) throw new Error('请选择有效的记录日期');
+  return {date:value};
+}
+
 // Store structured document nodes, never executable HTML from an editor.
 async function writingFields(input, previous = {}) {
   const type = ['study', 'life', 'article', 'update'].includes(input.type) ? input.type : null;
@@ -223,7 +231,7 @@ async function writingFields(input, previous = {}) {
   function plain(nodes) { return nodes.map(n => n.type === 'text' ? n.text : n.type === 'img' ? '' : n.type === 'br' ? '\n' : plain(n.children || []) + (['p','h2','h3','li','blockquote'].includes(n.type) ? '\n' : '')).join(''); }
   const attachments = input.attachments ?? previous.attachments ?? [];
   if (!Array.isArray(attachments) || attachments.length > 10 || attachments.some(id => typeof id !== 'string' || !db.documents.some(d => d.id === id))) throw new Error('附件无效，最多添加 10 个文档');
-  return { type, title: field('title', 100), tag: field('tag', 30),
+  return { type, ...recordDate(input.date === undefined ? previous.date : input.date), title: field('title', 100), tag: field('tag', 30),
     content: document ? plain(document).trim() : field('content', 100000),
     ...(document ? { document } : {}),
     images: await postImages(input.images ?? previous.images),
@@ -238,7 +246,7 @@ async function commentFields(input) {
     if (Buffer.byteLength(JSON.stringify(input)) > 20000) throw new Error('内容太长了');
     return {};
   }
-  const value = await writingFields({...input, type:'article'});
+  const value = await writingFields({...input, type:'article', date:undefined});
   if (value.content.length > 10000) throw new Error('留言正文最多 1 万字');
   return {content:value.content, document:value.document, attachments:value.attachments, sourceUrl:value.sourceUrl};
 }
@@ -640,7 +648,7 @@ async function api(req, res, url) {
       let images;
       try { images = await postImages(input.images); }
       catch (error) { return json(res, 400, { error: error.message }); }
-      const post = { id: crypto.randomUUID(), type, title, content, tag, images, ...(section ? { section } : {}), createdAt: new Date().toISOString() };
+      const post = { id: crypto.randomUUID(), type, title, content, tag, images, ...recordDate(input.date), ...(section ? { section } : {}), createdAt: new Date().toISOString() };
       db.posts.push(post); await save(); return json(res, 201, post);
     }
   }
@@ -658,7 +666,7 @@ async function api(req, res, url) {
       let images;
       try { images = await postImages(input.images ?? post.images); }
       catch (error) { return json(res, 400, { error: error.message }); }
-      Object.assign(post, { type, title, content, tag, images, updatedAt: new Date().toISOString() });
+      Object.assign(post, { type, title, content, tag, images, ...recordDate(input.date), updatedAt: new Date().toISOString() });
       if (section) post.section = section;
       else delete post.section;
       await save(); return json(res, 200, post);

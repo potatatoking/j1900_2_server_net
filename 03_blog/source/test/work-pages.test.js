@@ -119,7 +119,7 @@ test('work footer opens a separate newest-first changelog without mixing updates
   const work = run('workPage()');
   assert.match(work, /class="work-updates-footer"><button[^>]*data-action="show-updates"[^>]*>更新日志<\/button><hr><\/footer><\/div>$/);
   assert.doesNotMatch(work, /历史功能|修复&lt;script&gt;/);
-  assert.match(work, /工作独有词|往日归档/);
+  assert.match(work, /工作独有词|日期归档/);
   assert.equal(run("postPage(state.posts.find(p=>p.id==='new-update'))"), 'work');
   assert.match(run("searchResults('历史功能')"), /更新日志|#work\?item=post-old-update/);
   run('blogUpdatesModal()');
@@ -131,4 +131,51 @@ test('work footer opens a separate newest-first changelog without mixing updates
   run("window.BlogWriter={open(options){globalThis.openedWriter=options;}};postModal('update',state.posts.find(p=>p.id==='old-update'))");
   assert.equal(run('openedWriter.type'), 'update'); assert.equal(run('openedWriter.post.id'), 'old-update');
   context.location.hash='#study?item=post-old-update';assert.equal(run('route()'),'work');
+});
+
+
+test('record dates drive life and study archives, search and day editing without mixing sections', async () => {
+  const {run, context, node} = await setup();
+  run(`state.posts=[
+    {id:'old',type:'study',section:'learning',title:'补写学习',content:'日期内容',date:'2024-02-29',createdAt:'2026-11-23T00:00:00Z'},
+    {id:'job-day',type:'study',section:'work',title:'同日工作',content:'工作内容',date:'2024-02-29',createdAt:'2026-11-23T01:00:00Z'},
+    {id:'diary',type:'life',title:'补写日记',content:'日记内容',date:'2024-02-29',createdAt:'2026-11-23T02:00:00Z'}
+  ];`);
+  assert.equal(run("postDay(state.posts[0])"),'2024-02-29');
+  assert.match(run("studyCalendarView('learning',archivedStudyPosts('learning'))"), /data-study-day="2024-02-29"/);
+  assert.match(run('lifeArchiveView()'), /datetime="2024-02-29"/);
+  context.location.hash='#study';
+  assert.match(run("searchResults('2024年2月29日')"), /补写学习/);
+  assert.match(run("searchResults('2024-02-29')"), /补写学习/);
+  assert.doesNotMatch(run("writingActions('study','写一篇','learning')"), /data-date=/);
+  assert.doesNotMatch(run('studyPage()'), /按日期编辑/);
+  node.innerHTML='unchanged'; run("dayEditor('study','learning','2024-02-29')");
+  assert.equal(node.innerHTML,'unchanged');
+  run("state.admin=true; dayEditor('study','learning','2024-02-29')");
+  assert.match(node.innerHTML,/补写学习/); assert.doesNotMatch(node.innerHTML,/同日工作|补写日记/);
+  assert.match(node.innerHTML,/data-date="2024-02-29"/);
+  assert.match(run('studyPage()'),/按日期编辑/);
+  run("state.posts[0].date='2024-03-01'");
+  assert.doesNotMatch(run("studyCalendarView('learning',archivedStudyPosts('learning'))"),/data-study-day="2024-02-29"/);
+  assert.match(run("studyCalendarView('learning',archivedStudyPosts('learning'))"),/data-study-day="2024-03-01"/);
+});
+
+
+test('backfill actions forward their date to the writer and previews use record order', async () => {
+  const {run,context,handlers}=await setup();
+  run(`state.admin=true; window.BlogWriter={open(options){globalThis.openedWriter=options;}};`);
+  const button={dataset:{action:'new-post',type:'study',section:'work',date:'2024-02-29'}};
+  for (const handle of handlers.click) await handle({target:{closest:selector=>selector==='[data-action]'?button:null}});
+  assert.equal(run('openedWriter.date'),'2024-02-29'); assert.equal(run('openedWriter.section'),'work');
+  run(`state.posts=[
+    {id:'recent',type:'life',title:'日期最新',content:'a',date:'2024-03-03',createdAt:'2024-01-01T00:00:00Z'},
+    {id:'middle',type:'life',title:'日期其次',content:'b',date:'2024-03-02',createdAt:'2024-01-02T00:00:00Z'},
+    {id:'backfill',type:'life',title:'刚刚补写旧日',content:'c',date:'2020-01-01',createdAt:'2026-01-01T00:00:00Z'}
+  ];state.posts.reverse();`);
+  const preview=run("fanPreviewContent(fanPages.find(p=>p.id==='life'))");
+  assert.match(preview,/日期最新|日期其次/);assert.doesNotMatch(preview,/刚刚补写旧日/);
+  run(`state.posts=[{id:'ancient',type:'study',section:'learning',title:'早年',content:'x',date:'0004-02-29',createdAt:'2026-01-01T00:00:00Z'}];studyCalendarState.learning={month:'',day:''}`);
+  const calendar=run("studyCalendarView('learning',archivedStudyPosts('learning'))");
+  assert.match(calendar,/data-study-day="0004-02-29"/);
+  assert.equal((calendar.match(/study-calendar-blank/g)||[]).length,6);
 });

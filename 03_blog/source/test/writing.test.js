@@ -85,3 +85,49 @@ test('draft privacy, conflict handling, safe documents, visitor rich replies and
   assert.equal((await call('/api/topics')).body.find(d=>d.id===topic.body.id).replies[0].document[0].type,'img');
   assert.equal((await fetch(base+'/api/documents/'+docId)).status,200);
 });
+
+
+test('record dates validate, survive drafts and restart, and preserve creation timestamps', async t => {
+  const dir=await fs.mkdtemp(path.join(os.tmpdir(),'blog-writing-'));
+  await fs.copyFile(new URL('../server.js',import.meta.url),path.join(dir,'server.js'));
+  await fs.writeFile(path.join(dir,'package.json'),'{"type":"module"}');
+  await fs.mkdir(path.join(dir,'public'));
+  const probe=net.createServer(); probe.listen(0,'127.0.0.1'); await once(probe,'listening');
+  const port=probe.address().port;await new Promise(resolve=>probe.close(resolve));
+  const base=`http://127.0.0.1:${port}`;
+  let child;
+  async function stop(){if(child && child.exitCode===null){const exit=once(child,'exit');child.kill();await exit;}}
+  async function start(){child=spawn(process.execPath,['server.js'],{cwd:dir,env:{...process.env,PORT:String(port),BLOG_ADMIN_PASSWORD:'writing-test-only'},stdio:'ignore'});for(let i=0;i<60;i++){try{if((await fetch(base+'/api/session')).ok)return;}catch{}await new Promise(r=>setTimeout(r,30));}throw new Error('Server did not start');}
+  t.after(async()=>{await stop();await fs.rm(dir,{recursive:true,force:true});});
+  await start();
+  const call=async(route,method='GET',body,cookie)=>{const res=await fetch(base+route,{method,headers:{...(body?{'Content-Type':'application/json'}:{}),...(cookie?{Cookie:cookie}:{})},body:body?JSON.stringify(body):undefined});return {status:res.status,body:await res.json(),cookie:res.headers.get('set-cookie')};};
+  let login=await call('/api/login','POST',{password:'writing-test-only'}),cookie=login.cookie.split(';')[0];
+  const dated={type:'life',title:'补写闰日',content:'当天内容',date:'2024-02-29'};
+  assert.equal((await call('/api/drafts/dated','PUT',dated)).status,401);
+  for (const value of ['2023-02-29','2024-02-30','2024-04-31','2024-13-01','0000-01-01','2024-2-9','',null,42]) {
+    const invalid=await call('/api/drafts/invalid-date','PUT',{...dated,date:value},cookie);
+    assert.equal(invalid.status,400,`Invalid date ${value}`);
+  }
+  let saved=await call('/api/drafts/dated','PUT',dated,cookie);
+  assert.equal(saved.body.date,'2024-02-29');
+  saved=await call('/api/drafts/dated','PUT',{type:'life',title:dated.title,content:'继续写',revision:saved.body.revision},cookie);
+  assert.equal(saved.body.date,'2024-02-29');
+  const backdated=await call('/api/drafts/dated/publish','POST',{revision:saved.body.revision},cookie);
+  assert.equal(backdated.status,200); assert.equal(backdated.body.date,'2024-02-29');
+  assert.ok(Math.abs(Date.now()-Date.parse(backdated.body.createdAt))<10000);
+  const move={...dated,postId:backdated.body.id,date:'2024-03-01'};
+  saved=await call('/api/drafts/dated-edit','PUT',move,cookie);
+  const moved=await call('/api/drafts/dated-edit/publish','POST',{revision:saved.body.revision},cookie);
+  assert.equal(moved.body.date,'2024-03-01'); assert.equal(moved.body.createdAt,backdated.body.createdAt);
+  const legacyEdit=await call('/api/posts/'+backdated.body.id,'PUT',{type:'life',title:'旧客户端修改',content:'保留日期'},cookie);
+  assert.equal(legacyEdit.body.date,'2024-03-01'); assert.equal(legacyEdit.body.createdAt,backdated.body.createdAt);
+  assert.equal((await call('/api/posts/'+backdated.body.id,'PUT',{...dated,date:'2023-02-29'},cookie)).status,400);
+  const direct=await call('/api/posts','POST',{...dated,date:'2024-01-31'},cookie);
+  assert.equal(direct.status,201); assert.equal(direct.body.date,'2024-01-31');
+  await call('/api/drafts/persist-date','PUT',{...dated,date:'2024-12-31'},cookie);
+
+  await stop();await start();
+  login=await call('/api/login','POST',{password:'writing-test-only'});cookie=login.cookie.split(';')[0];
+  assert.equal((await call('/api/drafts','GET',undefined,cookie)).body.find(d=>d.id==='persist-date').date,'2024-12-31');
+  assert.equal((await call('/api/posts')).body.find(p=>p.id===backdated.body.id).date,'2024-03-01');
+});
